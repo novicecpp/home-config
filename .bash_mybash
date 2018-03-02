@@ -1,4 +1,6 @@
 # term 
+export EDITOR=emacs
+
 term () {
     if [[ "${1// }" ]]; then 
         TMUX_TERM_NAME="${1}"
