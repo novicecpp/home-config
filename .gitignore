@@ -1,0 +1,7 @@
+*
+.*
+!.gitignore
+!.bashrc.copy
+!.bash_mybash
+!.tmux.conf
+!.emacs

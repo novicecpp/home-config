@@ -1,0 +1,100 @@
+# term 
+term () {
+    if [[ "${1// }" ]]; then 
+        TMUX_TERM_NAME="${1}"
+    fi
+    if [[ -z "${TMUX// }" ]] && [[ $- == *i* ]] && [[ -n "${TMUX_TERM_NAME// }" ]]; then
+        ##[[ -z "${TMUX_TERM_NAME// }" ]] && TMUX_TERM_NAME="init"
+        tmux has-session -t $TMUX_TERM_NAME &> /dev/null
+        if [[ $? -eq 1 ]]; then
+            tmux new-session -d -s $TMUX_TERM_NAME \; \
+                 new-window -t $TMUX_TERM_NAME:1 "emacsclient -t" \; \
+                 swap-window -s $TMUX_TERM_NAME:1 -t $TMUX_TERM_NAME:0
+            tmux attach-session -d -t $TMUX_TERM_NAME
+        else
+            #if [[ -z $(tmux list-clients -t $TMUX_TERM_NAME) ]]; then
+            #    tmux attach-session -t $TMUX_TERM_NAME
+            #else
+            #    echo "Session $TMUX_TERM_NAME has already attached. Exit.."
+            #fi
+            tmux attach-session -d -t $TMUX_TERM_NAME
+        fi
+    fi
+}
+
+# open file in already open emacsclient in current session
+tmux_emacsclient () {
+    if [[ -z $TMUX ]]; then 
+        emacsclient -t $1
+        return
+    fi
+
+    target="$1"
+    found=false
+    for i in $(tmux list-panes -s -F "#{pane_pid},#{pane_id}");    
+    do
+        pane_pid=${i%,*}
+        pane_id=${i#*,}
+        if [[ "$(pstree $pane_pid)" == *"emacsclient"*  ]]; then            
+            found=true
+            break
+        fi
+    done
+    
+    if $found; then
+        path=$([[ -f $target ]] && realpath $target || echo "")
+        tmux send-keys -t $pane_id C-x C-f $path Enter 
+    else 
+        tmux new-window emacsclient -t $target
+        #tmux split-window -v 
+        #tmux resize-pane -y 6
+        #tmux select-pane -t 1
+        tmux if-shell 'tmux move-window -t 0' '' 'swap-window -t 0'
+    fi        
+    tmux select-window -t 0;
+
+}
+
+# swap to dedicated emacs-org window. using with tmux shortcut
+tmux_show_org () {
+    WINDOW_NUM=1322
+    SESSION_NAME=ORGLIFE
+    ORG_PATH=~/org/
+    
+    #check if in tmux session
+    if [[ -z $TMUX ]]; then exit 1; fi
+
+    session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
+    if [[ -z $session_find ]]; then
+        #create new session
+        #SAVE_TMUX=$TMUX
+        #unset TMUX
+        env -i tmux new-session -d -s $SESSION_NAME \
+             "bash -c 'cd $ORG_PATH; command emacs'"        
+    fi
+    
+    window_number=$(tmux display-message -p '#I')
+    if [[ $window_number == $WINDOW_NUM ]]; then 
+        export $(tmux show-environment -g TMUX_CUSTOM_PREVIOUS_WINDOW)
+        tmux select-window -t $TMUX_CUSTOM_PREVIOUS_WINDOW
+        tmux unlink-window -t $WINDOW_NUM
+    else        
+        window_find=$(tmux list-windows -F "#{window_index}" | grep -i $WINDOW_NUM)
+        if [[ -z $window_find ]]; then
+            tmux link-window -d -s $SESSION_NAME:0 -t $WINDOW_NUM
+        fi
+        last_window=$(tmux display-message -p \
+                           '#{window_index}.#{pane_index}')
+        tmux set-environment -g TMUX_CUSTOM_PREVIOUS_WINDOW $last_window
+        tmux select-window -t $WINDOW_NUM
+    fi   
+}
+
+term
+
+# bash-completion kubectl
+type kubectl &> /dev/null && source <(kubectl completion bash)
+
+#alias
+alias e='command emacs'
+alias emacs='tmux_emacsclient'
