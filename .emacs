@@ -180,10 +180,15 @@
   '((sequence "TODO(t)" "START(s)" "|" "DONE(d)")
     (sequence "WAIT(w)" "|")
     (sequence "|" "CANCELED(c)")))
+(setq org-export-backends '(ascii html latex odt))
+(setq org-startup-indented t)
+(setq org-hide-leading-stars t)
 
 ;; browse-url
 (setq browse-url-browser-function 'eww-browse-url)
 
+;; magit
+(define-key global-map (kbd "C-x g") 'magit-status)
 
 
 ;; test

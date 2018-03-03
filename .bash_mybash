@@ -1,6 +1,6 @@
 # term 
-export EDITOR=emacs
 
+# use term command to ssh with tmux terminal
 term () {
     if [[ "${1// }" ]]; then 
         TMUX_TERM_NAME="${1}"
@@ -28,10 +28,22 @@ term () {
 tmux_emacsclient () {
     if [[ -z $TMUX ]]; then 
         emacsclient -t $1
-        return
+        echo 'Error. Not in TMUX session.'
+        return 1
+    fi  
+
+    if [[ -n "$1" ]]; then
+        target="$1"
+    else
+        target="."
     fi
 
-    target="$1"
+    if [[ ! -r "$1" && -n "$1" ]]; then
+        echo "${FUNCNAME[0]}: cannot access '$1': No such file or directory"
+        return 2
+    fi
+
+
     found=false
     for i in $(tmux list-panes -s -F "#{pane_pid},#{pane_id}");    
     do
@@ -45,6 +57,7 @@ tmux_emacsclient () {
     
     if $found; then
         path=$([[ -f $target ]] && realpath $target || echo "")
+        tmux send-keys -t $pane_id C-g C-g 
         tmux send-keys -t $pane_id C-x C-f $path Enter 
     else 
         tmux new-window emacsclient -t $target
@@ -64,7 +77,7 @@ tmux_show_org () {
     ORG_PATH=~/org/
     
     #check if in tmux session
-    if [[ -z $TMUX ]]; then exit 1; fi
+    if [[ -z $TMUX ]]; then return 1; fi
 
     session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
     if [[ -z $session_find ]]; then
@@ -91,6 +104,24 @@ tmux_show_org () {
         tmux select-window -t $WINDOW_NUM
     fi   
 }
+
+tmux_swap_window () {
+    set -o xtrace
+    # https://stackoverflow.com/questions/806906/how-do-i-test-if-a-variable-is-a-number-in-bash
+    ! [[ "$1" =~ ^[0-9]+$ ]] && return 1 
+
+    next_window=$1
+    current_window=$(tmux display-message -p '#{window_index}')
+    if [[ $current_window == $next_window ]]; then
+        export $(tmux show-environment TMUX_CUSTOM_PREVIOUS_SWAP)
+        tmux select-window -t :=$TMUX_CUSTOM_PREVIOUS_SWAP
+    else
+        tmux set-environment TMUX_CUSTOM_PREVIOUS_SWAP $current_window
+        tmux select-window -t :=$next_window
+    fi
+    set +o xtrace
+}
+
 
 term
 
