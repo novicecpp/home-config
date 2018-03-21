@@ -1,4 +1,5 @@
 ;; add melpa
+
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
@@ -174,15 +175,31 @@
 ;;(setq org-hide-emphasis-markers t)
 (define-key global-map "\C-ca" 'org-agenda)
 (define-key global-map "\C-cl" 'org-store-link)
-(setq org-log-done t)
+(setq org-log-done 'note)
 (setq org-clock-into-drawer t)
 (setq org-todo-keywords
-  '((sequence "TODO(t)" "START(s)" "|" "DONE(d)")
-    (sequence "WAIT(w)" "|")
+  '((sequence "TODO(t)" "START(s)" "WAIT(w)" "|" "DONE(d)")
     (sequence "|" "CANCELED(c)")))
 (setq org-export-backends '(ascii html latex odt))
 (setq org-startup-indented t)
 (setq org-hide-leading-stars t)
+;;;; set effort
+(setq org-global-properties
+      '(("Effort_ALL" .
+         "0:15 0:30 1:00 1:30 2:00 3:00 4:00 5:00 6:00 0:00")))
+
+;;;; org clock-in/out when state change
+(defun clock-inout-after-state-change-hook()
+  "clock-in when change to state 'START' and clock-out when change to state 'WAIT'"
+    (let ((element (org-element-at-point))) 
+      (let ((tags (org-element-property :tags element))
+            (state (org-element-property :todo-keyword element)))        
+        (when (member "clock" tags) 
+          (cond ((string= state "START") (org-clock-in))
+                ((and (string= state "WAIT") (org-clock-is-active)) (org-clock-out)))))))
+
+(add-hook 'org-after-todo-state-change-hook 'clock-inout-after-state-change-hook)
+
 
 ;; browse-url
 (setq browse-url-browser-function 'eww-browse-url)
@@ -192,6 +209,11 @@
 
 
 ;; test
+
+
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-12" ))
+(set-face-attribute 'default t :font "Liberation Mono-12" )
+
 
 
 
