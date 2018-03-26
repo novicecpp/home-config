@@ -85,7 +85,7 @@ tmux_show_org () {
         #SAVE_TMUX=$TMUX
         #unset TMUX
         env -i tmux new-session -d -s $SESSION_NAME \
-             "bash -c 'cd $ORG_PATH; command emacs'"        
+             "emacsclient -t $ORG_PATH"
     fi
     
     window_number=$(tmux display-message -p '#I')
@@ -122,6 +122,54 @@ tmux_swap_window () {
     set +o xtrace
 }
 
+tmux_emacs_session() {
+    set -o xtrace
+    SESSION_NAME=EMACS
+    SERVER_NAME=foo
+
+    if [[ -n $TMUX ]]; then return 1; fi
+    session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
+    if [[ -z $session_find ]]; then
+        #echo "Start emacs server..."
+        #emacs --eval "(setq server-name \"$SERVER_NAME\")" --daemon &> /dev/null
+        tmux new-session -d -s $SESSION_NAME \
+            "emacsclient -t $@"
+            #"emacsclient -s $SERVER_NAME -t $@"
+    fi    
+    tmux attach -t $SESSION_NAME
+    set +o xtrace
+}
+
+emacs_global() {
+    if [[ $# != 1 ]]; then 
+        echo "Error: open file more than one is not support yet"
+        return 1
+    fi
+    path=$PWD/$1
+    SESSION_NAME=EMACS
+    SERVER_NAME=foo
+
+    #set -o xtrace
+    session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
+    if [[ -n $session_find ]]; then
+        current_command=$(tmux list-panes -t $SESSION_NAME:0 -F "#{pane_index}:#{pane_current_command}" 2>&1 | grep -i emacsclient | head -1)
+        if [[ -z $current_command ]]; then
+            tmux move-window -a -s $SESSION_NAME:0 -t $SESSION_NAME >/dev/null 2>&1 
+            tmux new-window -d -t $SESSION_NAME:0 emacsclient -t "$path"
+            pane_index=1
+        else
+            pane_index=${current_command%:*}
+            tmux send-keys -t $SESSION_NAME:0.$pane_index C-g C-g 
+            tmux send-keys -t $SESSION_NAME:0.$pane_index C-x C-f "$path" Enter         
+        fi
+        tmux select-window -t $SESSION_NAME:0
+        tmux select-pane -t $SESSION_NAME:0.$pane_index
+    fi 
+    #set +o xtrace
+}
+test1() {
+    echo $#
+}
 
 term
 
@@ -129,5 +177,5 @@ term
 type kubectl &> /dev/null && source <(kubectl completion bash)
 
 #alias
-alias e='command emacs'
-alias emacs='tmux_emacsclient'
+alias e='emacs_global'
+alias el='emacs_local'
