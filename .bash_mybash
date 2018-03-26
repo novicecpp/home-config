@@ -10,8 +10,9 @@ term () {
         tmux has-session -t $TMUX_TERM_NAME &> /dev/null
         if [[ $? -eq 1 ]]; then
             tmux new-session -d -s $TMUX_TERM_NAME \; \
-                 new-window -t $TMUX_TERM_NAME:1 "emacsclient -t" \; \
-                 swap-window -s $TMUX_TERM_NAME:1 -t $TMUX_TERM_NAME:0
+                 #new-window -t $TMUX_TERM_NAME:1 "emacsclient -t" \; \
+                 #swap-window -s $TMUX_TERM_NAME:1 -t $TMUX_TERM_NAME:0
+            tmux new-window -t $TMUX_TERM_NAME:1                  
             tmux attach-session -d -t $TMUX_TERM_NAME
         else
             #if [[ -z $(tmux list-clients -t $TMUX_TERM_NAME) ]]; then
@@ -141,13 +142,13 @@ tmux_emacs_session() {
 }
 
 emacs_global() {
-    if [[ $# != 1 ]]; then 
-        echo "Error: open file more than one is not support yet"
-        return 1
-    fi
     path=$PWD/$1
     SESSION_NAME=EMACS
     SERVER_NAME=foo
+    if [[ $# != 1 ]]; then 
+        echo "Error: open more than one file and emacsclient option is not support yet."
+        return 1
+    fi
 
     #set -o xtrace
     session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
@@ -164,18 +165,19 @@ emacs_global() {
         fi
         tmux select-window -t $SESSION_NAME:0
         tmux select-pane -t $SESSION_NAME:0.$pane_index
+    else
+        echo "Error: no $SESSION_NAME session. Please start $SESSION_NAME session before call ${FUNCNAME[0]}"
     fi 
     #set +o xtrace
 }
-test1() {
-    echo $#
-}
-
 term
 
 # bash-completion kubectl
 type kubectl &> /dev/null && source <(kubectl completion bash)
 
 #alias
+#alias e='emacsclient -n'
 alias e='emacs_global'
+alias eg='emacs_global'
 alias el='emacs_local'
+
