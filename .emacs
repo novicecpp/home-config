@@ -417,9 +417,13 @@
 
 ;;;; org todo state
 (setq org-todo-keywords
-  '((sequence "TODO(t)" "START(s)" "WAIT(w)" "|" "DONE(d)")
-    (sequence "RETRY(r)" "|" )
-    (sequence "|" "CANCELED(c)")))
+  '((sequence "TODO(t)" "TODAY(o)" "|" "DONE(d)")
+    (sequence "START(s)" "STOP(p)")
+    (sequence "RETRY(r)" "|" "CANCELED(c)")))
+
+;;  '((sequence "TODO(t)" "START(s)" "WAIT(w)" "|" "DONE(d)")
+;;    (sequence "RETRY(r)" "|" )
+;;    (sequence "|" "CANCELED(c)")))
 
 ;;;; set effort
 (setq org-global-properties
@@ -432,11 +436,35 @@
     (let ((element (org-element-at-point))) 
       (let ((tags (org-element-property :tags element))
             (state (org-element-property :todo-keyword element)))        
-        (when (member "clock" tags) 
-          (cond ((string= state "START") (org-clock-in))
-                ((and (string= state "WAIT") (org-clock-is-active)) (org-clock-out)))))))
+        (cond ((string= state "TODAY") 
+               (org-set-tags-to (concat (org-get-tags-string) ":clock:"))
+               (org-set-effort))
+              ((member "clock" tags) 
+               (cond ((string= state "START") 
+                      (org-clock-in))
+                     ((and (string= state "WAIT") (org-clock-is-active)) 
+                      (org-clock-out))))))))
 
 (add-hook 'org-after-todo-state-change-hook 'clock-inout-after-state-change-hook)
+
+
+;;(require 'org) 
+;;;;set effort to add tags
+;;(defun org-set-effort-with-tags-clock()
+;;  "set effort and tags :clock:"
+;;  (interactive)
+;;;;    (let ((element (org-element-at-point))) 
+;;;;      (let ((tags (org-element-property :tags element)))
+;;;;        (unless (member "clock" tags)
+;;;;          (org-set-tags-to (concat (org-get-tags-string) ":clock:"))))))
+;;  (let ((tags (org-get-tags-string)))
+;;    (unless (string-match-p ":clock:" tags)
+;;      (org-set-tags-to (concat tags ":clock:"))))
+;;  (org-set-effort))
+;;
+;;
+;;(org-defkey org-mode-map "\C-c\C-xe" 'org-set-effort-with-tags-clock)
+
 ;; org-capture
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (define-key global-map "\C-cc" 'org-capture)
@@ -449,10 +477,13 @@
 (setq org-refile-use-outline-path t)
 (setq org-refile-allow-creating-parent-nodes t)
 ;;;; agenda custom command
-(setq org-agenda-custom-commands '(("c" . "custom command")
-                                   ("cn" tags-todo "+LEVEL=2+next_action")
-                                   ("cy" tags "+CATEGORY=\"yark\"")
-                                   ("cc" tags-todo "+CATEGORY=\"calendar\"")))
+(setq org-agenda-custom-commands 
+      '(("c" . "custom command")
+        ("cn" tags-todo "+LEVEL>1+next_action")
+        ("cy" tags "CATEGORY=\"yark\"|yark")
+        ("cc" tags-todo "+CATEGORY=\"calendar\"")
+        ("ct" "tessss" tags-todo "+next_action" 
+         ((org-agenda-overriding-columns-format "%20ITEM %20EFFORT")))))
 
 
 
@@ -486,11 +517,11 @@
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
    (quote
-    ("~/org/gtd/yark.org" "~/org/gtd/calendar.org" "~/org/gtd/project/storm.org" "~/org/gtd/project/01204111.org" "~/org/gtd/next.org" "/home/novicecpp/org/gtd/project.org" "/home/novicecpp/org/gtd/waiting.org")))
+    ("~/org/gtd/project/org-web.org" "~/org/gtd/yark.org" "~/org/gtd/calendar.org" "~/org/gtd/project/storm.org" "~/org/gtd/project/01204111.org" "~/org/gtd/next.org" "/home/novicecpp/org/gtd/project.org" "/home/novicecpp/org/gtd/waiting.org")))
  '(org-refile-targets (quote ((org-agenda-files :level . 0))))
  '(package-selected-packages
    (quote
-    (magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode))))
+    (htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -531,21 +562,5 @@
 
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   (quote
-    ("~/org/gtd/yark.org" "~/org/gtd/calendar.org" "~/org/gtd/project/storm.org" "~/org/gtd/project/01204111.org" "~/org/gtd/next.org" "/home/novicecpp/org/gtd/project.org" "/home/novicecpp/org/gtd/waiting.org")))
- '(org-refile-targets (quote ((org-agenda-files :level . 0))))
- '(package-selected-packages
-   (quote
-    (magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
