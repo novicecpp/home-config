@@ -114,7 +114,7 @@
 
 ;; ido-mode config
 ;; base ido
-;;(ido-mode 1)
+(ido-mode t)
 ;;(ido-everywhere 1)
 ;; ido-ubiquitous
 ;;(require 'ido-ubiquitous)
@@ -176,28 +176,31 @@
 (add-to-list 'auto-mode-alist '("\\.bash_mybash\\'" . sh-mode))
 
 ;; org-mode
+(require 'org)
+
 (setq org-directory "~/org")
 ;;(setq org-hide-emphasis-markers t)
 (define-key global-map "\C-ca" 'org-agenda)
 (define-key global-map "\C-cl" 'org-store-link)
-(setq org-log-done 'note)
+(setq org-log-done 'time)
 (setq org-clock-into-drawer t)
 (setq org-export-backends '(ascii html latex odt))
 (setq org-startup-indented t)
 (setq org-hide-leading-stars t)
 ;;;; clear child todo before parent can done
-(setq org-enforce-todo-dependencies t)
+;;(setq org-enforce-todo-dependencies t)
 ;;(setq org-tags-match-list-sublevels 'indented)
 
 ;;;; org todo state
 (setq org-todo-keywords
   '((sequence "TODO(t)" "TODAY(o)" "|" "DONE(d)")
     (sequence "START(s)" "STOP(p)" "|")
-    (sequence "RETRY(r)" "|" "CANCELED(c)")))
+    (sequence "RETRY(r)" "WAIT" "|" "CANCELED(c)")))
 
-;;  '((sequence "TODO(t)" "START(s)" "WAIT(w)" "|" "DONE(d)")
-;;    (sequence "RETRY(r)" "|" )
-;;    (sequence "|" "CANCELED(c)")))
+
+(setq org-todo-keyword-faces
+      '(("TODAY" . (:weight ultra-bold :foreground "brightyellow"))
+        ("WAIT" . (:weight ultra-bold :foreground "pink"))))
 
 ;;;; set effort
 (setq org-global-properties
@@ -255,17 +258,91 @@
 ;;;; agenda custom command
 (setq org-agenda-custom-commands 
       '(("c" . "custom command")
-        ("cn" "Next Action" tags-todo "+LEVEL>1+next_action" (ignore) ("next.html"))
-        ("cy" "Maybe/Yark" tags "CATEGORY=\"yark\"|yark" (ignore) ("yark.html"))
-        ("cw" "Weekly Schedule" agenda "+CATEGORY=\"calendar\"" (ignore) ("week.html"))
-        ("cm" "Monthly Schedule" agenda "+CATEGORY=\"calendar\"" ((org-agenda-start-day "-7d") (org-agenda-span 'month)) ("month.html"))
-        ("ct" "get TODAY todo" todo "TODAY" 
-         ((org-agenda-overriding-columns-format "%60ITEM(item) %8Effort(estimate) %8CLOCKSUM(time)")))
-        ("ce" "test" alltodo "" () ("~/test.html"))))
+        ("cm" "Calendar" agenda "" 
+         ((org-agenda-start-day "-7d") 
+          (org-agenda-overriding-header "\nCalendar\n------------------\n")
+          (org-agenda-span 'month)
+          (org-agenda-files '("~/org/gtdv2/calendar.org"))) 
+         ("calendar_month.html"))
+        ("ck" "Tickler" agenda "" 
+         ((org-agenda-start-day "-7d") 
+          (org-agenda-overriding-header "\nTickler\n------------------\n")
+          (org-agenda-span 'month)
+          (org-agenda-files '("~/org/gtdv2/tickler.org")))
+         ("tickler_month.html"))
+        ("cp" "Project" tags "+LEVEL>0" 
+         ((org-tags-match-list-sublevels 'indented)
+          (org-agenda-overriding-header "\nProject List\n------------------\n")
+          (org-agenda-files '("~/org/gtdv2/project.org")))
+         ("tickler_month.html"))
+        ("cn" "Next Action" tags-todo "+LEVEL>0" 
+         ((org-agenda-overriding-header "\nNext Action\n------------------\n")
+          (org-agenda-files '("~/org/gtdv2/next.org")))
+         ("next.html"))
+        ("cs" "Someday" tags "+LEVEL>0" 
+         ((org-tags-match-list-sublevels 'indented)
+          (org-agenda-overriding-header "\nSomeday/Maybe\n------------------\n")
+          (org-agenda-files '("~/org/gtdv2/someday.org")))
+         ("somday.html"))        
+        ("ct" "get today todo" todo "TODAY|START|STOP|RETRY" 
+         ((org-agenda-overriding-columns-format "%60ITEM(item) %8Effort(estimate) %8CLOCKSUM(time)") (org-enforce-todo-dependencies nil)))
+        ("ca" "ALL" tags "+LEVEL>0" (ignore) ("all.html"))))
 
-
-(setq org-todo-keyword-faces
-      '(("TODAY" . (:weight ultra-bold :foreground "yellow"))))
+;; add org directory to agenda
+(add-to-list 'org-agenda-files (expand-file-name "~/org/gtdv2"))
+;; enter to follow link
+;;(setq org-return-follows-link t)
+;; habit
+(add-to-list 'org-modules 'org-habit)
+;; shortcut for link and refile project/nextaction
+(defun novicecpp/set-hash()
+  "test"
+  (interactive)
+  (let* ((element (org-element-at-point))
+        (title (org-element-property :title element))
+        (current (format-time-string "%Y-%m-%d %H:%M:%S"))
+        (hash (secure-hash 'sha256 (concat title current))))
+    (progn 
+      (org-set-property "hash" hash)
+      (message (concat "set hash property: " hash))))  
+)
+(defun novicecpp/set-parent-hash-and-refile()
+  "test2"
+  (interactive)
+  (let ((hash-current (org-entry-get nil "hash"))
+        (hash-parent (org-entry-get nil "hash" t)))
+    (if hash-current
+        (message "current headline have properties \"hash\"")
+      (progn 
+        (org-set-property "parent_hash" hash-parent)
+        (org-set-property "CATEGORY" (subseq hash-parent 0 12))
+        (message (concat "set parent_hash property:" hash-parent))        
+        (novicecpp/refile-target "~/org/gtdv2/next.org" "Project")))))
+;; refile target
+;; https://emacs.stackexchange.com/questions/8045/org-refile-to-a-known-fixed-location
+(defun novicecpp/refile-target (file headline)
+  "docsstring"
+  (let ((pos (save-excursion
+               (find-file file)
+               (org-find-exact-headline-in-buffer headline))))
+    (switch-to-buffer (current-buffer))
+    (org-refile nil nil (list headline file nil pos))))
+(define-key org-mode-map (kbd "C-c S") 'novicecpp/set-hash)
+(define-key org-mode-map (kbd "C-c s") 'novicecpp/set-parent-hash-and-refile)
+;; view next action of fproject
+(defun novicecpp/org-tag-view-nextaction-of-project()
+  "novicecpp/org-tag-view-nextaction-of-project"
+  (interactive)
+  
+  (let* ((org-agenda-files '("~/org/gtdv2/next.org"))
+        (parent-hash (org-entry-get nil "hash"))
+        (element (org-element-at-point))
+        (title (org-element-property :title element))        
+        (org-agenda-overriding-header (format "\n%s\n------------------\n" title)))
+    (org-tags-view nil (format "+parent_hash=\"%s\"" parent-hash)))
+)
+(define-key org-mode-map (kbd "C-c C-M-s") 
+  'novicecpp/org-tag-view-nextaction-of-project)
 
 
 
@@ -279,10 +356,19 @@
 ;; map C-tab keycode from mintty
 (define-key input-decode-map "\e[1;5I" [(control tab)])
 
+;; config org-notify-email for run
+(add-to-list 'load-path "~/.emacs.d/custom/")
+(setq novicecpp/org-notify-rule '((test (:time "1m" :actions novicecpp/org-notify-sendmail))))
+(setq novicecpp/org-notify-agenda-files '("~/org/gtdv2/calendar.org" "~/org/gtdv2/tickler.org"))
+
 
 ;; test
 (require 'linum)
 (set-face-underline-p 'linum nil)
+
+
+
+(load-file "~/test.el")
 
 
 
@@ -291,13 +377,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
+ '(org-agenda-files (quote ("~/test.org" "~/test2.org")))
+ '(org-refile-targets
    (quote
-    ("~/org/gtd/project/org-web.org" "~/org/gtd/yark.org" "~/org/gtd/calendar.org" "~/org/gtd/project/storm.org" "~/org/gtd/project/01204111.org" "~/org/gtd/next.org" "/home/novicecpp/org/gtd/project.org" "/home/novicecpp/org/gtd/waiting.org")))
- '(org-refile-targets (quote ((org-agenda-files :level . 0))))
+    ((org-agenda-files :maxlevel . 2)
+     ("~/org/gtdv2/nexttest.org" :maxlevel . 1))))
  '(package-selected-packages
    (quote
-    (htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode))))
+    (htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode)))
+ '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
