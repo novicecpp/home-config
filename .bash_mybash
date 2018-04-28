@@ -39,14 +39,8 @@ tmux_emacsclient () {
         target="."
     fi
 
-    if [[ ! -r "$1" && -n "$1" ]]; then
-        echo "${FUNCNAME[0]}: cannot access '$1': No such file or directory"
-        return 2
-    fi
-
-
     found=false
-    for i in $(tmux list-panes -s -F "#{pane_pid},#{pane_id}");    
+    for i in $(tmux list-panes -t 0 -F "#{pane_pid},#{pane_id}");    
     do
         pane_pid=${i%,*}
         pane_id=${i#*,}
@@ -62,9 +56,6 @@ tmux_emacsclient () {
         tmux send-keys -t $pane_id C-x C-f $path Enter 
     else 
         tmux new-window emacsclient -t $target
-        #tmux split-window -v 
-        #tmux resize-pane -y 6
-        #tmux select-pane -t 1
         tmux if-shell 'tmux move-window -t 0' '' 'swap-window -t 0'
     fi        
     tmux select-window -t 0;
@@ -106,6 +97,36 @@ tmux_show_org () {
     fi   
 }
 
+# v2
+tmux_show_org_v2 () {
+    WINDOW_NUM=1322
+    SESSION_NAME=ORGLIFE
+    ORG_PATH=~/org/gtdv2
+    
+    #check if in tmux session
+    if [[ -z $TMUX ]]; then return 1; fi
+
+    session_find=$(tmux list-sessions -F '#{session_name}' | grep -i $SESSION_NAME)
+    if [[ -z $session_find ]]; then
+        #create new session
+        env -i tmux new-session -d -s $SESSION_NAME \
+             "emacsclient -t $ORG_PATH"
+        env -i tmux set-option -t $SESSION_NAME status-bg red
+    fi
+    
+    current_session=$(tmux display-message -p '#{session_name}')
+    if [[ $current_session == $SESSION_NAME ]]; then 
+        export $(tmux show-environment TMUX_CUSTOM_PREVIOUS_SESSION)
+        [[ -z $TMUX_CUSTOM_PREVIOUS_SESSION ]] && return 1
+        tmux set-environment -g TMUX_CUSTOM_PREVIOUS_SESSION ""
+        tmux switch-client -t $TMUX_CUSTOM_PREVIOUS_SESSION
+    else                
+        tmux set-environment -g TMUX_CUSTOM_PREVIOUS_SESSION $current_session
+        tmux switch-client -t $SESSION_NAME
+    fi   
+}
+
+
 tmux_swap_window () {
     set -o xtrace
     # https://stackoverflow.com/questions/806906/how-do-i-test-if-a-variable-is-a-number-in-bash
@@ -136,8 +157,8 @@ tmux_emacs_session() {
         tmux new-session -d -s $SESSION_NAME \
             "emacsclient -t $@"
             #"emacsclient -s $SERVER_NAME -t $@"
+        tmux set-option -t $SESSION_NAME status-bg red
     fi    
-    tmux attach -t $SESSION_NAME
     set +o xtrace
 }
 
@@ -170,14 +191,21 @@ emacs_global() {
     fi 
     #set +o xtrace
 }
+
+
+
+
+#initialize term
 term
+
+
 
 # bash-completion kubectl
 type kubectl &> /dev/null && source <(kubectl completion bash)
 
 #alias
 #alias e='emacsclient -n'
-alias e='emacs_global'
+alias e='tmux_emacsclient'
 alias eg='emacs_global'
 alias el='emacs_local'
 
