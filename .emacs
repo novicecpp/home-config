@@ -24,6 +24,8 @@
 (add-to-list 'default-frame-alist '(font . "Liberation Mono-12" ))
 (set-face-attribute 'default t :font "Liberation Mono-12" )
 
+;; add custom load path
+(add-to-list 'load-path "~/.emacs.d/custom/")
 
 
 ;; disable menubar in terminal
@@ -175,8 +177,14 @@
 ;;.bash_mybash
 (add-to-list 'auto-mode-alist '("\\.bash_mybash\\'" . sh-mode))
 
+
+;; load custom emacs config file
+
+
 ;; org-mode
 (require 'org)
+
+(load-file "~/.emacs.d/custom/org-agenda-custom-command.el")
 
 (setq org-directory "~/org")
 ;;(setq org-hide-emphasis-markers t)
@@ -256,37 +264,6 @@
 (setq org-refile-use-outline-path t)
 (setq org-refile-allow-creating-parent-nodes t)
 ;;;; agenda custom command
-(setq org-agenda-custom-commands 
-      '(("c" . "custom command")
-        ("cm" "Calendar" agenda "" 
-         ((org-agenda-start-day "-7d") 
-          (org-agenda-overriding-header "\nCalendar\n------------------\n")
-          (org-agenda-span 'month)
-          (org-agenda-files '("~/org/gtdv2/calendar.org"))) 
-         ("calendar_month.html"))
-        ("ck" "Tickler" agenda "" 
-         ((org-agenda-start-day "-7d") 
-          (org-agenda-overriding-header "\nTickler\n------------------\n")
-          (org-agenda-span 'month)
-          (org-agenda-files '("~/org/gtdv2/tickler.org")))
-         ("tickler_month.html"))
-        ("cp" "Project" tags "+LEVEL>0" 
-         ((org-tags-match-list-sublevels 'indented)
-          (org-agenda-overriding-header "\nProject List\n------------------\n")
-          (org-agenda-files '("~/org/gtdv2/project.org")))
-         ("tickler_month.html"))
-        ("cn" "Next Action" tags-todo "+LEVEL>0" 
-         ((org-agenda-overriding-header "\nNext Action\n------------------\n")
-          (org-agenda-files '("~/org/gtdv2/next.org")))
-         ("next.html"))
-        ("cs" "Someday" tags "+LEVEL>0" 
-         ((org-tags-match-list-sublevels 'indented)
-          (org-agenda-overriding-header "\nSomeday/Maybe\n------------------\n")
-          (org-agenda-files '("~/org/gtdv2/someday.org")))
-         ("somday.html"))        
-        ("ct" "get today todo" todo "TODAY|START|STOP|RETRY" 
-         ((org-agenda-overriding-columns-format "%60ITEM(item) %8Effort(estimate) %8CLOCKSUM(time)") (org-enforce-todo-dependencies nil)))
-        ("ca" "ALL" tags "+LEVEL>0" (ignore) ("all.html"))))
 
 ;; add org directory to agenda
 (add-to-list 'org-agenda-files (expand-file-name "~/org/gtdv2"))
@@ -303,21 +280,44 @@
         (current (format-time-string "%Y-%m-%d %H:%M:%S"))
         (hash (secure-hash 'sha256 (concat title current))))
     (progn 
-      (org-set-property "hash" hash)
+      (org-set-property "CUSTOM_ID" hash)
       (message (concat "set hash property: " hash))))  
 )
-(defun novicecpp/set-parent-hash-and-refile()
+(defun novicecpp/set-and-refile-project-nextaction()
   "test2"
   (interactive)
-  (let ((hash-current (org-entry-get nil "hash"))
-        (hash-parent (org-entry-get nil "hash" t)))
+  (progn
+    (novicecpp/set-child-hash-property)
+    (novicecpp/refile-target "~/org/gtdv2/projectnextaction.org" "Project")))
+
+
+(defun novicecpp/set-child-hash-property()
+  "test2"
+  (interactive)
+  (let ((hash-current (org-entry-get nil "CUSTOM_ID"))
+        (hash-parent (org-entry-get nil "CUSTOM_ID" t))
+        (parent-title (save-excursion 
+                        (progn
+                          (org-up-heading-safe)
+                          (nth 4 (org-heading-components))))))
     (if hash-current
         (message "current headline have properties \"hash\"")
       (progn 
+        
+        (org-set-property "parent_topic" (format 
+                                          "[[file:%s::#%s][%s]]"
+                                          (buffer-file-name) hash-parent parent-title))
         (org-set-property "parent_hash" hash-parent)
         (org-set-property "CATEGORY" (subseq hash-parent 0 12))
-        (message (concat "set parent_hash property:" hash-parent))        
-        (novicecpp/refile-target "~/org/gtdv2/next.org" "Project")))))
+        (message (concat "set parent_hash property:" hash-parent))))))
+
+(defun novicecpp/set-and-refile-habit()
+  (interactive)
+  (progn
+    (novicecpp/set-child-hash-property)
+    (novicecpp/refile-target "~/org/gtdv2/habits.org" "Habits")))
+
+
 ;; refile target
 ;; https://emacs.stackexchange.com/questions/8045/org-refile-to-a-known-fixed-location
 (defun novicecpp/refile-target (file headline)
@@ -327,22 +327,31 @@
                (org-find-exact-headline-in-buffer headline))))
     (switch-to-buffer (current-buffer))
     (org-refile nil nil (list headline file nil pos))))
-(define-key org-mode-map (kbd "C-c S") 'novicecpp/set-hash)
-(define-key org-mode-map (kbd "C-c s") 'novicecpp/set-parent-hash-and-refile)
 ;; view next action of fproject
 (defun novicecpp/org-tag-view-nextaction-of-project()
   "novicecpp/org-tag-view-nextaction-of-project"
   (interactive)
   
-  (let* ((org-agenda-files '("~/org/gtdv2/next.org"))
-        (parent-hash (org-entry-get nil "hash"))
-        (element (org-element-at-point))
-        (title (org-element-property :title element))        
+  (let* ((org-agenda-files '("~/org/gtdv2/projectnextaction.org" "~/org/gtdv2/habits.org"))
+        (parent-hash (org-entry-get nil "CUSTOM_ID"))
+        (title  (nth 4 (org-heading-components)))
         (org-agenda-overriding-header (format "\n%s\n------------------\n" title)))
-    (org-tags-view nil (format "+parent_hash=\"%s\"" parent-hash)))
-)
-(define-key org-mode-map (kbd "C-c C-M-s") 
-  'novicecpp/org-tag-view-nextaction-of-project)
+    (org-tags-view nil (format "+parent_hash=\"%s\"" parent-hash))))
+(defun novicecpp/org-open-project-file()
+  (interactive)
+    (let ((custom-id (org-entry-get nil "CUSTOM_ID")))
+      (if custom-id 
+        (find-file-other-window (format "~/org/gtdv2/project/%s.org" (subseq custom-id 0 12)))
+        (message "No CUSTOM_ID for this headline."))))
+
+
+(define-key org-mode-map (kbd "C-c C-x C-g C-h") 'novicecpp/set-and-refile-habit)
+(define-key org-mode-map (kbd "C-c C-x C-g S") 'novicecpp/set-hash)
+(define-key org-mode-map (kbd "C-c C-x C-g h") 'novicecpp/set-child-hash-property)
+(define-key org-mode-map (kbd "C-c C-x C-g C-n") 'novicecpp/set-and-refile-project-nextaction)
+(define-key org-mode-map (kbd "C-c C-M-s")  'novicecpp/org-tag-view-nextaction-of-project)
+(define-key org-mode-map (kbd "C-c C-M-p")  'novicecpp/org-open-project-file)
+
 
 
 
@@ -357,14 +366,20 @@
 (define-key input-decode-map "\e[1;5I" [(control tab)])
 
 ;; config org-notify-email for run
-(add-to-list 'load-path "~/.emacs.d/custom/")
-(setq novicecpp/org-notify-rule '((test (:time "1m" :actions novicecpp/org-notify-sendmail))))
+(setq novicecpp/org-notify-rule '((test (:time "1m" :actions novicecpp/org-notify-sendmail))
+                                  (next-day (:time "-6h" :actions novicecpp/org-notify-sendmail))
+                                  (default (:time "-2m" :actions novicecpp/org-notify-sendmail))))
 (setq novicecpp/org-notify-agenda-files '("~/org/gtdv2/calendar.org" "~/org/gtdv2/tickler.org"))
+
+
+;; disable linum mode in org-mode
+(add-hook 'org-mode-hook (lambda () (linum-mode -1)))
 
 
 ;; test
 (require 'linum)
 (set-face-underline-p 'linum nil)
+
 
 
 
@@ -377,7 +392,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/test.org" "~/test2.org")))
+ '(org-agenda-files (quote ("~/org/gtdv2/")))
  '(org-refile-targets
    (quote
     ((org-agenda-files :maxlevel . 2)
