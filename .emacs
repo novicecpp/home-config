@@ -299,7 +299,7 @@
         (parent-title (save-excursion 
                         (progn
                           (org-up-heading-safe)
-                          (nth 4 (org-heading-components))))))
+                          (replace-regexp-in-string "\\]" "}" (replace-regexp-in-string "\\[" "{" (nth 4 (org-heading-components))))))))
     (if hash-current
         (message "current headline have properties \"hash\"")
       (progn 
@@ -317,6 +317,12 @@
     (novicecpp/set-child-hash-property)
     (novicecpp/refile-target "~/org/gtdv2/habits.org" "Habits")))
 
+(defun novicecpp/set-and-refile-waiting-for()
+  (interactive)
+  (progn
+    (novicecpp/set-child-hash-property)
+    (novicecpp/refile-target "~/org/gtdv2/waiting.org" "Waiting For")))
+
 
 ;; refile target
 ;; https://emacs.stackexchange.com/questions/8045/org-refile-to-a-known-fixed-location
@@ -332,7 +338,7 @@
   "novicecpp/org-tag-view-nextaction-of-project"
   (interactive)
   
-  (let* ((org-agenda-files '("~/org/gtdv2/projectnextaction.org" "~/org/gtdv2/habits.org"))
+  (let* ((org-agenda-files '("~/org/gtdv2/projectnextaction.org" "~/org/gtdv2/habits.org" "~/org/gtdv2/waiting.org"))
         (parent-hash (org-entry-get nil "CUSTOM_ID"))
         (title  (nth 4 (org-heading-components)))
         (org-agenda-overriding-header (format "\n%s\n------------------\n" title)))
@@ -345,10 +351,11 @@
         (message "No CUSTOM_ID for this headline."))))
 
 
-(define-key org-mode-map (kbd "C-c C-x C-g C-h") 'novicecpp/set-and-refile-habit)
+(define-key org-mode-map (kbd "C-c C-x C-g C-r h") 'novicecpp/set-and-refile-habit)
+(define-key org-mode-map (kbd "C-c C-x C-g C-r n") 'novicecpp/set-and-refile-project-nextaction)
+(define-key org-mode-map (kbd "C-c C-x C-g C-r w") 'novicecpp/set-and-refile-waiting-for)
 (define-key org-mode-map (kbd "C-c C-x C-g S") 'novicecpp/set-hash)
 (define-key org-mode-map (kbd "C-c C-x C-g h") 'novicecpp/set-child-hash-property)
-(define-key org-mode-map (kbd "C-c C-x C-g C-n") 'novicecpp/set-and-refile-project-nextaction)
 (define-key org-mode-map (kbd "C-c C-M-s")  'novicecpp/org-tag-view-nextaction-of-project)
 (define-key org-mode-map (kbd "C-c C-M-p")  'novicecpp/org-open-project-file)
 
@@ -407,8 +414,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-
-
-
 
