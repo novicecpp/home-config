@@ -21,8 +21,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-12" ))
-(set-face-attribute 'default t :font "Liberation Mono-12" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-14" ))
+(set-face-attribute 'default t :font "Liberation Mono-14" )
 
 ;; add custom load path
 (add-to-list 'load-path "~/.emacs.d/custom/")
@@ -56,6 +56,7 @@
 (show-paren-mode 1)
 
 ;; linum-mode
+(require 'linum)
 ;; https://www.systutorials.com/qa/666/how-add-space-between-the-line-numbers-and-text-content-emacs
 (setq linum-format (lambda (line) (propertize (format (let ((w (length (number-to-string (count-lines (point-min) (point-max)))))) (concat "%" (number-to-string w) "d ")) line) 'face 'linum)))
 (global-linum-mode 1)
@@ -67,6 +68,9 @@
 ;;         (linum-format (concat "%" (number-to-string x) "d ")))
 ;;    ad-do-it))
 ;;
+(add-hook 'org-mode-hook (lambda () (linum-mode -1)))
+(set-face-underline-p 'linum nil)
+
 
 ;; tramp mode
 ;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
@@ -113,10 +117,34 @@
 
 ;;(require 'py-autopep8)
 ;;(add-to-list 'exec-path "~/.emacs.d/python2.7/bin/")
+;;ivy
+(require 'ivy)
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+;; Ivy-based interface to standard commands
+(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+;;(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+;;(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+;;(global-set-key (kbd "<f1> l") 'counsel-find-library)
+;;(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+;;(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+;; Ivy-based interface to shell and system tools
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+;; Ivy-resume and other commands
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+
+
 
 ;; ido-mode config
 ;; base ido
-(ido-mode t)
+;;(ido-mode t)
 ;;(ido-everywhere 1)
 ;; ido-ubiquitous
 ;;(require 'ido-ubiquitous)
@@ -137,10 +165,22 @@
 ;;
 
 ;;;; language hook
-(require 'flycheck)
-(add-hook 'python-mode-hook 'flycheck-mode)
-(add-hook 'python-mode-hook 'py-yapf-enable-on-save)
-(setq python-shell-interpreter "/usr/bin/python3")
+;;(add-hook 'after-init-hook #'global-flycheck-mode)
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+(defvaralias 'flycheck-python-flake8-executable 'python-shell-interpreter) 
+
+(eval-after-load 'company
+ '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+(add-hook 'python-mode-hook (lambda () "" nil
+                              (flycheck-mode)
+                              (company-mode)
+                              (anaconda-mode)
+                              (yapf-mode)
+                              (yas-minor-mode)
+                              (yas-reload-all)))
+                              
+
 
 ;;(add-hook 'python-mode-hook 'yapf-mode)
 
@@ -178,6 +218,8 @@
 (add-to-list 'auto-mode-alist '("\\.bash_mybash\\'" . sh-mode))
 
 
+(require 'ace-window)
+(global-set-key (kbd "M-o") 'ace-window)
 ;; load custom emacs config file
 
 
@@ -196,18 +238,18 @@
 (setq org-startup-indented t)
 (setq org-hide-leading-stars t)
 ;;;; clear child todo before parent can done
-;;(setq org-enforce-todo-dependencies t)
+(setq org-enforce-todo-dependencies t)
 ;;(setq org-tags-match-list-sublevels 'indented)
 
 ;;;; org todo state
 (setq org-todo-keywords
-  '((sequence "TODO(t)" "TODAY(o)" "|" "DONE(d)")
-    (sequence "START(s)" "STOP(p)" "|")
-    (sequence "RETRY(r)" "WAIT" "|" "CANCELED(c)")))
+  '((sequence "TODO(t)" "|" "DONE(d)" "CANCELED(c)")
+    (sequence "TODAY(d)" "START(s)" "STOP(p)" "|")
+    (sequence "RETRY(r)" "WAIT" "|" )))
 
 
 (setq org-todo-keyword-faces
-      '(("TODAY" . (:weight ultra-bold :foreground "brightyellow"))
+      '(("Today" . (:weight ultra-bold :foreground "brightyellow"))
         ("WAIT" . (:weight ultra-bold :foreground "pink"))))
 
 ;;;; set effort
@@ -266,7 +308,7 @@
 ;;;; agenda custom command
 
 ;; add org directory to agenda
-(add-to-list 'org-agenda-files (expand-file-name "~/org/gtdv2"))
+(add-to-list 'org-agenda-files (expand-file-name "~/org/gtdv3"))
 ;; enter to follow link
 ;;(setq org-return-follows-link t)
 ;; habit
@@ -323,6 +365,8 @@
     (novicecpp/set-child-hash-property)
     (novicecpp/refile-target "~/org/gtdv2/waiting.org" "Waiting For")))
 
+;; enable column show
+(setq column-number-mode t)
 
 ;; refile target
 ;; https://emacs.stackexchange.com/questions/8045/org-refile-to-a-known-fixed-location
@@ -338,29 +382,31 @@
   "novicecpp/org-tag-view-nextaction-of-project"
   (interactive)
   
-  (let* ((org-agenda-files '("~/org/gtdv2/projectnextaction.org" "~/org/gtdv2/habits.org" "~/org/gtdv2/waiting.org"))
+  (let* ((org-agenda-files '("~/org/gtdv3/projectlist.org"))
         (parent-hash (org-entry-get nil "CUSTOM_ID"))
         (title  (nth 4 (org-heading-components)))
         (org-agenda-overriding-header (format "\n%s\n------------------\n" title)))
-    (org-tags-view nil (format "+parent_hash=\"%s\"" parent-hash))))
+    (if org-agenda-restrict
+        (org-agenda-remove-restriction-lock)
+      (progn
+        (org-agenda-set-restriction-lock)
+        (funcall 'org-tags-view nil "+LEVEL>0")))))
+
 (defun novicecpp/org-open-project-file()
   (interactive)
     (let ((custom-id (org-entry-get nil "CUSTOM_ID")))
       (if custom-id 
-        (find-file-other-window (format "~/org/gtdv2/project/%s.org" (subseq custom-id 0 12)))
+        (find-file-other-window (format "~/org/gtdv3/support-material/%s.org" (subseq custom-id 0 12)))
         (message "No CUSTOM_ID for this headline."))))
 
 
-(define-key org-mode-map (kbd "C-c C-x C-g C-r h") 'novicecpp/set-and-refile-habit)
-(define-key org-mode-map (kbd "C-c C-x C-g C-r n") 'novicecpp/set-and-refile-project-nextaction)
-(define-key org-mode-map (kbd "C-c C-x C-g C-r w") 'novicecpp/set-and-refile-waiting-for)
-(define-key org-mode-map (kbd "C-c C-x C-g S") 'novicecpp/set-hash)
-(define-key org-mode-map (kbd "C-c C-x C-g h") 'novicecpp/set-child-hash-property)
+;;(define-key org-mode-map (kbd "C-c C-x C-g C-r h") 'novicecpp/set-and-refile-habit)
+;;(define-key org-mode-map (kbd "C-c C-x C-g C-r n") 'novicecpp/set-and-refile-project-nextaction)
+;;(define-key org-mode-map (kbd "C-c C-x C-g C-r w") 'novicecpp/set-and-refile-waiting-for)
+(define-key org-mode-map (kbd "C-c C-x C-e S") 'novicecpp/set-hash)
+(define-key org-mode-map (kbd "C-c C-x C-e s") 'novicecpp/set-child-hash-property)
 (define-key org-mode-map (kbd "C-c C-M-s")  'novicecpp/org-tag-view-nextaction-of-project)
 (define-key org-mode-map (kbd "C-c C-M-p")  'novicecpp/org-open-project-file)
-
-
-
 
 ;; browse-url
 (setq browse-url-browser-function 'eww-browse-url)
@@ -373,19 +419,17 @@
 (define-key input-decode-map "\e[1;5I" [(control tab)])
 
 ;; config org-notify-email for run
-(setq novicecpp/org-notify-rule '((test (:time "1m" :actions novicecpp/org-notify-sendmail))
-                                  (next-day (:time "-6h" :actions novicecpp/org-notify-sendmail))
-                                  (default (:time "-2m" :actions novicecpp/org-notify-sendmail))))
-(setq novicecpp/org-notify-agenda-files '("~/org/gtdv2/calendar.org" "~/org/gtdv2/tickler.org"))
+;;(setq novicecpp/org-notify-rule '((test (:time "1m" :actions novicecpp/org-notify-sendmail))
+;;                                  (next-day (:time "-6h" :actions novicecpp/org-notify-sendmail))
+;;                                  (default (:time "-2m" :actions novicecpp/org-notify-sendmail))))
+;;(setq novicecpp/org-notify-agenda-files '("~/org/gtdv2/calendar.org" "~/org/gtdv2/tickler.org"))
 
 
 ;; disable linum mode in org-mode
-(add-hook 'org-mode-hook (lambda () (linum-mode -1)))
+
 
 
 ;; test
-(require 'linum)
-(set-face-underline-p 'linum nil)
 
 
 
@@ -399,14 +443,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/org/gtdv2/")))
- '(org-refile-targets
-   (quote
-    ((org-agenda-files :maxlevel . 2)
-     ("~/org/gtdv2/nexttest.org" :maxlevel . 1))))
  '(package-selected-packages
    (quote
-    (htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode)))
+    (yasnippet-snippets yasnippet jedi-core elpy company counsel swiper ace-window htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode)))
  '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

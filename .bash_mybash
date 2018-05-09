@@ -205,7 +205,9 @@ type kubectl &> /dev/null && source <(kubectl completion bash)
 
 #alias
 #alias e='emacsclient -n'
-alias e='tmux_emacsclient'
+#alias e='tmux_emacsclient'
+alias e='/usr/local/bin/emacsclient -cn'
 alias eg='emacs_global'
 alias el='emacs_local'
-
+alias emacs='emacs-26.1'
+alias emacsclient='/usr/local/bin/emacsclient'
