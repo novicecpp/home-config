@@ -34,6 +34,9 @@
 ;;)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
+(scroll-bar-mode -1)
+;; enable column show
+(setq column-number-mode t)
 
 ;; theme
 ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
@@ -308,7 +311,7 @@
 ;;;; agenda custom command
 
 ;; add org directory to agenda
-(add-to-list 'org-agenda-files (expand-file-name "~/org/gtdv3"))
+(add-to-list 'org-agenda-files (expand-file-name "~/org/gtd"))
 ;; enter to follow link
 ;;(setq org-return-follows-link t)
 ;; habit
@@ -353,6 +356,21 @@
         (org-set-property "CATEGORY" (subseq hash-parent 0 12))
         (message (concat "set parent_hash property:" hash-parent))))))
 
+(defun novicecpp/set-link-and-refile()
+  "test2"
+  (interactive)
+  (let ((hash-current (org-entry-get nil "CUSTOM_ID")))
+    (if hash-current
+        (let* ((title (replace-regexp-in-string "\\]" "}" (replace-regexp-in-string "\\[" "{" (nth 4 (org-heading-components)))))
+               (link-title (format "[[file:%s::#%s][%s]]" (buffer-file-name) hash-current title)))          
+          (save-excursion      
+            (progn
+              (org-insert-heading-respect-content)
+              (org-do-demote)
+              (insert link-title)
+              (novicecpp/refile-target "~/org/gtd/daily.org" "Work"))))
+      (message "current headline didn't have CUSTOM_ID property"))))
+
 (defun novicecpp/set-and-refile-habit()
   (interactive)
   (progn
@@ -365,8 +383,6 @@
     (novicecpp/set-child-hash-property)
     (novicecpp/refile-target "~/org/gtdv2/waiting.org" "Waiting For")))
 
-;; enable column show
-(setq column-number-mode t)
 
 ;; refile target
 ;; https://emacs.stackexchange.com/questions/8045/org-refile-to-a-known-fixed-location
@@ -382,7 +398,7 @@
   "novicecpp/org-tag-view-nextaction-of-project"
   (interactive)
   
-  (let* ((org-agenda-files '("~/org/gtdv3/projectlist.org"))
+  (let* ((org-agenda-files '("~/org/gtd/projectlist.org"))
         (parent-hash (org-entry-get nil "CUSTOM_ID"))
         (title  (nth 4 (org-heading-components)))
         (org-agenda-overriding-header (format "\n%s\n------------------\n" title)))
@@ -396,15 +412,17 @@
   (interactive)
     (let ((custom-id (org-entry-get nil "CUSTOM_ID")))
       (if custom-id 
-        (find-file-other-window (format "~/org/gtdv3/support-material/%s.org" (subseq custom-id 0 12)))
+        (find-file-other-window (format "~/org/gtd/support-material/%s.org" (subseq custom-id 0 12)))
         (message "No CUSTOM_ID for this headline."))))
 
 
 ;;(define-key org-mode-map (kbd "C-c C-x C-g C-r h") 'novicecpp/set-and-refile-habit)
 ;;(define-key org-mode-map (kbd "C-c C-x C-g C-r n") 'novicecpp/set-and-refile-project-nextaction)
 ;;(define-key org-mode-map (kbd "C-c C-x C-g C-r w") 'novicecpp/set-and-refile-waiting-for)
-(define-key org-mode-map (kbd "C-c C-x C-e S") 'novicecpp/set-hash)
-(define-key org-mode-map (kbd "C-c C-x C-e s") 'novicecpp/set-child-hash-property)
+(define-key org-mode-map (kbd "C-c C-M-c") 'novicecpp/copy-work)
+(define-key org-mode-map (kbd "C-c C-x S") 'novicecpp/set-hash)
+;;(define-key org-mode-map (kbd "C-c C-x s") 'novicecpp/set-child-hash-property)
+(define-key org-mode-map (kbd "C-c C-x s") 'novicecpp/set-link-and-refile)
 (define-key org-mode-map (kbd "C-c C-M-s")  'novicecpp/org-tag-view-nextaction-of-project)
 (define-key org-mode-map (kbd "C-c C-M-p")  'novicecpp/org-open-project-file)
 
@@ -445,7 +463,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (yasnippet-snippets yasnippet jedi-core elpy company counsel swiper ace-window htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode)))
+    (exwm yasnippet-snippets yasnippet jedi-core elpy company counsel swiper ace-window htmlize magit org-beautify-theme dockerfile-mode yaml-mode nhexl-mode py-yapf yapfify flycheck zenburn-theme undo-tree ace-jump-mode)))
  '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
