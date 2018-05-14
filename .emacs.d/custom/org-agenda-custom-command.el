@@ -75,11 +75,11 @@
          ((org-agenda-start-day "-7d") 
           (org-agenda-overriding-header "\nSchedule/Deadline\n------------------\n")
           (org-agenda-span 'month)
+          (org-habit-graph-column 90)
           (org-agenda-files '("~/org/gtd/projectlist.org" "~/org/gtd/tickler.org")))
          "calendar.html")
         ("xp" "Project List." tags "+LEVEL>0" 
          ((org-agenda-overriding-header "\nProject with all child.\n------------------\n")
-          (org-agenda-prefix-format '((tags . "  ")))
           (org-tags-match-list-sublevels 'indented)
           (org-agenda-files '("~/org/gtd/projectlist.org")))
          "project.html")
