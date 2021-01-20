@@ -1,0 +1,27 @@
+;;fix for org-caldav error
+(defvar url-http-method nil)
+(defvar url-http-data nil)
+(defvar url-http-extra-headers nil)
+(defvar oauth--token-data nil)
+(defvar url-callback-function nil)
+(defvar url-callback-arguments nil)
+
+(require 'oauth2)
+(require 'ox-icalendar)
+(require 'org-caldav)
+(setq org-caldav-url 'google
+      org-icalendar-timezone "Asia/Bangkok"
+      org-icalendar-use-scheduled '(event-if-todo event-if-not-todo)
+      org-caldav-oauth2-client-id 
+      "<google-calendar-oauth2-id>"
+      org-caldav-oauth2-client-secret
+      "<google-calendar-oauth2-secret>"
+      plstore-cache-passphrase-for-symmetric-encryption t)
+
+(setq org-caldav-calendars
+  '((:calendar-id "<google-calendar-id>"
+                  :files ("~/org/gtd/calendar.org")
+                  :inbox "~/org/inbox/inbox_calendar.org")
+    (:calendar-id "<google-calendar-id>"
+                  :files ("~/org/gtd/tickler.org")
+                  :inbox "~/org/inbox/inbox_tickler.org")))

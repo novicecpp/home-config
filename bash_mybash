@@ -1,0 +1,5 @@
+#!/bin/bash
+BASH_DIR=/home/thanayut/myhome/home-config/bash
+for f in $(ls $BASH_DIR/*.sh); do source $f; done
+for f in $(ls $BASH_DIR/generated/*.sh); do source $f; done
+for f in $(ls $BASH_DIR/generated/*.bash); do source $f; done
