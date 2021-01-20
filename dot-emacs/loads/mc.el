@@ -3,6 +3,32 @@
 
 (define-key input-decode-map [?\C-m] [C-m])
 
+(use-package selected
+  :demand t
+  :ensure t
+  :bind (:map selected-keymap
+              ("[" . align-code)
+              ("f" . fill-region)
+              ("U" . unfill-region)
+              ("d" . downcase-region)
+              ("u" . upcase-region)
+              ("r" . reverse-region)
+              ("s" . sort-lines))
+  :config
+  (selected-global-mode 1))
+
+(use-package phi-search
+  :ensure t
+  :defer 5)
+
+(use-package phi-search-mc
+  :ensure t
+  :after (phi-search multiple-cursors)
+  :config
+  (phi-search-mc/setup-keys)
+  (add-hook 'isearch-mode-mode #'phi-search-from-isearch-mc/setup-keys))
+
+
 (use-package multiple-cursors
   :after phi-search
   :defer 5
@@ -81,14 +107,3 @@
 (use-package mc-rect
   :after multiple-cursors
   :bind ("<C-m> ]" . mc/rect-rectangle-to-multiple-cursors))
-
-(use-package phi-search
-  :ensure t
-  :defer 5)
-
-(use-package phi-search-mc
-  :ensure t
-  :after (phi-search multiple-cursors)
-  :config
-  (phi-search-mc/setup-keys)
-  (add-hook 'isearch-mode-mode #'phi-search-from-isearch-mc/setup-keys))

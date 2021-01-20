@@ -71,22 +71,6 @@
 ;; highlight parenthesis
 (show-paren-mode 1)
 
-;; multi-cursor mode
-
-(use-package selected
-  :demand t
-  :ensure t
-  :bind (:map selected-keymap
-              ("[" . align-code)
-              ("f" . fill-region)
-              ("U" . unfill-region)
-              ("d" . downcase-region)
-              ("u" . upcase-region)
-              ("r" . reverse-region)
-              ("s" . sort-lines))
-  :config
-  (selected-global-mode 1))
-
 ;; tramp mode
 ;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
 (use-package tramp
