@@ -14,6 +14,7 @@ alias gpg='gpg2'
 
 alias a_gsts='gsts --aws-session-duration 43200 --aws-profile=default --aws-role-arn arn:aws:iam::005852626303:role/GSuite-Thanayut --sp-id 239920783439 --idp-id C029od40l --username thanayut@lmwn.com'
 
+alias less='less -I'
 # deprecated
 # start exwm with X server on term1
 #alias startx="xinit -- vt01"
