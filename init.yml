@@ -1,0 +1,70 @@
+- hosts: localhost
+  connection: local
+  become: no
+  tasks:
+  - name: source in ~/.bashrc file
+    blockinfile:
+      path: ~/.bashrc
+      insertafter: EOF
+      block: |
+        if [ -f /etc/bashrc ]; then
+          . ~/.bash_mybash
+        fi
+  - name: symlink .bash_mybash
+    file:
+      src: '{{ playbook_dir }}/bash_mybash'
+      dest: ~/.bash_mybash
+      state: link
+  - name: ensure has .emacs.d
+    file:
+      path: ~/.emacs.d
+      state: directory
+  - name: symlink init.el
+    file:
+      src: '{{ playbook_dir }}/dot-emacs/init.el'
+      dest: ~/.emacs.d/init.el
+      state: link
+
+  - name: symlink loads dir in .emacs.d
+    file:
+      src: '{{ playbook_dir }}/dot-emacs/loads'
+      dest: ~/.emacs.d/loads
+      state: link
+  - name: symlink tmux.conf
+    file:
+      src: '{{ playbook_dir }}/tmux.conf'
+      dest: ~/.tmux.conf
+
+      state: link
+
+  - name: symlink tmux.sh
+    file:
+      src: '{{ playbook_dir }}/tmux.sh'
+      dest: ~/.tmuxfunc
+      state: link
+
+  - name: ensure ~/.ssh
+    file:
+      path: ~/.ssh
+      state: directory
+      owner: '{{ ansible_user_uid }}'
+      group: '{{ ansible_user_gid }}'
+      mode: '0700'
+
+  - name: symlink ssh
+    file:
+      src: '{{ playbook_dir }}/ssh/config'
+      dest: ~/.ssh/config
+      state: link
+
+  - name: symlink ssh/conf.d
+    file:
+      src: '{{ playbook_dir }}/private/.ssh/conf.d'
+      dest: ~/.ssh/conf.d
+      state: link
+
+  - name: symlink gitconfig
+    file:
+      src: '{{ playbook_dir }}/gitconfig'
+      dest: ~/.gitconfig
+      state: link

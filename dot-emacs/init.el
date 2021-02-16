@@ -84,6 +84,7 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; for doom-modeline, also resize icon to normal text
+;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
 (use-package all-the-icons
   :ensure t
   :config
@@ -114,6 +115,7 @@
 
 ;; show ssh list in counsel
 (use-package counsel-tramp
+  :ensure t
   :config
   (define-key global-map (kbd "C-c s") 'counsel-tramp))
 
@@ -319,6 +321,17 @@
 
 (require 'auth-source-pass)
 (auth-source-pass-enable)
+
+(use-package impatient-mode
+  :ensure t)
+
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+  (current-buffer)))
+
+
+
 
 ;; load multicursors
 (load-file "~/.emacs.d/loads/mc.el")

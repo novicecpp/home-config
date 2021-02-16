@@ -1,0 +1,79 @@
+- hosts: localhost
+  connection: local
+  become: no
+  tasks:
+  - name: install dnf package
+    tags:
+    - dnf
+    dnf:
+      name:
+      - emacs
+      - tmux
+      - gnome-tweaks
+      - zstd
+      - the_silver_searcher
+      state: present
+    become: yes
+  - name: add flathub to flatpak repo
+    flatpak_remote:
+      name: flathub
+      state: present
+      flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      method: user
+  - name: install flatpak package
+    flatpak:
+      name: '{{ item }}'
+      method: user
+      state: present
+    with_items:
+    - com.discordapp.Discord
+    - com.spotify.Client
+
+  - name: download google chrome
+    get_url:
+      url: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+      dest: ~/Downloads
+  - name: add google rpm key
+    rpm_key:
+      state: present
+      key: https://dl.google.com/linux/linux_signing_key.pub
+      fingerprint: 4CCA 1EAF 950C EE4A B839 76DC A040 830F 7FAC 5991
+
+    become: yes
+
+  - name: install google chrome with dnf
+    dnf:
+      name: '{{ ansible_user_dir }}/Downloads/google-chrome-stable_current_x86_64.rpm'
+      state: present
+    become: yes
+
+  - name: ensure ~/.fonts dir
+    file:
+      path: ~/.fonts
+      state: directory
+
+  - name: download liberation-mono font
+    get_url:
+      url: https://www.fontsquirrel.com/fonts/download/liberation-mono
+      dest: ~/Downloads/liberation-mono.zip
+
+  - name: unzip downloaded fonts
+    unarchive:
+      src: ~/Downloads/liberation-mono.zip
+      dest: ~/.local/share/fonts/
+
+  - name: refresh front cache
+    command: fc-cache -v -f
+
+  - name: enable emacs server now
+    systemd:
+      name: emacs
+      state: started
+      enabled: yes
+      scope: user
+
+  - name: symlink key
+    file:
+      src: ~/myhome/keys
+      dest: ~/.keys
+      state: link

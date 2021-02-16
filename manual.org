@@ -1,0 +1,6 @@
+* gnome-tweak
+  - switch ctrl with capslock
+* emacs 
+** all-the-icon need to install fonts manually
+* gnome-terminal 
+  - change fonts to liberation-mono 11
