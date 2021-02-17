@@ -12,5 +12,7 @@ echo '' > $COMPLETION_FILENAME
 kubectl completion bash >> $COMPLETION_FILENAME
 helm completion bash >> $COMPLETION_FILENAME
 kops completion bash >> $COMPLETION_FILENAME
-ln -sf /opt/kubectx/completion/kubens.bash $PREFIX_PATH
-ln -sf /opt/kubectx/completion/kubectx.bash $PREFIX_PATH
+if [ -f /opt/kubectx/completion/kubectx.bash ]; then
+   ln -sf /opt/kubectx/completion/kubens.bash $PREFIX_PATH
+   ln -sf /opt/kubectx/completion/kubectx.bash $PREFIX_PATH
+fi

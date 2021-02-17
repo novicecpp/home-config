@@ -3,14 +3,27 @@
   become: no
   tasks:
   - name: source in ~/.bashrc file
+    tags: bashrc
     blockinfile:
       path: ~/.bashrc
       insertafter: EOF
       block: |
-        if [ -f /etc/bashrc ]; then
+        s=$EPOCHREALTIME
+        if [ -f ~/.bash_mybash ]; then
           . ~/.bash_mybash
         fi
+        if [ -d ~/.bash_completion.d ]; then
+          for bcfile in ~/.bash_completion.d/* ; do
+            . $bcfile
+          done
+        fi
+        e=$EPOCHREALTIME
+        d=$(echo "$e - $s" | bc)
+        echo ""
+        echo "Initialiazed time: [$d]"
+
   - name: symlink .bash_mybash
+    tags: single
     file:
       src: '{{ playbook_dir }}/bash_mybash'
       dest: ~/.bash_mybash

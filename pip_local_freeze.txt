@@ -1,1 +1,1 @@
-ansible boto boto3 ipython pipenv poetry sshuttle yapf yq 'python-language-server[all]'
+boto boto3 ipython pipenv poetry sshuttle yapf yq 'python-language-server[all]'

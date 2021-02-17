@@ -10,17 +10,23 @@
       - emacs
       - tmux
       - gnome-tweaks
+      - cowsay
       - zstd
       - the_silver_searcher
+      - fd-find
+      - fzf
+      - wine
       state: present
     become: yes
   - name: add flathub to flatpak repo
+    tags: flatpak
     flatpak_remote:
       name: flathub
       state: present
       flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
       method: user
   - name: install flatpak package
+    tags: flatpak
     flatpak:
       name: '{{ item }}'
       method: user
@@ -28,6 +34,7 @@
     with_items:
     - com.discordapp.Discord
     - com.spotify.Client
+    - com.slack.Slack
 
   - name: download google chrome
     get_url:
@@ -44,6 +51,36 @@
   - name: install google chrome with dnf
     dnf:
       name: '{{ ansible_user_dir }}/Downloads/google-chrome-stable_current_x86_64.rpm'
+      state: present
+    become: yes
+
+  - name: import rpmfusion free key
+    rpm_key:
+      state: present
+      key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020
+      fingerprint: E9A4 91A3 DE24 7814 E7E0 67EA E06F 8ECD D651 FF2E
+    become: yes
+
+  - name: import rpmfusion nonfree key
+    rpm_key:
+      state: present
+      key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
+      fingerprint: 79BD B88F 9BBF 7391 0FD4 095B 6A2A F961 9484 3C65
+    become: yes
+
+  - name: install rpmfusion free and nonfree
+    dnf:
+      name:
+      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-33.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-33.noarch.rpm
+      state: present
+    become: yes
+
+  - name: install nvidia driver
+    dnf:
+      name:
+      - akmod-nvidia
+      - xorg-x11-drv-nvidia-cuda
       state: present
     become: yes
 
@@ -77,3 +114,100 @@
       src: ~/myhome/keys
       dest: ~/.keys
       state: link
+
+  - name: downloads pixel-saver
+    tags: gnome
+    git:
+      repo: https://github.com/pixel-saver/pixel-saver
+      dest: ~/.local/share/pixel-saver
+      version: tags/1.24
+
+  - name: ensure ~/.local/share/gnome-shell/extensions exists
+    tags: gnome
+    file:
+      path: ~/.local/share/gnome-shell/extensions
+      state: directory
+
+  - name: symlink to gnome-shell extension dir
+    tags: gnome
+    file:
+      src: '~/.local/share/pixel-saver/pixel-saver@deadalnix.me'
+      dest: '~/.local/share/gnome-shell/extensions/pixel-saver@deadalnix.me'
+      state: link
+
+  - name: install kubectl
+    tags: kubectl
+    get_url:
+      url: https://dl.k8s.io/release/v1.18.15/bin/linux/amd64/kubectl
+      dest: ~/.local/bin
+      mode: '0755'
+
+  - name: export kubectl bash completion
+    tags:
+    - kubectl
+    - single
+    command: bash -c 'kubectl completion bash > ~/.bash_completion.d/kubectl.bash'
+
+  - name: install kubelogin
+    tags: kubectl
+    get_url:
+      url: https://github.com/int128/kubelogin/releases/download/v1.22.1/kubelogin_linux_amd64.zip
+      dest: ~/Downloads
+
+  - name: extract kubelogin
+    tags: kubectl
+    unarchive:
+      src: ~/Downloads/kubelogin_linux_amd64.zip
+      dest: ~/.local/bin/
+      exclude: LICENSE
+
+  - name: rename kubelogin to kubectl-oidc_login
+    tags: kubectl
+    command: mv ~/.local/bin/kubelogin ~/.local/bin/kubectl-oidc_login
+
+  - name: ensure ~/.kube dir
+    tags: kubectl
+    file:
+      path: ~/.kube
+      mode: '0700'
+      state: directory
+
+  - name: symlink kube config
+    tags: kubectl
+    file:
+      src: '{{playbook_dir}}/private/kube/config'
+      dest: ~/.kube/config
+      state: link
+
+  - name: downloads kubectx
+    tags: kubectx
+    git:
+      repo: https://github.com/ahmetb/kubectx
+      dest: ~/.local/share/kubectx
+      version: tags/v0.8.0
+
+  - name: symlink kubectx kubens
+    tags: kubectx
+    file:
+      src: '~/.local/share/kubectx/{{ item }}'
+      dest: '~/.local/bin/{{ item }}'
+      state: link
+    with_items:
+    - kubectx
+    - kubens
+
+  - name: ensure ~/.bash_completion.d dir
+    tags: kubectx
+    file:
+      path: ~/.bash_completion.d
+      state: directory
+
+  - name: symlink kubectx kubens bash completion
+    tags: kubectx
+    file:
+      src: '~/.local/share/kubectx/completion/{{item}}.bash'
+      dest: '~/.bash_completion.d/{{ item }}.bash'
+      state: link
+    with_items:
+    - kubectx
+    - kubens

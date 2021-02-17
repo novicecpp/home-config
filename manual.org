@@ -1,6 +1,16 @@
+#+startup: showall
 * gnome-tweak
-  - switch ctrl with capslock
-* emacs 
+- switch ctrl with capslock
+* emacs
 ** all-the-icon need to install fonts manually
-* gnome-terminal 
-  - change fonts to liberation-mono 11
+* gnome-terminal
+- change fonts to liberation-mono 11
+* timezone
+- forget to set when install os
+- timedatectl set-local-rtc 0
+  disable rtc (sync time with mainboard clock)
+* line client
+- download (google it) and install using wine
+* gnome-shell-extensions
+- killall -SIGQUIT gnome-shell
+- gnome-shell-extension-tool -e pixel-saver@deadalnix.me
