@@ -14,3 +14,5 @@
 * gnome-shell-extensions
 - killall -SIGQUIT gnome-shell
 - gnome-shell-extension-tool -e pixel-saver@deadalnix.me
+* setup aws cli sso
+- aws configure sso

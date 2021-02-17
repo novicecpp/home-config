@@ -16,6 +16,8 @@
       - fd-find
       - fzf
       - wine
+      - ncdu
+      - autossh
       state: present
     become: yes
   - name: add flathub to flatpak repo
@@ -211,3 +213,34 @@
     with_items:
     - kubectx
     - kubens
+
+  - name: install python dependency
+    tags: pip
+    pip:
+      name:
+      - boto
+      - boto3
+      - ipython
+      - pipenv
+      - poetry
+      - sshuttle
+      - yapf
+      - yq
+      - 'python-language-server[all]'
+      - glances
+      state: latest
+      extra_args: --user
+
+  - name: install aws-cli v2
+    tags: awscli
+    get_url:
+      url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+      dest: ~/Downloads/awscliv2.zip
+  - name: unzip downloaded fonts
+    tags: awscli
+    unarchive:
+      src: ~/Downloads/awscliv2.zip
+      dest: /tmp
+  - name: run install commands
+    tags: awscli
+    command: /tmp/aws/install -i ~/.local/share/aws-cli -b ~/.local/bin

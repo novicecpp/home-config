@@ -23,7 +23,6 @@
         echo "Initialiazed time: [$d]"
 
   - name: symlink .bash_mybash
-    tags: single
     file:
       src: '{{ playbook_dir }}/bash_mybash'
       dest: ~/.bash_mybash
@@ -80,4 +79,32 @@
     file:
       src: '{{ playbook_dir }}/gitconfig'
       dest: ~/.gitconfig
+      state: link
+
+  - name: symlink mystartup scripts
+    tags: startup
+    file:
+      src: '{{ playbook_dir }}/gitconfig'
+      dest: ~/.local/bin/mystartup.sh
+      state: link
+
+  - name: symlink mystartup.sh scripts
+    tags: startup
+    file:
+      src: '{{ playbook_dir }}/autostart/mystartup.sh'
+      dest: ~/.local/bin/mystartup.sh
+      state: link
+
+  - name: symlink mystartup.desktop file
+    tags: startup
+    file:
+      src: '{{ playbook_dir }}/autostart/mystartup.desktop'
+      dest: ~/.config/autostart/mystartup.desktop
+      state: link
+
+  - name: symlink kubectx kubens bash completion
+    tags: pac
+    file:
+      src: '{{playbook_dir}}/private/proxy.pac'
+      dest: '~/.proxy.pac'
       state: link
