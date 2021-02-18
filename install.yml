@@ -250,11 +250,11 @@
     git:
       repo: https://github.com/pyenv/pyenv
       dest: ~/.local/share/pyenv
-      version: master
+      version: tags/v1.2.23
 
   - name: install pyenv-virtualenv
     tags: pyenv
     git:
-      repo: https://github.com/pyenv/pyenv
+      repo: https://github.com/pyenv/pyenv-virtualenv
       dest: ~/.local/share/pyenv/plugins/pyenv-virtualenv
-      version: master
+      version: tags/v1.1.5

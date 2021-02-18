@@ -13,7 +13,7 @@ if [ -d "$PYENV_ROOT" ]; then
       fi
 
       case "$command" in
-      rehash|shell)
+      activate|deactivate|rehash|shell)
         eval "$(pyenv "sh-$command" "$@")";;
       *)
         command pyenv "$command" "$@";;
