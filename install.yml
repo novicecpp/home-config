@@ -18,6 +18,7 @@
       - wine
       - ncdu
       - autossh
+      - xsel # for tmux
       state: present
     become: yes
   - name: add flathub to flatpak repo
