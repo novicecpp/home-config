@@ -244,3 +244,17 @@
   - name: run install commands
     tags: awscli
     command: /tmp/aws/install -i ~/.local/share/aws-cli -b ~/.local/bin
+
+  - name: install pyenv
+    tags: pyenv
+    git:
+      repo: https://github.com/pyenv/pyenv
+      dest: ~/.local/share/pyenv
+      version: master
+
+  - name: install pyenv-virtualenv
+    tags: pyenv
+    git:
+      repo: https://github.com/pyenv/pyenv
+      dest: ~/.local/share/pyenv/plugins/pyenv-virtualenv
+      version: master
