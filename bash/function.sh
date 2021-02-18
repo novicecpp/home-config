@@ -137,12 +137,10 @@ cdg()
 
 
 cdd() {
-    if [[ "$#" != 0 ]]; then
-        builtin cd "$@";
-        return
-    fi
+    cd "$1"
+    [[ $? != 0 ]] && return 1
     while true; do
-        local lsd="$(fd --hidden --type d . .)"
+        local lsd="$(fd --type d . .)"
         local dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
         if [[ ${dir} == '.' && ${#dir} != 0 ]]; then
             return 0
