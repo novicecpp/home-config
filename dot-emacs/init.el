@@ -173,6 +173,7 @@
 
 (use-package lsp-mode
   :ensure t
+  :init (setq lsp-headerline-breadcrumb-enable nil)
   :hook (python-mode . lsp)
         (lsp-mode . lsp-enable-which-key-integration)
   :commands lsp)
@@ -187,6 +188,8 @@
 
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs
+  :commands lsp-treemacs-errors-list)
 
 
 (use-package company
