@@ -148,3 +148,11 @@ cdd() {
         builtin cd "$dir" &> /dev/null
     done
 }
+
+f_source_env () {
+    if [[ -f "$1" ]]; then
+        set -a; eval $(cat "$1"); set +a;
+    else
+        echo "cat: $1: No such file or directory"
+    fi
+}
