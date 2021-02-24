@@ -311,3 +311,26 @@
     unarchive:
       src: ~/Downloads/vault_1.6.2_linux_amd64.zip
       dest: ~/.local/bin
+
+  - name: bluetooth ldac
+    tags: bluetooth
+    dnf:
+      name: pulseaudio-module-bluetooth-freeworld
+      state: present
+      allowerasing: yes
+    become: yes
+
+  - name: import keybase key
+    tags: keybase
+    rpm_key:
+      state: present
+      key: https://keybase.io/docs/server_security/code_signing_key.asc
+      fingerprint: 222B 85B0 F90B E2D2 4CFE B93F 4748 4E50 656D 16C7
+    become: yes
+
+  - name: install keybase repo
+    tags: keybase
+    dnf:
+      name: https://prerelease.keybase.io/keybase_amd64.rpm
+      state: present
+    become: yes

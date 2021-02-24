@@ -108,3 +108,10 @@
       src: '{{playbook_dir}}/private/proxy.pac'
       dest: '~/.proxy.pac'
       state: link
+
+  - name: symlink kubectx kubens bash completion
+    tags: gpg
+    file:
+      src: '~/myhome/gnupg'
+      dest: '~/.gnupg'
+      state: link
