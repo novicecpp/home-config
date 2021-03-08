@@ -16,3 +16,6 @@
 - gnome-shell-extension-tool -e pixel-saver@deadalnix.me
 * setup aws cli sso
 - aws configure sso
+* network (mostly wifi)
+- dns 1.1.1.1,1.0.0.1
+- disable ipv6 by set link local only

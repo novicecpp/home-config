@@ -19,6 +19,7 @@
       - ncdu
       - autossh
       - xsel # for tmux
+      - keepassxc
       state: present
     become: yes
   - name: add flathub to flatpak repo
@@ -334,3 +335,23 @@
       name: https://prerelease.keybase.io/keybase_amd64.rpm
       state: present
     become: yes
+
+  - name: downloads helm
+    tags: helm
+    get_url:
+      url: https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
+      dest: /tmp/helm.tar.gz
+      checksum: sha256:01b317c506f8b6ad60b11b1dc3f093276bb703281cb1ae01132752253ec706a2
+
+  - name: unzip helm
+    tags: helm
+    unarchive:
+      src: /tmp/helm.tar.gz
+      dest: /tmp
+
+  - name: move bin helm to ~/.local/bin
+    tags: helm
+    copy:
+      src: /tmp/linux-amd64/helm
+      dest: ~/.local/bin
+      mode: '0755'
