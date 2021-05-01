@@ -322,6 +322,9 @@
 (use-package go-mode
   :ensure t)
 
+(use-package rust-mode
+  :ensure t)
+
 (require 'auth-source-pass)
 (auth-source-pass-enable)
 
