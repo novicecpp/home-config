@@ -359,3 +359,10 @@
       src: /tmp/linux-amd64/helm
       dest: ~/.local/bin
       mode: '0755'
+
+  - name: symlink emacsclient
+    tags: emacsclient
+    file:
+      src: '{{playbook_dir}}/desktop/emacsclient.desktop'
+      dest: ~/.local/share/applications/emacsclient.desktop
+      state: link

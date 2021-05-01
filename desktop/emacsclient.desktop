@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=emacsclient
+Comment=emacsclient
+Icon=emacs
+Type=Application
+Exec=emacsclient -cn
