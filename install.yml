@@ -20,6 +20,10 @@
       - autossh
       - xsel # for tmux
       - keepassxc
+      - inotify-tools
+      - pv
+      - age
+      - dnf-plugin-system-upgrade
       state: present
     become: yes
   - name: add flathub to flatpak repo
