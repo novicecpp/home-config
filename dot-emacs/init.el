@@ -323,7 +323,16 @@
   :ensure t)
 
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (rust-mode . lsp)
+  :config
+  (setq rust-format-on-save t))
+
+(use-package cargo
+  :ensure t
+  :hook
+  (rust-mode . cargo-minor-mode))
 
 (require 'auth-source-pass)
 (auth-source-pass-enable)
@@ -348,16 +357,3 @@
 ;; ================== testing section ======================
 ;; load test
 ;; (load-file "~/test.el")
-
-;; (setq-default persp-keymap-prefix (kbd "C-c o"))
-;; (require 'persp-mode)
-
-(use-package persp-mode
-  :ensure t
-  :init
-  (setq-default persp-keymap-prefix (kbd "C-c z"))
-  :hook
-  (window-setup-hook . (lambda () (persp-mode 1)))
-  :config
-  (setq persp-autokill-buffer-on-remove 'kill-weak)
-  (persp-mode 1))

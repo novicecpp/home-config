@@ -4,5 +4,5 @@
 
 
 export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
-export EDITOR='emacsclient -c'
+export EDITOR='emacs'
 export HISTSIZE=10000
