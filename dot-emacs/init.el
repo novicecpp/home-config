@@ -5,6 +5,10 @@
 ;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
 ;;(setq debug-on-error t)    ; now you should get a backtrace
 
+;;(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.9)
+(setq read-process-output-max (* 1024 1024))
+
 ;; add melpa
 (require 'package)
 (add-to-list 'package-archives
@@ -188,8 +192,6 @@
 
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs
-  :commands lsp-treemacs-errors-list)
 
 
 (use-package company
@@ -244,22 +246,13 @@
 ;;  (python-mode . (lambda () (yapf-mode))))
 
 
-(use-package pdf-tools
-  :ensure t)
-
 (setq python-shell-interpreter "python3"
       python-shell-interpreter-args "-i")
 
-;; DEPRECATED(?): try linum package instead
-;;(use-package display-line-numbers
-;;  :hook
-;;  (prog-mode . (lambda () (display-line-numbers-mode))))
-
-(use-package linum
+(use-package display-line-numbers
   :hook
-  (prog-mode . linum-on)
-  (yaml-mode . linum-on))
-
+  (prog-mode . display-line-numbers-mode)
+  (yaml-mode . display-line-numbers-mode))
 
 
 ;;yaml-mode
@@ -305,7 +298,7 @@
   :config
   (epa-file-enable)
   (setq epg-gpg-program  "/usr/bin/gpg2"
-        epa-pinentry-mode 'loopback))
+        epg-pinentry-mode 'loopback))
 
 (use-package dumb-jump
   :ensure t
@@ -357,3 +350,6 @@
 ;; ================== testing section ======================
 ;; load test
 ;; (load-file "~/test.el")
+
+(use-package pdf-tools
+  :ensure t)
