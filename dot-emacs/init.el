@@ -9,6 +9,8 @@
 (setq gc-cons-percentage 0.9)
 (setq read-process-output-max (* 1024 1024))
 
+(setq inhibit-startup-screen t)
+
 ;; add melpa
 (require 'package)
 (add-to-list 'package-archives
@@ -37,8 +39,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-11" ))
-(set-face-attribute 'default t :font "Liberation Mono-11" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-9" ))
+(set-face-attribute 'default t :font "Liberation Mono-9" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
@@ -98,9 +100,8 @@
   :ensure t
   :config
   (setq doom-modeline-icon t)
-  (setq doom-modeline-height 10)
-  (set-face-attribute 'mode-line nil :height 100)
-  (set-face-attribute 'mode-line-inactive nil :height 100)
+  (setq doom-modeline-height 1)
+  (set-face-attribute 'mode-line nil :height 80)
   :hook (after-init . doom-modeline-mode))
 
 ;; jump window like tmux+ace-jump-mode
@@ -232,7 +233,7 @@
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
   :bind
-  (("C-c p" . projectile-command-map)))
+  ("C-c p" . projectile-command-map))
 
 (use-package counsel-projectile
   :ensure t
@@ -245,25 +246,27 @@
 ;;  :hook
 ;;  (python-mode . (lambda () (yapf-mode))))
 
-
-(setq python-shell-interpreter "python3"
-      python-shell-interpreter-args "-i")
-
 (use-package display-line-numbers
   :hook
   (prog-mode . display-line-numbers-mode)
   (yaml-mode . display-line-numbers-mode))
 
-
-;;yaml-mode
-(use-package yaml-mode
-  :ensure t)
-
-;; magit
 (use-package magit
   :ensure t
   :bind
   ("C-x g" . magit-status))
+
+(use-package zoom-window
+  :ensure t
+  :bind
+  ("C-x z" . zoom-window-zoom))
+
+
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+
+(use-package yaml-mode
+  :ensure t)
 
 (use-package jsonnet-mode
   :ensure t
@@ -273,6 +276,9 @@
   (jsonnet-mode . (lambda ()
                     (setq indent-tabs-mode t
                           tab-width 2))))
+
+(use-package json-mode
+  :ensure t)
 ;;
 
 ;;.auto-mode & interpreter-mode
@@ -349,7 +355,4 @@
 
 ;; ================== testing section ======================
 ;; load test
-;; (load-file "~/test.el")
-
-(use-package pdf-tools
-  :ensure t)
+(load-file "~/.emacs.d/test.el")
