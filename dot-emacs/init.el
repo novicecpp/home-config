@@ -40,7 +40,7 @@
 
 ;; set-font
 (add-to-list 'default-frame-alist '(font . "Liberation Mono-9" ))
-(set-face-attribute 'default t :font "Liberation Mono-9" )
+(set-face-attribute 'default nil :font "Liberation Mono-9" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
@@ -101,7 +101,8 @@
   :config
   (setq doom-modeline-icon t)
   (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :height 80)
+  (set-face-attribute 'mode-line nil :height 75)
+  (set-face-attribute 'mode-line-inactive nil :height 75)
   :hook (after-init . doom-modeline-mode))
 
 ;; jump window like tmux+ace-jump-mode
@@ -166,30 +167,22 @@
   :bind
   (("C-c C-r" . sudo-edit)))
 
-;; DISABLED: train before use
-;;(use-package origami
-;;  :ensure t
-;;  :bind
-;;  (("C-c C-c" . origami-recursively-toggle-node)
-;;   ("C-c o" . origami-show-only-node)
-;;   ("C-c S" . origami-open-all-nodes))
-;;  :hook
-;;  (prog-mode . (lambda () (origami-mode))))
-
 (use-package lsp-mode
   :ensure t
   :init (setq lsp-headerline-breadcrumb-enable nil)
-  :hook (python-mode . lsp)
-        (lsp-mode . lsp-enable-which-key-integration)
+  :hook
+  (python-mode . lsp)
+  (lsp-mode . lsp-enable-which-key-integration)
   :commands lsp)
 
-(use-package lsp-ui
-  :ensure t
-  :bind
-  (:map lsp-ui-mode-map
-        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-        ([remap xref-find-references]  . lsp-ui-peek-find-references))
-  :commands lsp-ui-mode)
+;; temporary disable
+;;(use-package lsp-ui
+;;  :ensure t
+;;  :bind
+;;  (:map lsp-ui-mode-map
+;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+;;        ([remap xref-find-references]  . lsp-ui-peek-find-references))
+;;  :commands lsp-ui-mode)
 
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
@@ -211,8 +204,7 @@
 
 (use-package company-ansible
   :ensure t
-  :config
-  (push 'company-ansible company-backends))
+  :config  (push 'company-ansible company-backends))
 
 (use-package flycheck
   :ensure t
@@ -239,12 +231,6 @@
   :ensure t
   :config
   (counsel-projectile-mode))
-
-;; DEPRECATED: delete-trailing-whitespace is enough
-;;(use-package yapfify
-;;  :ensure t)
-;;  :hook
-;;  (python-mode . (lambda () (yapf-mode))))
 
 (use-package display-line-numbers
   :hook
@@ -278,6 +264,8 @@
                           tab-width 2))))
 
 (use-package json-mode
+  :config
+  (setq json-encoding-default-indentation "    ")
   :ensure t)
 ;;
 
@@ -355,4 +343,4 @@
 
 ;; ================== testing section ======================
 ;; load test
-(load-file "~/.emacs.d/test.el")
+(load-file "~/.emacs.d/loads/test.el")
