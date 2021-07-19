@@ -1,7 +1,6 @@
 alias a_tunnel_testing='sshuttle -v -r testing 10.251.0.0/16'
 alias a_tunnel_bastion_shuttle='sshuttle -v -r bastion_shuttle 10.2.0.0/14'
 alias a_tunnel_bastion_socket='autossh -M 0 -T -N -vv -D12345 bastion_socks5'
-alias a_ssh_key_wongnai='bash ~/.keys/wongnai/add.sh'
 alias a_encrypt='gpg --armor --encrypt --sign -r '
 alias a_xset='xset r rate 200 60'
 

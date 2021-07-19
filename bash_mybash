@@ -9,4 +9,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
+# source all files in bash/
 for f in $(ls $DIR/bash/*.sh); do source $f; done
+# source all file in private/bash/
+for f in $(ls $DIR/private/bash/*.sh); do source $f; done
