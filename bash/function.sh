@@ -19,17 +19,6 @@ sshmux() {
     #echo $cmd
 }
 
-
-f_randpasswd() {
-    n=$([ -z "$1" ] && echo 64)
-    < /dev/urandom tr -dc _A-Z-a-z-0-9@_A-Z-a-z-0-9'!@#$%^&*' | head -c${1:-$n};echo;
-}
-
-f_randpasswd_alphanum() {
-    n=$([ -z "$1" ] && echo 64)
-    < /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-$n};echo;
-}
-
 f_init_agent () {
 
     sockdir=$(ls /tmp | grep -E 'ssh-[A-Za-z0-9]{12}' | head -1)
