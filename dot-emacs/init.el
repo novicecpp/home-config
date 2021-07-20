@@ -62,12 +62,6 @@
   (load-theme 'zenburn t))
 
 ;; https://www.emacswiki.org/emacs/SavePlace
-;; emacs < 25.1
-;;(use-package saveplace
-;;  :config
-;;  (setq-default save-place t)
-;;  (setq save-place-file "~/.emacs.d/saved-places")
-;;  (setq save-place-forget-unreadable-files nil))
 (save-place-mode 1)
 
 ;; auto refresh when file change
@@ -321,19 +315,20 @@
   :hook
   (rust-mode . cargo-minor-mode))
 
-(require 'auth-source-pass)
-(auth-source-pass-enable)
 
-(use-package impatient-mode
-  :ensure t)
-
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-  (current-buffer)))
-
-
-
+(use-package emamux
+  :ensure t
+  :config
+  ;; copy keymap from emamux.el
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-s") #'emamux:send-command)
+    (define-key map (kbd "C-y") #'emamux:yank-from-list-buffers)
+    (define-key map (kbd "C-k") #'emamux:close-runner-pane)
+    (define-key map (kbd "c")   #'emamux:new-window)
+    (define-key map (kbd "C")   #'emamux:clone-current-frame)
+    (define-key map (kbd "2")   #'emamux:split-window)
+    (define-key map (kbd "3")   #'emamux:split-window-horizontally)
+    (global-set-key (kbd "C-z") map)))
 
 ;; load multicursors
 (load-file "~/.emacs.d/loads/mc.el")
@@ -344,3 +339,19 @@
 ;; ================== testing section ======================
 ;; load test
 (load-file "~/.emacs.d/loads/test.el")
+
+;;(use-package pdf-tools
+;;  :ensure t)
+;;(put 'upcase-region 'disabled nil)
+
+(use-package impatient-mode
+  :ensure t)
+
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+  (current-buffer)))
+
+;; not sure why i need this
+;;(require 'auth-source-pass)
+;;(auth-source-pass-enable)
