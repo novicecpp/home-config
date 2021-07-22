@@ -1,5 +1,0 @@
-[Desktop Entry]
-Name=Startup Script
-Comment=eiei
-Type=Application
-Exec=env mystartup.sh
