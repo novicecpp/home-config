@@ -165,7 +165,9 @@
   :ensure t
   :init (setq lsp-headerline-breadcrumb-enable nil)
   :hook
-  (python-mode . lsp)
+  (python-mode . (lambda ()
+                   (lsp)
+                   (setq-default lsp-diagnostics-provider :none)))
   (lsp-mode . lsp-enable-which-key-integration)
   :commands lsp)
 
@@ -181,6 +183,12 @@
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
 
+(use-package lsp-jedi
+  :ensure t
+  :config
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 (use-package company
   :ensure t
@@ -206,6 +214,12 @@
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   :hook
   (prog-mode . flycheck-mode))
+
+(use-package flycheck-pycheckers
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+  (setq flycheck-pycheckers-checkers '(pylint flake8 bandit)))
 
 (use-package yasnippet
   :ensure t
@@ -338,7 +352,8 @@
 
 ;; ================== testing section ======================
 ;; load test
-(load-file "~/.emacs.d/loads/test.el")
+(if (file-exists-p "~/.emacs.d/loads/test.el")
+    (load-file "~/.emacs.d/loads/test.el"))
 
 ;;(use-package pdf-tools
 ;;  :ensure t)
