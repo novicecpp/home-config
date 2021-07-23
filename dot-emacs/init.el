@@ -287,8 +287,8 @@
 
 ;; set default emacs web browser
 ;; browse-url-generic-program value is browser executable file
-;; (setq-default browse-url-browser-function 'browse-url-generic
-;;               browse-url-generic-program "google-chrome-unstable")
+ (setq-default browse-url-browser-function 'browse-url-generic
+               browse-url-generic-program "google-chrome")
 ;; follow symlink
 (setq find-file-visit-truename t)
 
@@ -343,6 +343,11 @@
     (define-key map (kbd "2")   #'emamux:split-window)
     (define-key map (kbd "3")   #'emamux:split-window-horizontally)
     (global-set-key (kbd "C-z") map)))
+
+(use-package blacken
+  :ensure t
+  :config
+  (setq-default blacken-line-length 120))
 
 ;; load multicursors
 (load-file "~/.emacs.d/loads/mc.el")
