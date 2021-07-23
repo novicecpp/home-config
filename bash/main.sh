@@ -2,7 +2,18 @@
 # https://stackoverflow.com/questions/24623021/getting-stty-standard-input-inappropriate-ioctl-for-device-when-using-scp-thro
 [[ $- == *i* ]] && stty -ixon
 
+# save history immediately
+# https://askubuntu.com/questions/67283/is-it-possible-to-make-writing-to-bash-history-immediate
+shopt -s histappend
+PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
-export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+# do not color PS1 when ssh connection (for localvm testing)
+# https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
+# https://unix.stackexchange.com/questions/9605/how-can-i-detect-if-the-shell-is-controlled-from-ssh
+if [[ -z ${SSH_CONNECTION} ]]; then
+    export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+else
+    export PS1='[\u@\h \W]\$ '
+fi
 export EDITOR='emacs'
 export HISTSIZE=10000
