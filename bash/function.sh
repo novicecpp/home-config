@@ -62,33 +62,6 @@ f_tmux_dns_tunnel() {
     tmux switch-client -t tunnel
 }
 
-# bug bear
-f_inotifywait_rsync () {
-    if [[ "$#" < 1 ]]; then
-	    echo "Usage: f_inotifywait_rsync <ssh_host:path>"
-        return 1
-    fi
-    local ssh_opts="$2"
-    IFS=':' read -ra ssh_args <<< "$1"
-    host=${ssh_args[0]}
-    path=${ssh_args[1]}
-    ssh $ssh_opts $host "ls $(dirname $path)"
-    exit_code=$?
-    if [[ "$exit_code" -eq 2 ]]; then
-	    echo "cannot access $path in host $ssh_args"
-	    return 1
-    elif [[ "$exit_code" -eq 255 ]]; then
-	    echo "cannot access host $ssh_args"
-	    return 1
-    fi
-    echo "sync current directory with $path"
-    rsync -e "ssh $ssh_opts" -av . "$1"
-    while inotifywait -r -e modify,create,delete,move .;
-    do
-	    rsync -e "ssh $ssh_opts" -av . "$1"
-    done
-}
-
 f_sshdig() {
     #set -e
     local host=$1
