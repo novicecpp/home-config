@@ -259,9 +259,9 @@
 
 (use-package json-mode
   :config
+  ;; set tab size to 4
   (setq json-encoding-default-indentation "    ")
   :ensure t)
-;;
 
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
