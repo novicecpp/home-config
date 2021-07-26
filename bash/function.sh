@@ -120,3 +120,8 @@ f_source_env () {
         echo "cat: $1: No such file or directory"
     fi
 }
+
+
+f_awk_cut () {
+    awk "{print \$${1:-1}}"
+}
