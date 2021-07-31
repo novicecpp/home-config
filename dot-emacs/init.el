@@ -349,20 +349,17 @@
   :config
   (setq-default blacken-line-length 120))
 
-;; load multicursors
-(load-file "~/.emacs.d/loads/mc.el")
+;; load all file in loads dir
+(mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
 
-;; load org config
-(load-file "~/.emacs.d/loads/org-init.el")
+;; upcase/downcase region without asking
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
-;; ================== testing section ======================
-;; load test
-(if (file-exists-p "~/.emacs.d/loads/test.el")
-    (load-file "~/.emacs.d/loads/test.el"))
 
+;;;; ================== testing section ======================
 ;;(use-package pdf-tools
 ;;  :ensure t)
-;;(put 'upcase-region 'disabled nil)
 
 (use-package impatient-mode
   :ensure t)
