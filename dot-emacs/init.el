@@ -277,6 +277,10 @@
   (setq json-encoding-default-indentation "    ")
   :ensure t)
 
+(use-package terraform-mode
+  :ensure t
+)
+
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
 (push '("bash" . sh-mode) interpreter-mode-alist)
@@ -351,6 +355,11 @@
 
 ;; load all file in loads dir
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
