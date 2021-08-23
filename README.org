@@ -1,9 +1,8 @@
 * My Config
 My config is mixed of configuration file I use in my linux laptop.
-I am currently use Fedora 33, with Emacs's main editor.
-Most configuration are install via (manually) symlink. It's work so far.
+I am currently use Fedora, bash, and emacs.
+Most configuration are install via ansible.
 Also, I have "private" repo as submodule for files that contain sensitive information (like ip of my private server).
-* Todo
-- [ ] remove unnecessary files from private repo
-- [ ] automate install symlink, (source ~/.bash_mybash in .bashrc)
-- [ ] clean up bash function
+* Install
+To setup machine, see [[https://github.com/novicecpp/home-config-ansible][novicecpp/home-config-ansible]]
+To apply config in this repo, run private/apply-config.sh
