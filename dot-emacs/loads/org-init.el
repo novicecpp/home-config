@@ -4,7 +4,16 @@
   (setq org-startup-indented t)
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c c") 'org-capture)
-  (global-set-key (kbd "C-c a") 'org-agenda))
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (setq org-hide-emphasis-markers t)
+  (setq org-agenda-start-on-weekday 0)
+  (setq org-agenda-window-setup 'current-window)
+  (setq org-directory "~/myhome/org")
+  (setq org-agenda-files
+        (seq-filter (lambda(x) (not (string-match "\.deleted/"(file-name-directory x))))
+         (directory-files-recursively "~/myhome/org" "\\.org$")
+         )))
+
 
 ;;(setq org-capture-templates '(("j" "Journal entry" plain (function org-journal-find-location)
 ;;                               (file "~/abc.orgcaptmpl")
