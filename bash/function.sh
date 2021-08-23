@@ -102,12 +102,9 @@ cdg()
 
 cdd() {
     local dir lsd input_dir search_string
-    if [[ "$#" == 2 ]]; then
-        search_string=$1
-        input_dir=$2
-    elif [[ "$#" == 1 ]]; then
-        search_string=$1
-        input_dir='.'
+    if [[ "$#" -le 2 ]]; then
+        search_string="${1:-.}"
+        input_dir="${2:-.}"
     else
         echo 'wrong number argument.'
         return 1
@@ -133,6 +130,10 @@ f_source_env () {
 
 f_awk_cut () {
     awk "{print \$${1:-1}}"
+}
+
+f_awk_sum () {
+    awk '{s+=$1} END {print s}'
 }
 
 
