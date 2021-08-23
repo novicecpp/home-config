@@ -101,12 +101,21 @@ cdg()
 
 
 cdd() {
-    cd "$1"
-    [[ $? != 0 ]] && return 1
+    local dir lsd input_dir search_string
+    if [[ "$#" == 2 ]]; then
+        search_string=$1
+        input_dir=$2
+    elif [[ "$#" == 1 ]]; then
+        search_string=$1
+        input_dir='.'
+    else
+        echo 'wrong number argument.'
+        return 1
+    fi
     while true; do
-        local lsd="$(fd --type d . .)"
-        local dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
-        if [[ ${dir} == '.' && ${#dir} != 0 ]]; then
+        lsd="$(fd --type d ${search_string} ${input_dir})"
+        dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
+        if [[ $? == 130 || ${dir} == '.' ]]; then
             return 0
         fi
         builtin cd "$dir" &> /dev/null
@@ -124,4 +133,14 @@ f_source_env () {
 
 f_awk_cut () {
     awk "{print \$${1:-1}}"
+}
+
+
+f_open_gpg () {
+    if [[ -f "$1" ]]; then
+        timeout 60s emacs $1 || xsel -cb
+    else
+        echo "$1: No such file or directory"
+        return 1
+    fi
 }
