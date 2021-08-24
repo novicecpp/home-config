@@ -1,5 +1,7 @@
+#! /bin/bash
+
 f_inotifywait_rsync () {
-    if [[ "$#" < 1 ]]; then
+    if [[ "$#" -lt 1 ]]; then
 	    echo "Usage: f_inotifywait_rsync <path> <ssh_host:path>"
         return 1
     fi
@@ -8,8 +10,8 @@ f_inotifywait_rsync () {
     EVENTS="CREATE,DELETE,MODIFY,MOVED_FROM,MOVED_TO"
     path="$(realpath $1)"
     echo "path=$path"
+    rsync --update -alvr --exclude '*.git*' $path $2
     inotifywait -e "$EVENTS" -m -r --exclude 'flycheck_.+' --exclude '\.#.+' --format '%:e %f' $path | (
-        last_sync=$EPOCHREALTIME
         sync_triggered=0
         while true ; do
             read -t 1 LINE
