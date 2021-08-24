@@ -260,7 +260,10 @@
       python-shell-interpreter-args "-i")
 
 (use-package yaml-mode
-  :ensure t)
+  :ensure t
+  :hook (yaml-mode . (lambda ()
+                       (flycheck-select-checker 'yaml-yamllint)
+                       (flycheck-mode))))
 
 (use-package jsonnet-mode
   :ensure t
