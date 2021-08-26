@@ -30,6 +30,7 @@
 
 
 (use-package multiple-cursors
+  :ensure t
   :after phi-search
   :defer 5
 
@@ -89,6 +90,7 @@
     (activate-mark)))
 
 (use-package mc-extras
+  :ensure t
   :after multiple-cursors
   :bind (("<C-m> M-C-f" . mc/mark-next-sexps)
          ("<C-m> M-C-b" . mc/mark-previous-sexps)

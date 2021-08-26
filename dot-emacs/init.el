@@ -1,5 +1,3 @@
-;; NOTE: not using org-babel yet because it not compat with flycheck
-
 ;; for debug
 ;; https://stackoverflow.com/questions/1322591/tracking-down-max-specpdl-size-errors-in-emacs/1322978
 ;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
@@ -150,11 +148,18 @@
   (setq ivy-count-format "(%d/%d) ")
   :bind
   (("C-s" . swiper)
+   ("M-x" . counsel-M-x)
    ("C-c g" . counsel-git)
    ("C-c j" . counsel-git-grep)
    ("C-c k" . counsel-ag)
    ("C-c C-c C-l" . counsel-locate)
    ("C-c C-r" . ivy-resume)))
+
+(use-package ivy-rich
+  :ensure
+  :init
+  (ivy-rich-mode 1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package sudo-edit
   :ensure t
@@ -349,7 +354,7 @@
     (define-key map (kbd "C")   #'emamux:clone-current-frame)
     (define-key map (kbd "2")   #'emamux:split-window)
     (define-key map (kbd "3")   #'emamux:split-window-horizontally)
-    (global-set-key (kbd "C-z") map)))
+    (global-set-key (kbd "C-C z") map)))
 
 (use-package blacken
   :ensure t
@@ -367,7 +372,6 @@
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
 
 ;;;; ================== testing section ======================
 ;;(use-package pdf-tools
