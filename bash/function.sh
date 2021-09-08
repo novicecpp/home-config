@@ -110,12 +110,14 @@ cdd() {
         return 1
     fi
     while true; do
-        lsd="$(fd --type d ${search_string} ${input_dir})"
+        lsd="$(cd ${input_dir} && fd --type d ${search_string} )"
         dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
+        echo $dir
         if [[ $? == 130 || ${dir} == '.' ]]; then
             return 0
         fi
-        builtin cd "$dir" &> /dev/null
+        input_dir=$input_dir/$dir
+        builtin cd "$input_dir" &> /dev/null
     done
 }
 
