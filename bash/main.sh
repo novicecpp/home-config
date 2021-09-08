@@ -5,7 +5,10 @@
 # save history immediately
 # https://askubuntu.com/questions/67283/is-it-possible-to-make-writing-to-bash-history-immediate
 shopt -s histappend
-PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+
+# do not save history when prefix comamnd with space
+export HISTCONTROL="ignorespace"
 
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
