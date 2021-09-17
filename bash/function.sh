@@ -112,13 +112,12 @@ cdd() {
     while true; do
         lsd="$(cd ${input_dir} && fd --type d ${search_string} )"
         dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
-        echo $dir
+        input_dir="$input_dir/$dir"
         if [[ $? == 130 || ${dir} == '.' ]]; then
-            return 0
+            break
         fi
-        input_dir=$input_dir/$dir
-        builtin cd "$input_dir" &> /dev/null
     done
+    builtin cd "$input_dir" &> /dev/null
 }
 
 f_source_env () {
