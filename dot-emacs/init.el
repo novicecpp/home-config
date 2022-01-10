@@ -37,8 +37,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-9" ))
-(set-face-attribute 'default nil :font "Liberation Mono-9" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-12" ))
+(set-face-attribute 'default nil :font "Liberation Mono-12" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
@@ -93,8 +93,8 @@
   :config
   (setq doom-modeline-icon t)
   (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :height 75)
-  (set-face-attribute 'mode-line-inactive nil :height 75)
+  (set-face-attribute 'mode-line nil :height 0.75)
+  (set-face-attribute 'mode-line-inactive nil :height 0.75)
   :hook (after-init . doom-modeline-mode))
 
 ;; jump window like tmux+ace-jump-mode
@@ -237,6 +237,7 @@
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
+  (setq projectile-project-search-path '("~/myhome/coding/wongnai"))
   :bind
   ("C-c p" . projectile-command-map))
 
@@ -368,6 +369,8 @@
   :ensure t
   :config
   (exec-path-from-shell-initialize))
+
+(add-to-list 'org-export-backends 'md)
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
