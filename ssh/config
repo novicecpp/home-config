@@ -4,3 +4,8 @@ ControlPersist 30m
 Compression yes
 Ciphers chacha20-poly1305@openssh.com
 Include conf.d/*.conf
+
+Host github.com
+    HostName github.com
+    User git
+    Identityfile ~/.deploy_keys/home-config-private

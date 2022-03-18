@@ -13,3 +13,6 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 for f in $(ls $DIR/bash/*.sh); do source $f; done
 # source all file in private/bash/
 for f in $(ls $DIR/private/bash/*.sh); do source $f; done
+
+# source init scripts for your currently job
+source $DIR/private/init/cern.sh

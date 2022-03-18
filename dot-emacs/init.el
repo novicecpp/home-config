@@ -362,6 +362,12 @@
   :config
   (setq-default blacken-line-length 120))
 
+(use-package lua-mode
+  :ensure t)
+(use-package puppet-mode
+  :ensure t)
+
+
 ;; load all file in loads dir
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
 
