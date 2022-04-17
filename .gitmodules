@@ -2,3 +2,5 @@
 	path = private
 	url = ssh://git@github.com/novicecpp/home-config-private
     branch = .
+[submodule "private/"]
+	branch = master
