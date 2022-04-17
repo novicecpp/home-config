@@ -376,7 +376,10 @@
   :config
   (exec-path-from-shell-initialize))
 
-(add-to-list 'org-export-backends 'md)
+(use-package org-download
+  :ensure t
+  :config
+  (add-hook 'dired-mode-hook ' org-download-enable))
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
@@ -393,6 +396,8 @@
   (princ (with-current-buffer buffer
     (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
   (current-buffer)))
+
+;; (add-to-list 'org-export-backends 'md)
 
 ;; not sure why i need this
 ;;(require 'auth-source-pass)
