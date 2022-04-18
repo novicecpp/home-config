@@ -131,7 +131,8 @@
 (use-package undo-tree
   :ensure t
   :config
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  (setq undo-tree-auto-save-history nil))
 
 (use-package dockerfile-mode
   :ensure t)
