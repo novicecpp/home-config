@@ -28,3 +28,7 @@ audible-bell=false
 font='Liberation Mono 12'
 use-system-font=false
 visible-name='main'
+
+[org/gnome/desktop/peripherals/keyboard]
+delay=uint32 200
+repeat-interval=uint32 30
