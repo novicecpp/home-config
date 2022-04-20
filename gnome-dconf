@@ -30,5 +30,5 @@ use-system-font=false
 visible-name='main'
 
 [org/gnome/desktop/peripherals/keyboard]
-delay=uint32 150
+delay=uint32 200
 repeat-interval=uint32 15
