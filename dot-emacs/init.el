@@ -86,15 +86,15 @@
 (use-package all-the-icons
   :ensure t
   :config
-  (setq all-the-icons-scale-factor 1.0))
+  (setq all-the-icons-scale-factor 0.9))
 
 (use-package doom-modeline
   :ensure t
   :config
   (setq doom-modeline-icon t)
   (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :height 0.75)
-  (set-face-attribute 'mode-line-inactive nil :height 0.75)
+  (set-face-attribute 'mode-line nil :height 0.9)
+  (set-face-attribute 'mode-line-inactive nil :height 0.9)
   :hook (after-init . doom-modeline-mode))
 
 ;; jump window like tmux+ace-jump-mode
