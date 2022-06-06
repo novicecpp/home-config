@@ -356,7 +356,7 @@
     (define-key map (kbd "C")   #'emamux:clone-current-frame)
     (define-key map (kbd "2")   #'emamux:split-window)
     (define-key map (kbd "3")   #'emamux:split-window-horizontally)
-    (global-set-key (kbd "C-C z") map)))
+    (global-set-key (kbd "C-C t") map)))
 
 (use-package blacken
   :ensure t
