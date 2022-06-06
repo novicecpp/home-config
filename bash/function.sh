@@ -146,3 +146,9 @@ f_open_gpg () {
         return 1
     fi
 }
+
+f_ () {
+    F_FUNCTION=$(declare -F | grep -P -- '-f f_.+' | cut -d' ' -f3)
+    FUNCTION_NAME=$(printf '%s\n..\n.\n' "${F_FUNCTION[@]}" | fzf)
+	(sleep 0.05 && tmux send-key "$FUNCTION_NAME" &)
+}
