@@ -103,21 +103,22 @@ cdg()
 cdd() {
     local dir lsd input_dir search_string
     if [[ "$#" -le 2 ]]; then
-        search_string="${1:-.}"
-        input_dir="${2:-.}"
+        SEARCH_STRING="${1:-.}"
+        INPUT_DIR="${2:-.}"
     else
         echo 'wrong number argument.'
         return 1
     fi
     while true; do
-        lsd="$(cd ${input_dir} && fd --type d ${search_string} )"
-        dir="$(printf '%s\n..\n.\n' "${lsd[@]}" | fzf )"
-        input_dir="$input_dir/$dir"
-        if [[ $? == 130 || ${dir} == '.' ]]; then
+        LSD="$(cd ${INPUT_DIR} && fd --type d ${SEARCH_STRING} )"
+        DIR_SELECTED="$(printf '%s\n..\n.\n' "${LSD[@]}" | fzf )"
+        EXIT_CODE=$?
+        INPUT_DIR="$INPUT_DIR/$DIR_SELECTED"
+        if [[ $EXIT_CODE == 130 || ${DIR_SELECTED} == '.' ]]; then
             break
         fi
     done
-    builtin cd "$input_dir" &> /dev/null
+    builtin cd "${INPUT_DIR}" &> /dev/null
 }
 
 f_source_env () {
