@@ -150,7 +150,7 @@
   :bind
   (("C-s" . swiper)
    ("M-x" . counsel-M-x)
-   ("C-c g" . counsel-git)
+   ;;("C-c g" . counsel-git)
    ("C-c j" . counsel-git-grep)
    ("C-c k" . counsel-ag)
    ("C-c C-c C-l" . counsel-locate)
@@ -302,7 +302,7 @@
 ;; set default emacs web browser
 ;; browse-url-generic-program value is browser executable file
  (setq-default browse-url-browser-function 'browse-url-generic
-               browse-url-generic-program "google-chrome")
+               browse-url-generic-program "firefox")
 ;; follow symlink
 (setq find-file-visit-truename t)
 
@@ -381,6 +381,14 @@
   :ensure t
   :config
   (add-hook 'dired-mode-hook ' org-download-enable))
+
+(use-package browse-at-remote
+  :ensure t
+  :config
+  (add-to-list 'browse-at-remote-remote-type-regexps '("^gitlab\\.cern\\.ch$" . "gitlab"))
+  :bind
+  (("C-c g g" . browse-at-remote)))
+
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
