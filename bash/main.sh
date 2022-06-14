@@ -5,7 +5,14 @@
 # save history immediately
 # https://askubuntu.com/questions/67283/is-it-possible-to-make-writing-to-bash-history-immediate
 shopt -s histappend
-export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+# dedup history
+# https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
+nl ~/.bash_history | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
+cp ~/.bashhist ~/.bash_history
+history -c
+history -r
 
 # do not save history when prefix comamnd with space
 export HISTCONTROL="ignorespace"
