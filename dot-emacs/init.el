@@ -232,6 +232,9 @@
   :config
   (yas-global-mode 1))
 
+(use-package yasnippet-snippets
+  :ensure t)
+
 
 (use-package projectile
   :ensure t
@@ -388,6 +391,10 @@
   (add-to-list 'browse-at-remote-remote-type-regexps '("^gitlab\\.cern\\.ch$" . "gitlab"))
   :bind
   (("C-c g g" . browse-at-remote)))
+
+(use-package pipenv
+  :ensure t)
+
 
 
 ;; upcase/downcase region without asking
