@@ -160,7 +160,10 @@
   :ensure
   :init
   (ivy-rich-mode 1)
-  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+  :config
+  (setq ivy-rich-parse-remote-buffer nil
+        ivy-rich-parse-remote-file-path nil))
 
 (use-package sudo-edit
   :ensure t
@@ -346,7 +349,6 @@
   :hook
   (rust-mode . cargo-minor-mode))
 
-
 (use-package emamux
   :ensure t
   :config
@@ -394,8 +396,6 @@
 
 (use-package pipenv
   :ensure t)
-
-
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
