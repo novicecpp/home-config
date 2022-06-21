@@ -8,10 +8,11 @@ f_inotifywait_rsync () {
     local EVENTS path
     # modify from: https://unix.stackexchange.com/questions/103858/inotify-and-rsync-on-large-number-of-files
     EVENTS="CREATE,DELETE,MODIFY,MOVED_FROM,MOVED_TO"
-    path="$(realpath $1)"
+    #path="$(realpath $1)"
+    path=$1
     echo "path=$path"
     rsync --update -alvr --exclude '*.git*' $path $2
-    inotifywait -e "$EVENTS" -m -r --exclude 'flycheck_.+' --exclude '\.#.+' --format '%:e %f' $path | (
+    inotifywait -e "$EVENTS" -m -r --exclude '(flycheck_.+|\.#.+)' --format '%:e %f' $path | (
         sync_triggered=0
         while true ; do
             read -t 1 LINE
