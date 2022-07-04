@@ -41,3 +41,19 @@ tmux_open_remote_file() {
     FILEPATH=$(echo ${CAPTURED} | awk '{print $2}')
     emacsclient -cn "/ssh:${P_ARGS}:${FILEPATH}"
 }
+
+tmux_copy_shell_output_to_clipboard() {
+    if [[ -z $DEBUG_PANE ]]; then
+        DEBUG_TARGET=""
+    else
+        DEBUG_TARGET="-t $DEBUG_PANE"
+    fi
+    CAPTURED=$(tmux capture-pane -p -S -1000 ${DEBUG_TARGET})
+    if [[ "$CAPTURED" == "" ]]; then
+        return
+    fi
+    readarray -t GREP_OUTPUT_ARRAY <<< $(printf "%s" "$CAPTURED" | grep -n -P '\[.+@.+ .+\]' | tail -n2)
+    FIRST=$(( ${GREP_OUTPUT_ARRAY[0]%%[:]*} + 1 ))
+    LAST=$(( ${GREP_OUTPUT_ARRAY[1]%%[:]*} - 1 ))
+    printf "%s\n" "$CAPTURED" | sed -n "${FIRST},${LAST}p" | xsel -ib
+}
