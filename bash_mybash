@@ -1,18 +1,36 @@
 #!/bin/bash
 
-# https://stackoverflow.com/questions/59895/how-can-i-get-the-source-directory-of-a-bash-script-from-within-the-script-itsel
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+__get_script_dir() {
+    caller_context=($(caller))
+    #SOURCE="${BASH_SOURCE[0]}"
+    SOURCE=${caller_context[1]}
+    while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+      DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+      SOURCE="$(readlink "$SOURCE")"
+      [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    done
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+    echo $DIR
+}
+
+__get_machine_name() {
+    MACHINE_ID=$(cat /etc/machine-id)
+    SCRIPT_DIR=$(__get_script_dir)
+    MAPFILE=$SCRIPT_DIR/private/machine_id_map
+    MACHINE_KV=$(grep -P "^${MACHINE_ID}" $MAPFILE)
+    rc=$?
+    if [[ $rc == 1 ]]; then
+        >&2 echo "No machine name was found [machine-id:${MACHINE_ID}, mapfile:${MAPFILE}]"
+        return 1
+    fi
+    echo ${MACHINE_KV##*=}
+}
+
+
+SCRIPT_DIR=$(__get_script_dir)
 
 # source all files in bash/
-for f in $(ls $DIR/bash/*.sh); do source $f; done
-# source all file in private/bash/
-for f in $(ls $DIR/private/bash/*.sh); do source $f; done
+for i in $(find $SCRIPT_DIR/bash/ -type f -iname '*.sh'); do source "$i"; done
 
-# source init scripts for your currently job
-source $DIR/private/init/cern.sh
+# source entrypoint of bash in private/
+source $SCRIPT_DIR/private/bash_mybash
