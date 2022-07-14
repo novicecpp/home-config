@@ -89,14 +89,7 @@ f_sed_remove_comment_lines() {
 
 cdg()
 {
-    dir_path=$(git rev-parse --show-toplevel 2> /dev/null)
-    if [[ "$?" == 0 ]]; then
-        cd $dir_path
-        select_dir=$(fd --hidden --type d . | fzf)
-        command cd ${dir_path}/${select_dir}
-    else
-        echo 'Error. Not git directory.'
-    fi
+    cd $(git rev-parse --show-toplevel)
 }
 
 
