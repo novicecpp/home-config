@@ -134,7 +134,7 @@ f_awk_sum () {
 
 f_open_gpg () {
     if [[ -f "$1" ]]; then
-        timeout 180s emacs $1 || xsel -cb
+        timeout 180s emacs -Q $1 || xsel -cb
     else
         echo "$1: No such file or directory"
         return 1
