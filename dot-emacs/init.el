@@ -244,7 +244,10 @@
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
-  (setq projectile-project-search-path '("~/myhome/coding/wongnai"))
+  (setq projectile-project-search-path '("~/myhome/coding/home-config/"
+                                         "~/myhome/coding/home-config-ansible/"
+                                         ("~/myhome/coding" . 5)))
+  (setq projectile-auto-discover nil)
   :bind
   ("C-c p" . projectile-command-map))
 
