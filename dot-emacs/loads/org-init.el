@@ -9,10 +9,24 @@
   (setq org-agenda-start-on-weekday 0)
   (setq org-agenda-window-setup 'current-window)
   (setq org-directory "~/myhome/org")
+
+  (setq org-startup-with-inline-images t)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(;; other Babel languages
+     (plantuml . t)))
+  (setq org-plantuml-jar-path
+        (expand-file-name "~/.local/jar/plantuml.jar"))
+
   (setq org-agenda-files
         (seq-filter (lambda(x) (not (string-match "\.deleted/"(file-name-directory x))))
          (directory-files-recursively "~/myhome/org" "\\.org$")
          )))
+
+(use-package org-download
+  :ensure t
+  :config
+  (add-hook 'dired-mode-hook ' org-download-enable))
 
 
 ;;(setq org-capture-templates '(("j" "Journal entry" plain (function org-journal-find-location)

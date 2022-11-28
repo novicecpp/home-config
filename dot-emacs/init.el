@@ -65,6 +65,7 @@
 ;; auto refresh when file change
 ;; http://stackoverflow.com/questions/1480572/how-to-have-emacs-auto-refresh-all-buffers-when-files-have-changed-on-disk
 (global-auto-revert-mode t)
+(setq auto-revert-interval 2)
 
 ;; highlight parenthesis
 (show-paren-mode 1)
@@ -80,6 +81,9 @@
 
 ;; delete trailing whitespace when save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; disable lockfiles feature
+(setq create-lockfiles nil)
 
 ;; for doom-modeline, also resize icon to normal text
 ;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
@@ -104,7 +108,6 @@
   ("C-x q" . ace-window)
   :config
   (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?\;)))
-
 
 ;; fix exec path for mac os, but don't use mac anymore
 ;;(require 'exec-path-from-shell)
@@ -385,11 +388,6 @@
   :config
   (exec-path-from-shell-initialize))
 
-(use-package org-download
-  :ensure t
-  :config
-  (add-hook 'dired-mode-hook ' org-download-enable))
-
 (use-package browse-at-remote
   :ensure t
   :config
@@ -415,6 +413,7 @@
   (princ (with-current-buffer buffer
     (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
   (current-buffer)))
+
 
 ;; (add-to-list 'org-export-backends 'md)
 
