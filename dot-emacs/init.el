@@ -173,34 +173,34 @@
   :bind
   (("C-c C-r" . sudo-edit)))
 
-(use-package lsp-mode
-  :ensure t
-  :init (setq lsp-headerline-breadcrumb-enable nil)
-  :hook
-  (python-mode . (lambda ()
-                   (lsp)
-                   (setq-default lsp-diagnostics-provider :none)))
-  (lsp-mode . lsp-enable-which-key-integration)
-  :commands lsp)
-
-;; temporary disable
-;;(use-package lsp-ui
+;;(use-package lsp-mode
 ;;  :ensure t
-;;  :bind
-;;  (:map lsp-ui-mode-map
-;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-;;        ([remap xref-find-references]  . lsp-ui-peek-find-references))
-;;  :commands lsp-ui-mode)
+;;  :init (setq lsp-headerline-breadcrumb-enable nil)
+;;  :hook
+;;  (python-mode . (lambda ()
+;;                   (lsp)
+;;                   (setq-default lsp-diagnostics-provider :none)))
+;;  (lsp-mode . lsp-enable-which-key-integration)
+;;  :commands lsp)
+;;
+;;;; temporary disable
+;;;;(use-package lsp-ui
+;;;;  :ensure t
+;;;;  :bind
+;;;;  (:map lsp-ui-mode-map
+;;;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+;;;;        ([remap xref-find-references]  . lsp-ui-peek-find-references))
+;;;;  :commands lsp-ui-mode)
+;;
+;;(use-package lsp-ivy
+;;  :commands lsp-ivy-workspace-symbol)
 
-(use-package lsp-ivy
-  :commands lsp-ivy-workspace-symbol)
-
-(use-package lsp-jedi
-  :ensure t
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
+;;(use-package lsp-jedi
+;;  :ensure t
+;;  :config
+;;  (with-eval-after-load "lsp-mode"
+;;    (add-to-list 'lsp-disabled-clients 'pyls)
+;;    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 (use-package company
   :ensure t
@@ -219,19 +219,6 @@
 (use-package company-ansible
   :ensure t
   :config  (push 'company-ansible company-backends))
-
-(use-package flycheck
-  :ensure t
-  :init
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-  :hook
-  (prog-mode . flycheck-mode))
-
-(use-package flycheck-pycheckers
-  :ensure t
-  :config
-  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
-  (setq flycheck-pycheckers-checkers '(pylint flake8 bandit)))
 
 (use-package yasnippet
   :ensure t
@@ -279,10 +266,10 @@
       python-shell-interpreter-args "-i")
 
 (use-package yaml-mode
-  :ensure t
-  :hook (yaml-mode . (lambda ()
-                       (flycheck-select-checker 'yaml-yamllint)
-                       (flycheck-mode))))
+  :ensure t)
+;;  :hook (yaml-mode . (lambda ()
+;;                       (flycheck-select-checker 'yaml-yamllint)
+;;                       (flycheck-mode))))
 
 (use-package jsonnet-mode
   :ensure t
@@ -345,8 +332,6 @@
 
 (use-package rust-mode
   :ensure t
-  :hook
-  (rust-mode . lsp)
   :config
   (setq rust-format-on-save t))
 
@@ -405,6 +390,58 @@
 ;;;; ================== testing section ======================
 ;;(use-package pdf-tools
 ;;  :ensure t)
+
+;; eglot testing
+(use-package eglot
+  :ensure t
+  :defer t
+  :init
+  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
+  :hook
+  (python-mode . eglot-ensure)
+  (yaml-mode . eglot-ensure))
+
+
+;; copy from https://github.com/purcell/emacs.d/blob/6eec82f623d6a866cba1b182c63d6d11446d88c4/lisp/init-flymake.el#L15-L18
+;;(use-package flymake-flycheck
+;;  :ensure t
+;;  :init
+;;  (defun sanityinc/enable-flymake-flycheck ()
+;;    (setq-local flymake-diagnostic-functions
+;;                (append flymake-diagnostic-functions
+;;                        (flymake-flycheck-all-chained-diagnostic-functions))))
+;;  :hook
+;;  (flymake-mode . sanityinc/enable-flymake-flycheck)
+;;  :bind
+;;  (("C-c ! n" . flymake-goto-next-error)
+;;  ("C-c ! p" . flymake-goto-prev-error)
+;;  ("C-c ! c" . flymake-start)))
+
+
+(use-package flycheck
+  :ensure t
+  :init
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  :hook
+  ((python-mode . (lambda ()
+                    (flycheck-mode)
+                    (flycheck-select-checker 'python-pyright)
+                    (flycheck-add-next-checker 'python-pyright 'python-pycheckers)))))
+
+;;
+(use-package flycheck-pycheckers
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+  (setq flycheck-pycheckers-checkers '(pylint flake8)))
+
+;;(use-package lsp-pyright
+;;  :ensure t
+;;  :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp)  ;; or lsp-deferred
+;;                          (flycheck-add-next-checker 'lsp 'python-pycheckers))))
+
 
 (use-package impatient-mode
   :ensure t)
