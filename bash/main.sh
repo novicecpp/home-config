@@ -12,7 +12,6 @@ export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 nl ~/.bash_history | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
 cp ~/.bashhist ~/.bash_history
 history -c
-history -r
 
 # do not save history when prefix comamnd with space
 export HISTCONTROL="ignorespace"
