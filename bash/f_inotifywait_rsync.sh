@@ -2,16 +2,19 @@
 
 f_inotifywait_rsync () {
     if [[ "$#" -lt 1 ]]; then
-	    echo "Usage: f_inotifywait_rsync <path> <ssh_host:path>"
+	    echo "Usage: f_inotifywait_rsync <path> <ssh_host:path> [--root]"
         return 1
     fi
-    local EVENTS path
+    local EVENTS path rsync_root
+    if [[ "$3" == "--root" ]]; then
+        rsync_root=(--rsync-path="sudo rsync")
+    fi
     # modify from: https://unix.stackexchange.com/questions/103858/inotify-and-rsync-on-large-number-of-files
     EVENTS="CREATE,DELETE,MODIFY,MOVED_FROM,MOVED_TO"
     #path="$(realpath $1)"
     path=$1
     echo "path=$path"
-    rsync --update -alvr --exclude '*.git*' $path $2
+    rsync --update -alvr --exclude '*.git*' "${rsync_root[@]}" $path $2
     inotifywait -e "$EVENTS" -m -r --exclude '(flycheck_.+|\.#.+)' --format '%:e %f' $path | (
         sync_triggered=0
         while true ; do
@@ -21,8 +24,7 @@ f_inotifywait_rsync () {
                     ts=$EPOCHREALTIME
             fi
             if [[ $sync_triggered == 1 && $(calc() { awk "BEGIN{print $*}"; }; calc $EPOCHREALTIME-$ts) > 1.00 ]]; then
-                rsync --update -alvr --exclude '*.git*' $path $2
-                echo rsync --update -alvr --exclude '*.git*' $path $2
+                rsync --update -alvr --exclude '*.git*' "${rsync_root[@]}" $path $2
                 sync_triggered=0
             fi
         done

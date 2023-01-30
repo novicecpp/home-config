@@ -376,7 +376,7 @@
 (use-package browse-at-remote
   :ensure t
   :config
-  (add-to-list 'browse-at-remote-remote-type-regexps '("^gitlab\\.cern\\.ch$" . "gitlab"))
+  (add-to-list 'browse-at-remote-remote-type-regexps '(:host "^gitlab\\.cern\\.ch$" :type "gitlab"))
   :bind
   (("C-c g g" . browse-at-remote)))
 

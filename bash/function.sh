@@ -146,3 +146,8 @@ f_ () {
     FUNCTION_NAME=$(printf '%s\n..\n.\n' "${F_FUNCTION[@]}" | fzf)
 	(sleep 0.05 && tmux send-key "$FUNCTION_NAME" &)
 }
+
+
+f_ssh_add_gpg () {
+    gpg --decrypt $1 | ssh-add -
+}
