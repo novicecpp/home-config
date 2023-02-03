@@ -16,6 +16,8 @@ alias less='less -I'
 alias r_pipewire='systemctl restart --user pipewire pipewire-pulse'
 alias r_emacs='systemctl restart --user emacs'
 
+alias diff='diff -u --color'
+
 # alias a_gsts='gsts --aws-session-duration 43200 --aws-profile=default --aws-role-arn arn:aws:iam::005852626303:role/GSuite-Thanayut --sp-id 239920783439 --idp-id C029od40l --username thanayut@lmwn.com'
 # deprecated
 # start exwm with X server on term1
