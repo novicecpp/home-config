@@ -3,5 +3,5 @@ ServerAliveCountMax 3
 ControlPersist 30m
 Compression yes
 Ciphers chacha20-poly1305@openssh.com
+ControlPath /tmp/%C
 Include conf.d/*.conf
-
