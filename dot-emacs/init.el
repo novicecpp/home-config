@@ -53,6 +53,9 @@
 ;; by default emacs only show line number
 (setq column-number-mode t)
 
+;; do not show native-compile's warning buffer
+(native-comp-async-report-warnings-errors 'silent)
+
 ;; theme
 (use-package solarized-theme
   :ensure t
@@ -572,6 +575,7 @@
   :ensure t
   :init
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
   :hook
   ((python-mode . (lambda ()
                     (flycheck-mode)
