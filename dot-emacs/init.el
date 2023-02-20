@@ -54,7 +54,7 @@
 (setq column-number-mode t)
 
 ;; do not show native-compile's warning buffer
-(native-comp-async-report-warnings-errors 'silent)
+(setq native-comp-async-report-warnings-errors 'silent)
 
 ;; theme
 (use-package solarized-theme
@@ -126,10 +126,10 @@
 ;;  (exec-path-from-shell-initialize))
 
 ;; show ssh list in counsel
-(use-package counsel-tramp
-  :ensure t
-  :config
-  (define-key global-map (kbd "C-c s") 'counsel-tramp))
+;;(use-package counsel-tramp
+;;  :ensure t
+;;  :config
+;;  (define-key global-map (kbd "C-c s") 'counsel-tramp))
 
 ;; key helper
 (use-package which-key
@@ -252,10 +252,10 @@
   :bind
   ("C-c p" . projectile-command-map))
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-mode))
+;;(use-package counsel-projectile
+;;counsel  :ensure t
+;;  :config
+;;  (counsel-projectile-mode))
 
 (use-package display-line-numbers
   :hook
