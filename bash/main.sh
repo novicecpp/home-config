@@ -2,6 +2,10 @@
 # https://stackoverflow.com/questions/24623021/getting-stty-standard-input-inappropriate-ioctl-for-device-when-using-scp-thro
 [[ $- == *i* ]] && stty -ixon
 
+# Dumb way to remove __vte_prompt_command from PROMPT_COMMAND
+# It should be better way to prevent load it entirely
+PROMPT_COMMAND=$(echo $PROMPT_COMMAND | sed 's/__vte_prompt_command/ : /')
+
 # save history immediately
 # https://askubuntu.com/questions/67283/is-it-possible-to-make-writing-to-bash-history-immediate
 shopt -s histappend
