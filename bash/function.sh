@@ -151,3 +151,7 @@ f_ () {
 f_ssh_add_gpg () {
     gpg --decrypt $1 | ssh-add -
 }
+
+f_proc_environ () {
+    cat /proc/$1/environ | tr '\0' '\n'
+}
