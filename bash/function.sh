@@ -153,5 +153,9 @@ f_ssh_add_gpg () {
 }
 
 f_proc_environ () {
+    if [[ $# != 1 ]]; then
+        >&2 echo 'usage: f_proc_environ <pid>'
+        return 1
+    fi
     cat /proc/$1/environ | tr '\0' '\n'
 }
