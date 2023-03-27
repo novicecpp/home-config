@@ -159,3 +159,9 @@ f_proc_environ () {
     fi
     cat /proc/$1/environ | tr '\0' '\n'
 }
+
+f_pyenv_init() {
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+}
