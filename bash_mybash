@@ -29,8 +29,19 @@ __get_machine_name() {
 
 SCRIPT_DIR=$(__get_script_dir)
 
+# https://stackoverflow.com/questions/5014823/how-can-i-profile-a-bash-shell-script-slow-startup
+# PS4='+ $(date "+%s.%N")\011 '
+# exec 3>&2 2>/tmp/bashstart.$$.log
+# set -x
+
+
 # source all files in bash/
-for i in $(find $SCRIPT_DIR/bash/ -type f -iname '*.sh'); do source "$i"; done
+for i in $(find $SCRIPT_DIR/bash/ -type f -iname '*.sh'); do
+    source "$i";
+done
 
 # source entrypoint of bash in private/
 source $SCRIPT_DIR/private/bash_mybash
+
+# set +x
+# exec 2>&3 3>&-

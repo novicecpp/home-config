@@ -13,6 +13,7 @@ export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
+
 nl ~/.bash_history | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
 cp ~/.bashhist ~/.bash_history
 history -c
@@ -28,5 +29,6 @@ if [[ -z ${SSH_CONNECTION} ]]; then
 else
     export PS1='[\u@\h \W]\$ '
 fi
+
 export EDITOR='emacs'
 export HISTSIZE=10000
