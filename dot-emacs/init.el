@@ -611,3 +611,43 @@
 ;; not sure why i need this
 ;;(require 'auth-source-pass)
 ;;(auth-source-pass-enable)
+
+
+;; testing tree-sitter
+;; use builtin treesit.el and only for python and yaml
+(push '(yaml-mode . yaml-ts-mode) major-mode-remap-alist)
+(push '(python-mode . python-ts-mode) major-mode-remap-alist)
+(setq python-ts-mode-hook python-mode-hook)
+(setq yaml-ts-mode-hook yaml-mode-hook)
+
+
+;; shameless copy from Gary Oberbrunner’s https://github.com/garyo/emacs-config/blob/36639b9d771c68611f4be2786d74319229fc24bd/emacs-config.org
+;; manually clone ts-fold forked from Andrew Swerlick's https://github.com/AndrewSwerlick/ts-fold/tree/andrew-sw/treesit-el-support
+;; and put in ~/.emacs.d/clone/ts-fold
+;; still need to figure it out why the there is error everytime toggle ts-fold
+;; ts-fold--after-command: Symbol’s function definition is void: ts-fold-indicators-refresh
+;; and ts-fold does not load properly with hydra when use (use-package ts-fold :load-path /path)
+
+
+(use-package hydra
+  :ensure t)
+
+(defhydra hydra-ts-fold (:exit t :hint nil)
+  "
+Tree-sitter code folding
+Point^^                     Recursive^^             All^^
+^^^^^^---------------------------------------------------------------
+[_f_] toggle fold at point
+[_o_] open at point         [_O_] open recursively  [_M-o_] open all
+[_c_] close at point         ^ ^                    [_M-c_] close all"
+  ("f" ts-fold-toggle)
+  ("o" ts-fold-open)
+  ("c" ts-fold-close)
+  ("O" ts-fold-open-recursively)
+  ("M-o" ts-fold-open-all)
+  ("M-c" ts-fold-close-all))
+
+;;
+(add-to-list 'load-path "~/.emacs.d/clone/ts-fold")
+(require 'ts-fold)
+(global-set-key (kbd "C-c f") 'hydra-ts-fold/body)
