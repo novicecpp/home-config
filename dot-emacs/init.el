@@ -9,16 +9,32 @@
 
 (setq inhibit-startup-screen t)
 
-;; add melpa
-(require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
+(defvar bootstrap-version)
+(progn (setq straight-repository-branch "develop")
+       (let ((bootstrap-file
+              (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+             (bootstrap-version 6))
+         (unless (file-exists-p bootstrap-file)
+           (with-current-buffer
+               (url-retrieve-synchronously
+                "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+                'silent 'inhibit-cookies)
+             (goto-char (point-max))
+             (eval-print-last-sexp)))
+         (load bootstrap-file nil 'nomessage)))
 
-;; auto install use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; add melpa
+;;(require 'package)
+;;(add-to-list 'package-archives
+;;	     '("melpa" . "https://melpa.org/packages/"))
+;;(package-initialize)
+;;
+;;;; auto install use-package
+;;(unless (package-installed-p 'use-package)
+;;  (package-refresh-contents)
+;;  (package-install 'use-package))
+(setq straight-use-package-by-default t)
+(straight-use-package 'use-package)
 
 ;; manage auto-save file
 ;; http://snarfed.org/gnu_emacs_backup_files
@@ -58,11 +74,11 @@
 
 ;; theme
 (use-package solarized-theme
-  :ensure t
+
 )
 
 (use-package zenburn-theme
-  :ensure t
+
 )
 
 ;; load solarized theme when run in test machine
@@ -84,6 +100,7 @@
 ;; tramp mode
 ;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
 (use-package tramp
+  :straight (tramp :type built-in)
   :config
   (setq tramp-default-method "ssh")
   (setq tramp-use-ssh-controlmaster-options nil) ; Don't override SSH config.
@@ -99,12 +116,12 @@
 ;; for doom-modeline, also resize icon to normal text
 ;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
 (use-package all-the-icons
-  :ensure t
+
   :config
   (setq all-the-icons-scale-factor 0.9))
 
 (use-package doom-modeline
-  :ensure t
+
   :config
   (setq doom-modeline-icon t)
   (setq doom-modeline-height 1)
@@ -114,7 +131,7 @@
 
 ;; jump window like tmux+ace-jump-mode
 (use-package ace-window
-  :ensure t
+
   :bind
   ("C-x q" . ace-window)
   :config
@@ -127,13 +144,13 @@
 
 ;; show ssh list in counsel
 ;;(use-package counsel-tramp
-;;  :ensure t
+;;
 ;;  :config
 ;;  (define-key global-map (kbd "C-c s") 'counsel-tramp))
 
 ;; key helper
 (use-package which-key
-  :ensure t
+
   :config (which-key-mode))
 
 ;; avy: alternative ace-jump-mode
@@ -143,20 +160,20 @@
   (avy-setup-default))
 
 (use-package undo-tree
-  :ensure t
+
   :config
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history nil))
 
 (use-package dockerfile-mode
-  :ensure t)
+  )
 
 ;;ivy
 ;;(use-package counsel
-;;  :ensure t)
+;;  )
 
 ;;(use-package ivy
-;;  :ensure t
+;;
 ;;  :config
 ;;  (ivy-mode 1)
 ;;  (setq ivy-use-virtual-buffers t)
@@ -180,12 +197,12 @@
 ;;        ivy-rich-parse-remote-file-path nil))
 
 (use-package sudo-edit
-  :ensure t
+
   :bind
   (("C-c C-r" . sudo-edit)))
 
 ;;(use-package lsp-mode
-;;  :ensure t
+;;
 ;;  :init (setq lsp-headerline-breadcrumb-enable nil)
 ;;  :hook
 ;;  (python-mode . (lambda ()
@@ -196,7 +213,7 @@
 ;;
 ;;;; temporary disable
 ;;;;(use-package lsp-ui
-;;;;  :ensure t
+;;;;
 ;;;;  :bind
 ;;;;  (:map lsp-ui-mode-map
 ;;;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
@@ -207,14 +224,14 @@
 ;;  :commands lsp-ivy-workspace-symbol)
 
 ;;(use-package lsp-jedi
-;;  :ensure t
+;;
 ;;  :config
 ;;  (with-eval-after-load "lsp-mode"
 ;;    (add-to-list 'lsp-disabled-clients 'pyls)
 ;;    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 (use-package company
-  :ensure t
+
   :diminish
   :bind
   ("M-/" . company-complete)
@@ -222,26 +239,26 @@
   (after-init . global-company-mode)
   :config
   (use-package company-quickhelp
-    :ensure t
+
     :config
     (company-quickhelp-mode 1))
   (setq company-idle-delay 0.2))
 
 (use-package company-ansible
-  :ensure t
+
   :config  (push 'company-ansible company-backends))
 
 (use-package yasnippet
-  :ensure t
+
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :ensure t)
+  )
 
 
 (use-package projectile
-  :ensure t
+
   :config
   (projectile-mode)
   ;;(setq projectile-completion-system 'ivy)
@@ -253,7 +270,7 @@
   ("C-c p" . projectile-command-map))
 
 ;;(use-package counsel-projectile
-;;counsel  :ensure t
+;;counsel
 ;;  :config
 ;;  (counsel-projectile-mode))
 
@@ -263,12 +280,12 @@
   (yaml-mode . display-line-numbers-mode))
 
 (use-package magit
-  :ensure t
+
   :bind
   ("C-x g" . magit-status))
 
 (use-package zoom-window
-  :ensure t
+
   :bind
   ("C-x z" . zoom-window-zoom))
 
@@ -277,13 +294,13 @@
       python-shell-interpreter-args "-i")
 
 (use-package yaml-mode
-  :ensure t)
+  )
 ;;  :hook (yaml-mode . (lambda ()
 ;;                       (flycheck-select-checker 'yaml-yamllint)
 ;;                       (flycheck-mode))))
 
 (use-package jsonnet-mode
-  :ensure t
+
   :config
   (setq jsonnet-use-smie t)
   :hook
@@ -295,10 +312,10 @@
   :config
   ;; set tab size to 4
   (setq json-encoding-default-indentation "    ")
-  :ensure t)
+  )
 
 (use-package terraform-mode
-  :ensure t
+
 )
 
 ;;.auto-mode & interpreter-mode
@@ -319,15 +336,16 @@
 ;;
 (setq custom-file "~/.emacs.d/custom-set-variable.el")
 
+;; temporary disable because straight.el cannot pull source
 ;; interact with gpg file
-(use-package epa-file
-  :config
-  (epa-file-enable)
-  (setq epg-gpg-program  "/usr/bin/gpg2"
-        epg-pinentry-mode 'loopback))
+;;(use-package epa-file
+;;  :config
+;;  (epa-file-enable)
+;;  (setq epg-gpg-program  "/usr/bin/gpg2"
+;;        epg-pinentry-mode 'loopback))
 
 (use-package dumb-jump
-  :ensure t
+
   :bind
   (("M-g o" . dumb-jump-go-other-window)
    ("M-g j" . dumb-jump-go)
@@ -339,20 +357,20 @@
   (setq dumb-jump-selector 'ivy))
 
 (use-package go-mode
-  :ensure t)
+  )
 
 (use-package rust-mode
-  :ensure t
+
   :config
   (setq rust-format-on-save t))
 
 (use-package cargo
-  :ensure t
+
   :hook
   (rust-mode . cargo-minor-mode))
 
 (use-package emamux
-  :ensure t
+
   :config
   ;; copy keymap from emamux.el
   (let ((map (make-sparse-keymap)))
@@ -366,26 +384,26 @@
     (global-set-key (kbd "C-C t") map)))
 
 (use-package blacken
-  :ensure t
+
   :config
   (setq-default blacken-line-length 120))
 
 (use-package lua-mode
-  :ensure t)
+  )
 (use-package puppet-mode
-  :ensure t)
+  )
 
 
 ;; load all file in loads dir
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
 
 (use-package exec-path-from-shell
-  :ensure t
+
   :config
   (exec-path-from-shell-initialize))
 
 (use-package browse-at-remote
-  :ensure t
+
   :config
   (add-to-list 'browse-at-remote-remote-type-regexps '(:host "^gitlab\\.cern\\.ch$" :type "gitlab"))
   :bind
@@ -397,7 +415,7 @@
   (setq
    pipenv-projectile-after-switch-function
    #'pipenv-projectile-after-switch-extended)
-  :ensure t)
+  )
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
@@ -405,11 +423,11 @@
 
 ;;;; ================== testing section ======================
 ;;(use-package pdf-tools
-;;  :ensure t)
+;;  )
 
 ;; eglot testing
 (use-package eglot
-  :ensure t
+  :straight (eglot :type built-in)
   :defer t
   :init
   (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
@@ -418,12 +436,12 @@
   (yaml-mode . eglot-ensure))
 
 (use-package vertico
-  :ensure t
+
   :init
   (vertico-mode))
 
 (use-package consult
-  :ensure t
+
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
@@ -543,7 +561,7 @@
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
-  :ensure t
+
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -557,7 +575,7 @@
 
 ;; copy from https://github.com/purcell/emacs.d/blob/6eec82f623d6a866cba1b182c63d6d11446d88c4/lisp/init-flymake.el#L15-L18
 ;;(use-package flymake-flycheck
-;;  :ensure t
+;;
 ;;  :init
 ;;  (defun sanityinc/enable-flymake-flycheck ()
 ;;    (setq-local flymake-diagnostic-functions
@@ -572,7 +590,7 @@
 
 
 (use-package flycheck
-  :ensure t
+
   :init
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
@@ -584,13 +602,13 @@
 
 ;;
 (use-package flycheck-pycheckers
-  :ensure t
+
   :config
   (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
   (setq flycheck-pycheckers-checkers '(pylint flake8)))
 
 ;;(use-package lsp-pyright
-;;  :ensure t
+;;
 ;;  :hook (python-mode . (lambda ()
 ;;                          (require 'lsp-pyright)
 ;;                          (lsp)  ;; or lsp-deferred
@@ -598,7 +616,7 @@
 
 
 (use-package impatient-mode
-  :ensure t)
+  )
 
 (defun markdown-html (buffer)
   (princ (with-current-buffer buffer
@@ -615,10 +633,12 @@
 
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
-(push '(yaml-mode . yaml-ts-mode) major-mode-remap-alist)
-(push '(python-mode . python-ts-mode) major-mode-remap-alist)
-(setq python-ts-mode-hook python-mode-hook)
-(setq yaml-ts-mode-hook yaml-mode-hook)
+(use-package treesit-auto
+  :config
+  (global-treesit-auto-mode)
+  (setq python-ts-mode-hook python-mode-hook)
+  (setq yaml-ts-mode-hook yaml-mode-hook)
+  (setq treesit-auto-install t))
 
 
 ;; shameless copy from Gary Oberbrunner’s https://github.com/garyo/emacs-config/blob/36639b9d771c68611f4be2786d74319229fc24bd/emacs-config.org
@@ -630,7 +650,7 @@
 
 
 (use-package hydra
-  :ensure t)
+  )
 
 (defhydra hydra-ts-fold (:exit t :hint nil)
   "
@@ -647,7 +667,11 @@ Point^^                     Recursive^^             All^^
   ("M-o" ts-fold-open-all)
   ("M-c" ts-fold-close-all))
 
-;;
-(add-to-list 'load-path "~/.emacs.d/clone/ts-fold")
-(require 'ts-fold)
+
+(use-package ts-fold
+  :straight (ts-fold :type git :host github
+                     :repo "AndrewSwerlick/ts-fold"
+                     :branch "andrew-sw/treesit-el-support"))
+
+
 (global-set-key (kbd "C-c f") 'hydra-ts-fold/body)

@@ -5,7 +5,6 @@
 
 (use-package selected
   :demand t
-  :ensure t
   :bind (:map selected-keymap
               ("[" . align-code)
               ("f" . fill-region)
@@ -18,11 +17,10 @@
   (selected-global-mode 1))
 
 (use-package phi-search
-  :ensure t
   :defer 5)
 
 (use-package phi-search-mc
-  :ensure t
+
   :after (phi-search multiple-cursors)
   :config
   (phi-search-mc/setup-keys)
@@ -30,7 +28,6 @@
 
 
 (use-package multiple-cursors
-  :ensure t
   :after phi-search
   :defer 5
 
@@ -90,7 +87,6 @@
     (activate-mark)))
 
 (use-package mc-extras
-  :ensure t
   :after multiple-cursors
   :bind (("<C-m> M-C-f" . mc/mark-next-sexps)
          ("<C-m> M-C-b" . mc/mark-previous-sexps)
@@ -102,10 +98,12 @@
          ("<C-m> |"     . mc/move-to-column)
          ("<C-m> ~"     . mc/compare-chars)))
 
-(use-package mc-freeze
-  :after multiple-cursors
-  :bind ("<C-m> f" . mc/freeze-fake-cursors-dwim))
+;; temporary disable because straight.el cannot pull source
+;; (use-package mc-freeze
+;;   :after multiple-cursors
+;;   :bind ("<C-m> f" . mc/freeze-fake-cursors-dwim))
 
-(use-package mc-rect
-  :after multiple-cursors
-  :bind ("<C-m> ]" . mc/rect-rectangle-to-multiple-cursors))
+;; temporary disable because straight.el cannot pull source
+;;(use-package mc-rect
+;;  :after multiple-cursors
+;;  :bind ("<C-m> ]" . mc/rect-rectangle-to-multiple-cursors))
