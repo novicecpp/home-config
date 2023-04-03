@@ -73,18 +73,15 @@
 (setq native-comp-async-report-warnings-errors 'silent)
 
 ;; theme
-(use-package solarized-theme
-
-)
-
+(use-package solarized-theme)
 (use-package zenburn-theme
-
-)
-
-;; load solarized theme when run in test machine
-(if (file-exists-p "~/.emacs_test")
+  :config
+  ;; load solarized theme when run in test machine
+  (if (and
+         (file-exists-p "~/.emacs_test")
+         (require 'solarized-theme nil 'noerror))
       (load-theme 'solarized-light t)
-  (load-theme 'zenburn t))
+    (load-theme 'zenburn t)))
 
 ;; https://www.emacswiki.org/emacs/SavePlace
 (save-place-mode 1)
@@ -433,7 +430,8 @@
   (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   :hook
   (python-mode . eglot-ensure)
-  (yaml-mode . eglot-ensure))
+  (yaml-mode . eglot-ensure)
+  (sh-mode . eglot-ensure))
 
 (use-package vertico
 
