@@ -588,15 +588,17 @@
 
 
 (use-package flycheck
-
-  :init
+  :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
   :hook
   ((python-mode . (lambda ()
                     (flycheck-mode)
                     (flycheck-select-checker 'python-pyright)
-                    (flycheck-add-next-checker 'python-pyright 'python-pycheckers)))))
+                    (flycheck-add-next-checker 'python-pyright 'python-pycheckers)))
+   (sh-mode . (lambda ()
+                (flycheck-mode)
+                (flycheck-select-checker 'sh-shellcheck)))))
 
 ;;
 (use-package flycheck-pycheckers
@@ -634,9 +636,12 @@
 (use-package treesit-auto
   :config
   (global-treesit-auto-mode)
-  (setq python-ts-mode-hook python-mode-hook)
-  (setq yaml-ts-mode-hook yaml-mode-hook)
-  (setq treesit-auto-install t))
+  (setq treesit-auto-install t)
+  (setq python-ts-mode-hook python-mode-hook
+        yaml-ts-mode-hook yaml-mode-hook)
+  ;; sh-mode is changed to bash-ts-mode by this package.
+  (setq bash-ts-mode-hook sh-mode-hook))
+
 
 
 ;; shameless copy from Gary Oberbrunner’s https://github.com/garyo/emacs-config/blob/36639b9d771c68611f4be2786d74319229fc24bd/emacs-config.org
