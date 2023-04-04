@@ -598,7 +598,12 @@
                     (flycheck-add-next-checker 'python-pyright 'python-pycheckers)))
    (sh-mode . (lambda ()
                 (flycheck-mode)
-                (flycheck-select-checker 'sh-shellcheck)))))
+                (flycheck-select-checker 'sh-shellcheck)))
+   (yaml-mode . (lambda ()
+                  (flycheck-mode)
+                  (flycheck-select-checker 'yaml-yamllint)))))
+
+
 
 ;;
 (use-package flycheck-pycheckers
