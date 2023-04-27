@@ -3,6 +3,19 @@
 ;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
 ;;(setq debug-on-error t)    ; now you should get a backtrace
 
+;; Startup time
+;; https://www.reddit.com/r/emacs/comments/m8d55l/what_is_your_startup_time/
+(defun efs/display-startup-time ()
+  (message
+   "Emacs loaded in %s with %d garbage collections."
+   (format
+    "%.2f seconds"
+    (float-time
+     (time-subtract after-init-time before-init-time)))
+   gcs-done))
+
+(add-hook 'emacs-startup-hook #'efs/display-startup-time)
+
 ;;(setq gc-cons-threshold most-positive-fixnum)
 (setq gc-cons-percentage 0.9)
 (setq read-process-output-max (* 1024 1024))
@@ -77,9 +90,7 @@
 (use-package zenburn-theme
   :config
   ;; load solarized theme when run in test machine
-  (if (and
-         (file-exists-p "~/.emacs_test")
-         (require 'solarized-theme nil 'noerror))
+  (if (file-exists-p "~/.emacs_test")
       (load-theme 'solarized-light t)
     (load-theme 'zenburn t)))
 
@@ -97,6 +108,7 @@
 ;; tramp mode
 ;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
 (use-package tramp
+  :defer t
   :straight (tramp :type built-in)
   :config
   (setq tramp-default-method "ssh")
@@ -113,12 +125,10 @@
 ;; for doom-modeline, also resize icon to normal text
 ;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
 (use-package all-the-icons
-
   :config
   (setq all-the-icons-scale-factor 0.9))
 
 (use-package doom-modeline
-
   :config
   (setq doom-modeline-icon t)
   (setq doom-modeline-height 1)
@@ -128,7 +138,7 @@
 
 ;; jump window like tmux+ace-jump-mode
 (use-package ace-window
-
+  :defer t
   :bind
   ("C-x q" . ace-window)
   :config
@@ -147,23 +157,24 @@
 
 ;; key helper
 (use-package which-key
-
+  :defer t
   :config (which-key-mode))
 
 ;; avy: alternative ace-jump-mode
 (use-package avy
+  :defer t
   :bind* ("C-." . avy-goto-char-timer)
   :config
   (avy-setup-default))
 
 (use-package undo-tree
-
+  :defer t
   :config
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history nil))
 
 (use-package dockerfile-mode
-  )
+  :defer t)
 
 ;;ivy
 ;;(use-package counsel
@@ -193,10 +204,10 @@
 ;;  (setq ivy-rich-parse-remote-buffer nil
 ;;        ivy-rich-parse-remote-file-path nil))
 
-(use-package sudo-edit
-
-  :bind
-  (("C-c C-r" . sudo-edit)))
+;;(use-package sudo-edit
+;;  :defer t
+;;  :bind
+;;  (("C-c C-r" . sudo-edit)))
 
 ;;(use-package lsp-mode
 ;;
@@ -228,34 +239,36 @@
 ;;    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 (use-package company
-
+  :defer t
   :diminish
   :bind
   ("M-/" . company-complete)
   :hook
   (after-init . global-company-mode)
   :config
-  (use-package company-quickhelp
-
-    :config
-    (company-quickhelp-mode 1))
   (setq company-idle-delay 0.2))
 
-(use-package company-ansible
+(use-package company-quickhelp
+  :defer t
+  :config
+  (company-quickhelp-mode 1))
 
+
+(use-package company-ansible
+  :defer t
   :config  (push 'company-ansible company-backends))
 
 (use-package yasnippet
-
+  :defer t
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  )
+  :defer t)
 
 
 (use-package projectile
-
+  :defer t
   :config
   (projectile-mode)
   ;;(setq projectile-completion-system 'ivy)
@@ -272,17 +285,18 @@
 ;;  (counsel-projectile-mode))
 
 (use-package display-line-numbers
+  :defer t
   :hook
   (prog-mode . display-line-numbers-mode)
   (yaml-mode . display-line-numbers-mode))
 
 (use-package magit
-
+  :defer t
   :bind
   ("C-x g" . magit-status))
 
 (use-package zoom-window
-
+  :defer t
   :bind
   ("C-x z" . zoom-window-zoom))
 
@@ -291,13 +305,13 @@
       python-shell-interpreter-args "-i")
 
 (use-package yaml-mode
-  )
+  :defer t)
 ;;  :hook (yaml-mode . (lambda ()
 ;;                       (flycheck-select-checker 'yaml-yamllint)
 ;;                       (flycheck-mode))))
 
 (use-package jsonnet-mode
-
+  :defer t
   :config
   (setq jsonnet-use-smie t)
   :hook
@@ -306,14 +320,14 @@
                           tab-width 2))))
 
 (use-package json-mode
+  :defer t
   :config
   ;; set tab size to 4
   (setq json-encoding-default-indentation "    ")
   )
 
 (use-package terraform-mode
-
-)
+  :defer t)
 
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
@@ -341,33 +355,33 @@
 ;;  (setq epg-gpg-program  "/usr/bin/gpg2"
 ;;        epg-pinentry-mode 'loopback))
 
-(use-package dumb-jump
-
-  :bind
-  (("M-g o" . dumb-jump-go-other-window)
-   ("M-g j" . dumb-jump-go)
-   ("M-g b" . dumb-jump-back)
-   ("M-g i" . dumb-jump-go-prompt)
-   ("M-g x" . dumb-jump-go-prefer-external)
-   ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config
-  (setq dumb-jump-selector 'ivy))
+;;(use-package dumb-jump
+;;
+;;  :bind
+;;  (("M-g o" . dumb-jump-go-other-window)
+;;   ("M-g j" . dumb-jump-go)
+;;   ("M-g b" . dumb-jump-back)
+;;   ("M-g i" . dumb-jump-go-prompt)
+;;   ("M-g x" . dumb-jump-go-prefer-external)
+;;   ("M-g z" . dumb-jump-go-prefer-external-other-window))
+;;  :config
+;;  (setq dumb-jump-selector 'ivy))
 
 (use-package go-mode
-  )
+  :defer t)
 
 (use-package rust-mode
-
+  :defer t
   :config
   (setq rust-format-on-save t))
 
 (use-package cargo
-
+  :defer t
   :hook
   (rust-mode . cargo-minor-mode))
 
 (use-package emamux
-
+  :defer t
   :config
   ;; copy keymap from emamux.el
   (let ((map (make-sparse-keymap)))
@@ -380,33 +394,33 @@
     (define-key map (kbd "3")   #'emamux:split-window-horizontally)
     (global-set-key (kbd "C-C t") map)))
 
-(use-package blacken
-
-  :config
-  (setq-default blacken-line-length 120))
+;;(use-package blacken
+;;
+;;  :config
+;;  (setq-default blacken-line-length 120))
 
 (use-package lua-mode
-  )
+  :defer t)
 (use-package puppet-mode
-  )
+  :defer t)
 
 
 ;; load all file in loads dir
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
 
 (use-package exec-path-from-shell
-
   :config
   (exec-path-from-shell-initialize))
 
 (use-package browse-at-remote
-
+  :defer t
   :config
   (add-to-list 'browse-at-remote-remote-type-regexps '(:host "^gitlab\\.cern\\.ch$" :type "gitlab"))
   :bind
   (("C-c g g" . browse-at-remote)))
 
 (use-package pipenv
+  :defer t
   :hook (python-mode . pipenv-mode)
   :init
   (setq
@@ -434,12 +448,12 @@
   (sh-mode . eglot-ensure))
 
 (use-package vertico
-
+  :defer t
   :init
   (vertico-mode))
 
 (use-package consult
-
+  :defer t
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
@@ -559,7 +573,7 @@
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
-
+  :defer t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -588,6 +602,7 @@
 
 
 (use-package flycheck
+  :defer t
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
@@ -607,7 +622,7 @@
 
 ;;
 (use-package flycheck-pycheckers
-
+  :defer t
   :config
   (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
   (setq flycheck-pycheckers-checkers '(pylint flake8)))
@@ -620,13 +635,13 @@
 ;;                          (flycheck-add-next-checker 'lsp 'python-pycheckers))))
 
 
-(use-package impatient-mode
-  )
-
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-  (current-buffer)))
+;;(use-package impatient-mode
+;;  )
+;;
+;;(defun markdown-html (buffer)
+;;  (princ (with-current-buffer buffer
+;;    (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+;;  (current-buffer)))
 
 
 ;; (add-to-list 'org-export-backends 'md)
@@ -639,6 +654,7 @@
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
 (use-package treesit-auto
+  :defer t
   :config
   (global-treesit-auto-mode)
   (setq treesit-auto-install t)
@@ -658,7 +674,7 @@
 
 
 (use-package hydra
-  )
+  :defer t)
 
 (defhydra hydra-ts-fold (:exit t :hint nil)
   "
@@ -679,7 +695,8 @@ Point^^                     Recursive^^             All^^
 (use-package ts-fold
   :straight (ts-fold :type git :host github
                      :repo "AndrewSwerlick/ts-fold"
-                     :branch "andrew-sw/treesit-el-support"))
+                     :branch "andrew-sw/treesit-el-support")
+  :defer t)
 
 
 (global-set-key (kbd "C-c f") 'hydra-ts-fold/body)
