@@ -382,17 +382,13 @@
 
 (use-package emamux
   :defer t
-  :config
-  ;; copy keymap from emamux.el
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-s") #'emamux:send-command)
-    (define-key map (kbd "C-y") #'emamux:yank-from-list-buffers)
-    (define-key map (kbd "C-k") #'emamux:close-runner-pane)
-    (define-key map (kbd "c")   #'emamux:new-window)
-    (define-key map (kbd "C")   #'emamux:clone-current-frame)
-    (define-key map (kbd "2")   #'emamux:split-window)
-    (define-key map (kbd "3")   #'emamux:split-window-horizontally)
-    (global-set-key (kbd "C-C t") map)))
+  :bind (("C-c t C-s" . emamux:send-command)
+         ("C-c t C-y" . emamux:yank-from-list-buffers)
+         ("C-c t C-k" . emamux:close-runner-pane)
+         ("C-c t c" . emamux:new-window)
+         ("C-c t C" . emamux:clone-current-frame)
+         ("C-c t 2" . emamux:split-window)
+         ("C-c t 3" . emamux:split-window-horizontally)))
 
 ;;(use-package blacken
 ;;
