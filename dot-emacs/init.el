@@ -339,8 +339,8 @@
 
 ;; set default emacs web browser
 ;; browse-url-generic-program value is browser executable file
- (setq-default browse-url-browser-function 'browse-url-generic
-               browse-url-generic-program "firefox")
+;; (setq-default browse-url-browser-function 'browse-url-generic
+;;               browse-url-generic-program "firefox")
 ;; follow symlink
 (setq find-file-visit-truename t)
 
