@@ -598,7 +598,7 @@
 
 
 (use-package flycheck
-  :defer t
+  ;;:defer t
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
@@ -650,7 +650,7 @@
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
 (use-package treesit-auto
-  :defer t
+  ;;:defer t
   :config
   (global-treesit-auto-mode)
   (setq treesit-auto-install t)
