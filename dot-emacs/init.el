@@ -609,8 +609,8 @@
   :hook
   ((python-mode . (lambda ()
                     (flycheck-mode)
-                    (flycheck-select-checker 'python-pyright)
-                    (flycheck-add-next-checker 'python-pyright 'python-pycheckers)))
+                    (flycheck-select-checker 'python-pylint)
+                    (flycheck-add-next-checker 'python-pylint 'python-pyright)))
    (sh-mode . (lambda ()
                 (flycheck-mode)
                 (flycheck-select-checker 'sh-shellcheck)))
