@@ -168,8 +168,7 @@ f_pyenv_init() {
 
 
 # Copy from https://superuser.com/questions/299694/is-there-a-directory-history-for-bash/1395350#1395350
-cdh ()
-{
+cdh () {
     local hnum=16;
     local new_dir index dir cnt;
     if ! [[ $# -eq 0 ]]; then
@@ -218,4 +217,9 @@ cdh ()
 }
 cd() {
     cdh "$@"
+}
+
+# https://serverfault.com/a/755815
+f_print_cert_bundle() {
+    openssl crl2pkcs7 -nocrl -certfile $1 | openssl pkcs7 -print_certs -text -noout
 }

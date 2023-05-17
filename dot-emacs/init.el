@@ -168,7 +168,7 @@
   (avy-setup-default))
 
 (use-package undo-tree
-  :defer t
+  ;;defer t
   :config
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history nil))
@@ -259,7 +259,6 @@
   :config  (push 'company-ansible company-backends))
 
 (use-package yasnippet
-  :defer t
   :config
   (yas-global-mode 1))
 
@@ -272,8 +271,10 @@
   :config
   (projectile-mode)
   ;;(setq projectile-completion-system 'ivy)
-  (setq projectile-project-search-path '("~/myhome/coding/home-config/"
-                                         "~/myhome/coding/home-config-ansible/"
+  (setq projectile-project-search-path '("~/myhome/home-config/"
+                                         "~/myhome/home-config-ansible/"
+                                         "~/myhome/org/"
+                                         "~/myhome/org_work/"
                                          ("~/myhome/coding" . 5)))
   (setq projectile-auto-discover nil)
   :bind
