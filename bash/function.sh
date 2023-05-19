@@ -222,7 +222,7 @@ cd() {
 # https://serverfault.com/a/755815
 f_print_cert_bundle() {
     openssl crl2pkcs7 -nocrl -certfile $1 | openssl pkcs7 -print_certs -text -noout
-{
+}
 
 f_rpm_gpg_pubkey() {
     rpm -q gpg-pubkey --qf '%{NAME}-%{VERSION}-%{RELEASE}\t%{SUMMARY}\n'
