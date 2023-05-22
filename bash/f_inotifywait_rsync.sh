@@ -13,6 +13,9 @@ f_inotifywait_rsync () {
     EVENTS="CREATE,DELETE,MODIFY,MOVED_FROM,MOVED_TO"
     #path="$(realpath $1)"
     path=$1
+    if [[ "$path" == '.' ]]; then
+        path=$(realpath $1)
+    fi
     echo "path=$path"
     rsync --update -alvr --exclude '*.git*' "${rsync_root[@]}" $path $2
     inotifywait -e "$EVENTS" -m -r --exclude '(flycheck_.+|\.#.+)' --format '%:e %f' $path | (
