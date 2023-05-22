@@ -122,11 +122,12 @@
 ;; disable lockfiles feature
 (setq create-lockfiles nil)
 
+;; Deprecated: doom-modeline move to nerd-icon, install fonts is enough to use.
 ;; for doom-modeline, also resize icon to normal text
 ;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
-(use-package all-the-icons
-  :config
-  (setq all-the-icons-scale-factor 0.9))
+;;(use-package all-the-icons
+;;  :config
+;;  (setq all-the-icons-scale-factor 0.9))
 
 (use-package doom-modeline
   :config
@@ -157,7 +158,7 @@
 
 ;; key helper
 (use-package which-key
-  :defer t
+  ;;:defer t
   :config (which-key-mode))
 
 ;; avy: alternative ace-jump-mode
@@ -654,6 +655,9 @@
   ;;:defer t
   :config
   (global-treesit-auto-mode)
+  ;; somehow it does not work with latest emacs master HEAD.
+  ;; but still need it to notify (warning message)  if grammar is not installed.
+  ;; install grammar manually via treesit-install-language-grammar
   (setq treesit-auto-install t)
   (setq python-ts-mode-hook python-mode-hook
         yaml-ts-mode-hook yaml-mode-hook)
