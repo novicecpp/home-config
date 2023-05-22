@@ -219,6 +219,10 @@ cd() {
     cdh "$@"
 }
 
+cdr() {
+    cd "$(realpath $1)"
+}
+
 # https://serverfault.com/a/755815
 f_print_cert_bundle() {
     openssl crl2pkcs7 -nocrl -certfile $1 | openssl pkcs7 -print_certs -text -noout
