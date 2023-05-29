@@ -21,9 +21,18 @@ f_randpasswd() {
     if [[ -z "$num" ]]; then
         num=64
     fi
-    if [[ $alphanum == 1 ]]; then
-        < /dev/urandom tr -dc "A-Za-z0-9" | head -c ${num}; echo;
-    else
-        < /dev/urandom tr -dc "A-Za-z0-9_/+?\-@#%^()[]{}\." | head -c${1:-$num};echo;
-    fi
+    while true; do
+        if [[ $alphanum == 1 ]]; then
+            genpass=$(< /dev/urandom tr -dc "A-Za-z0-9" | head -c ${num}; echo);
+        else
+            genpass=$(< /dev/urandom tr -dc "A-Za-z0-9_/+\-@\$#%\.\!" | head -c${1:-$num};echo;)
+        fi
+        check_regex='(.)\1'
+        if [[ $genpass =~ $check_regex ]]; then
+            continue
+        else
+            echo "$genpass"
+            break
+        fi
+    done
 }
