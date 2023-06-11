@@ -1,5 +1,5 @@
 (use-package org
-  :straight (eglot :type built-in)
+  :straight (org :type built-in)
   :config
   (setq org-startup-indented t)
   (global-set-key (kbd "C-c l") 'org-store-link)
