@@ -701,3 +701,33 @@ Point^^                     Recursive^^             All^^
 
 
 (global-set-key (kbd "C-c f") 'hydra-ts-fold/body)
+
+
+(use-package org-roam
+  :custom
+  (org-roam-directory (file-truename "~/myhome/org/roam"))
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n")
+      :unnarrowed t)
+   ("f" "fleeting note" plain
+      "* %?"
+      :target (file+head "%<%Y%m%d>-fleet.org"
+                         "#+title: %<%Y-%m-%d>-fleeting-note\n")
+      :unnarrowed t)
+   ))
+
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+
+         ("C-M-i"    . completion-at-point)
+  :config
+  (org-roam-db-autosync-mode))
