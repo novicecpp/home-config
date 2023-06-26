@@ -4,7 +4,6 @@
 (define-key input-decode-map [?\C-m] [C-m])
 
 (use-package selected
-  :demand t
   :bind (:map selected-keymap
               ("[" . align-code)
               ("f" . fill-region)
@@ -16,11 +15,10 @@
   :config
   (selected-global-mode 1))
 
-(use-package phi-search
-  :defer 5)
+(use-package phi-search)
+  ;;:defer 5)
 
 (use-package phi-search-mc
-
   :after (phi-search multiple-cursors)
   :config
   (phi-search-mc/setup-keys)
@@ -28,8 +26,8 @@
 
 
 (use-package multiple-cursors
-  :after phi-search
-  :defer 5
+  ;;:after phi-search
+  ;;:defer 5
 
   ;; - Sometimes you end up with cursors outside of your view. You can scroll
   ;;   the screen to center on each cursor with `C-v` and `M-v`.
