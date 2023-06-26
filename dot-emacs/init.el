@@ -651,18 +651,18 @@
 
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
-(use-package treesit-auto
-  ;;:defer t
-  :config
-  (global-treesit-auto-mode)
-  ;; somehow it does not work with latest emacs master HEAD.
-  ;; but still need it to notify (warning message)  if grammar is not installed.
-  ;; install grammar manually via treesit-install-language-grammar
-  (setq treesit-auto-install t)
-  (setq python-ts-mode-hook python-mode-hook
-        yaml-ts-mode-hook yaml-mode-hook)
-  ;; sh-mode is changed to bash-ts-mode by this package.
-  (setq bash-ts-mode-hook sh-mode-hook))
+;;(use-package treesit-auto
+;;  ;;:defer t
+;;  :config
+;;  (global-treesit-auto-mode)
+;;  ;; somehow it does not work with latest emacs master HEAD.
+;;  ;; but still need it to notify (warning message)  if grammar is not installed.
+;;  ;; install grammar manually via treesit-install-language-grammar
+;;  (setq treesit-auto-install t)
+;;  (setq python-ts-mode-hook python-mode-hook
+;;        yaml-ts-mode-hook yaml-mode-hook)
+;;  ;; sh-mode is changed to bash-ts-mode by this package.
+;;  (setq bash-ts-mode-hook sh-mode-hook))
 
 
 
