@@ -4,6 +4,9 @@
 (define-key input-decode-map [?\C-m] [C-m])
 
 (use-package selected
+  ;; need demand, otherwise it will not load
+  ;; TODO: understand why it happen like this
+  :demand t
   :bind (:map selected-keymap
               ("[" . align-code)
               ("f" . fill-region)
@@ -12,21 +15,21 @@
               ("u" . upcase-region)
               ("r" . reverse-region)
               ("s" . sort-lines))
-  :config
-  (selected-global-mode 1))
+  :config (selected-global-mode 1))
 
-(use-package phi-search)
-  ;;:defer 5)
+;;(use-package phi-search)
+;;  ;;:defer 5)
+;;
+;;(use-package phi-search-mc
+;;  :after (phi-search multiple-cursors)
+;;  :config
+;;  (phi-search-mc/setup-keys)
+;;  (add-hook 'isearch-mode-mode #'phi-search-from-isearch-mc/setup-keys))
 
-(use-package phi-search-mc
-  :after (phi-search multiple-cursors)
-  :config
-  (phi-search-mc/setup-keys)
-  (add-hook 'isearch-mode-mode #'phi-search-from-isearch-mc/setup-keys))
 
 
 (use-package multiple-cursors
-  ;;:after phi-search
+  :after selected
   ;;:defer 5
 
   ;; - Sometimes you end up with cursors outside of your view. You can scroll
