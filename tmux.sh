@@ -16,7 +16,7 @@ tmux_custom_split_windows () {
 }
 
 tmux_copy_buffer_to_clipboard() {
-    tmux show-buffer | xsel -ib
+    tmux show-buffer | wl-copy
 }
 
 tmux_open_remote_file() {
