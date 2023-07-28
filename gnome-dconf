@@ -26,3 +26,9 @@ sleep-inactive-ac-type='nothing'
 [org/gnome/desktop/peripherals/keyboard]
 delay=uint32 200
 repeat-interval=uint32 15
+
+[org/gnome/desktop/interface]
+font-antialiasing='rgba'
+font-hinting='medium'
+monospace-font-name='Liberation Mono 12'
+text-scaling-factor=1.0
