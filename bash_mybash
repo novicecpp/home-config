@@ -15,9 +15,9 @@ __get_script_dir() {
 
 SCRIPT_DIR=$(__get_script_dir)
 
-set -o allexport
-source /etc/home-config-info
-set +o allexport
+#set -o allexport
+#source /etc/home-config-info
+#set +o allexport
 
 # https://stackoverflow.com/questions/5014823/how-can-i-profile-a-bash-shell-script-slow-startup
 # PS4='+ $(date "+%s.%N")\011 '
