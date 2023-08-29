@@ -231,3 +231,8 @@ f_print_cert_bundle() {
 f_rpm_gpg_pubkey() {
     rpm -q gpg-pubkey --qf '%{NAME}-%{VERSION}-%{RELEASE}\t%{SUMMARY}\n'
 }
+
+
+f_wine_explorer() {
+   wine explorer /desktop=Line,1280x720
+}
