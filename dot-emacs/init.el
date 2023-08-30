@@ -1,7 +1,7 @@
 ;; for debug
 ;; https://stackoverflow.com/questions/1322591/tracking-down-max-specpdl-size-errors-in-emacs/1322978
-;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
-;;(setq debug-on-error t)    ; now you should get a backtrace
+(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
+(setq debug-on-error t)    ; now you should get a backtrace
 
 ;; Startup time
 ;; https://www.reddit.com/r/emacs/comments/m8d55l/what_is_your_startup_time/
@@ -651,18 +651,18 @@
 
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
-;;(use-package treesit-auto
-;;  ;;:defer t
-;;  :config
-;;  (global-treesit-auto-mode)
-;;  ;; somehow it does not work with latest emacs master HEAD.
-;;  ;; but still need it to notify (warning message)  if grammar is not installed.
-;;  ;; install grammar manually via treesit-install-language-grammar
-;;  (setq treesit-auto-install t)
-;;  (setq python-ts-mode-hook python-mode-hook
-;;        yaml-ts-mode-hook yaml-mode-hook)
-;;  ;; sh-mode is changed to bash-ts-mode by this package.
-;;  (setq bash-ts-mode-hook sh-mode-hook))
+(use-package treesit-auto
+  ;;:defer t
+  :config
+  (global-treesit-auto-mode)
+  ;; somehow it does not work with latest emacs master HEAD.
+  ;; but still need it to notify (warning message)  if grammar is not installed.
+  ;; install grammar manually via treesit-install-language-grammar
+  (setq treesit-auto-install t)
+  (setq python-ts-mode-hook python-mode-hook
+        yaml-ts-mode-hook yaml-mode-hook)
+  ;; sh-mode is changed to bash-ts-mode by this package.
+  (setq bash-ts-mode-hook sh-mode-hook))
 
 
 
