@@ -16,7 +16,7 @@
    '(;; other Babel languages
      (plantuml . t)))
   (setq org-plantuml-jar-path
-        (expand-file-name "~/.local/jar/plantuml.jar")))
+        (expand-file-name "/usr/share/java/plantuml/plantuml.jar")))
 
   ;;(setq org-agenda-files
   ;;      (seq-filter (lambda(x) (not (string-match "\.deleted/"(file-name-directory x))))
