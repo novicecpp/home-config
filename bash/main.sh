@@ -4,22 +4,23 @@
 
 # Dumb way to remove __vte_prompt_command from PROMPT_COMMAND
 # It should be better way to prevent load it entirely
-PROMPT_COMMAND=$(echo $PROMPT_COMMAND | sed 's/__vte_prompt_command/ : /')
+#PROMPT_COMMAND=$(echo $PROMPT_COMMAND | sed 's/__vte_prompt_command/ : /')
 
 # save history immediately
 # https://askubuntu.com/questions/67283/is-it-possible-to-make-writing-to-bash-history-immediate
 shopt -s histappend
-export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+# do not save history when prefix comamnd with space
+HISTCONTROL="ignorespace"
+HISTSIZE=10000
+PROMPT_COMMAND="history -a;"
 
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
 
 nl ~/.bash_history | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
-cp ~/.bashhist ~/.bash_history
-history -c
-
-# do not save history when prefix comamnd with space
-export HISTCONTROL="ignorespace"
+if (( $(stat --printf="%s" ~/.bashhist) > 2 )); then
+   cp ~/.bashhist ~/.bash_history
+fi
 
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
@@ -31,4 +32,3 @@ else
 fi
 
 export EDITOR='emacs'
-export HISTSIZE=10000
