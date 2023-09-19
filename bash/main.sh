@@ -25,10 +25,13 @@ fi
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
 # https://unix.stackexchange.com/questions/9605/how-can-i-detect-if-the-shell-is-controlled-from-ssh
-if [[ -z ${SSH_CONNECTION} ]]; then
-    export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+# Also, if we are inside apptainer, do not override PS1.
+if [[ -n ${SSH_CONNECTION} ]]; then
+    :
+elif [[ -d '/.singularity.d' ]]; then
+    :
 else
-    export PS1='[\u@\h \W]\$ '
+    export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
 
 export EDITOR='emacs'
