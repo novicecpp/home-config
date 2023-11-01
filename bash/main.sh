@@ -35,3 +35,7 @@ else
 fi
 
 export EDITOR='emacs'
+
+# get ssh private passphrase from pass
+export SSH_ASKPASS_REQUIRE=prefer
+export SSH_ASKPASS=askpass.sh
