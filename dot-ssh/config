@@ -4,4 +4,5 @@ ControlPersist 30m
 Compression yes
 Ciphers chacha20-poly1305@openssh.com
 ControlPath /tmp/%C
+AddKeysToAgent yes
 Include conf.d/*.conf
