@@ -731,3 +731,7 @@ Point^^                     Recursive^^             All^^
          ("C-M-i"    . completion-at-point)
   :config
   (org-roam-db-autosync-mode))
+
+
+(use-package expand-region
+  :bind (("C-=" . 'er/expand-region)))
