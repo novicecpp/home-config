@@ -417,14 +417,16 @@
   :bind
   (("C-c g g" . browse-at-remote)))
 
-(use-package pipenv
-  :defer t
-  :hook (python-mode . pipenv-mode)
-  :init
-  (setq
-   pipenv-projectile-after-switch-function
-   #'pipenv-projectile-after-switch-extended)
-  )
+;;(use-package pipenv
+;;  :defer t
+;;  :hook (python-mode . pipenv-mode)
+;;  :init
+;;  (setq
+;;   pipenv-projectile-after-switch-function
+;;   #'pipenv-projectile-after-switch-extended)
+;;  )
+
+(use-package groovy-mode)
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
@@ -733,5 +735,11 @@ Point^^                     Recursive^^             All^^
   (org-roam-db-autosync-mode))
 
 
+
 (use-package expand-region
   :bind (("C-=" . 'er/expand-region)))
+
+(use-package poetry
+  :defer t
+  :bind (("C-c y" . poetry))
+  :config (poetry-track-virtualenv))
