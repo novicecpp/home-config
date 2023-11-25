@@ -120,8 +120,10 @@ f_ () {
 }
 
 
-f_ssh_add_gpg () {
-    gpg --decrypt $1 | ssh-add -
+f_ssh_add () {
+    export SSH_ASKPASS=askpass.sh
+    export SSH_ASKPASS_REQUIRE=force
+    ssh-add "$1"
 }
 
 f_proc_environ () {
@@ -150,4 +152,8 @@ f_rpm_gpg_pubkey() {
 
 f_wine_explorer() {
    wine explorer /desktop=Line,1280x720
+}
+
+f_datetime() {
+    printf '%(%Y%m%d_%H%M%S)T\n' -1
 }
