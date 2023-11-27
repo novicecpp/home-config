@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# helper function
+
+# https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 __get_script_dir() {
     caller_context=($(caller))
     #SOURCE="${BASH_SOURCE[0]}"
@@ -13,7 +16,16 @@ __get_script_dir() {
     echo $DIR
 }
 
-SCRIPT_DIR=$(__get_script_dir)
+__which_content() {
+    if [[ "$#" -ne 1 ]]; then
+        echo "usage: ${FUNCNAME[0]} <function_name>"
+        return 1
+    fi
+    funcname=$1
+    which "${funcname}" | sed -e '1,2d' | head -n -1 | awk '{$1=$1};1'
+}
+
+
 
 #set -o allexport
 #source /etc/home-config-info
@@ -24,14 +36,15 @@ SCRIPT_DIR=$(__get_script_dir)
 # exec 3>&2 2>/tmp/bashstart.$$.log
 # set -x
 
+SCRIPT_DIR=$(__get_script_dir)
 
 # source all files in bash/
-for i in $(find $SCRIPT_DIR/bash/ -type f -iname '*.sh'); do
-    source "$i";
+for i in $(find ${SCRIPT_DIR}/bash/ -type f -iname '*.sh'); do
+    source "${i}";
 done
 
 # source entrypoint of bash in private/
-source $SCRIPT_DIR/private/bash_mybash
+source "${SCRIPT_DIR}/private/bash_mybash"
 
 # set +x
 # exec 2>&3 3>&-
