@@ -6,15 +6,11 @@ term () {
         TMUX_TERM_NAME="${1}"
     fi
     if [[ -z "${TMUX// }" ]] && [[ $- == *i* ]] && [[ -n "${TMUX_TERM_NAME// }" ]]; then
-        ##[[ -z "${TMUX_TERM_NAME// }" ]] && TMUX_TERM_NAME="init"
         # create new tmux server with session name "init" if server has not started yet.
-        tmux list-sessions -F '#{pid}' 2> /dev/null
+        tmux list-sessions -F '#{pid}' &> /dev/null
         if [[ $? -eq 1 ]]; then
-            tmpfile=$(mktemp)
-            kgxpid=$(pstree -s -p $$ | grep -o -E 'kgx\([0-9]+\)' | grep -o -E '[0-9]+')
-            cat /proc/$kgxpid/environ | tr '\0' '\n' | sort > $tmpfile
-            env -i bash -c "set -a; source $tmpfile; set +a; tmux new-session -d -s init"
-            rm $tmpfile
+            f_clean_env tmux new-session -d -s init
+            [[ "$?" -ne 0 ]] && return 1
             tmux new-window -t init:1
         fi
         tmux has-session -t $TMUX_TERM_NAME &> /dev/null

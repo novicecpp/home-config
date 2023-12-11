@@ -157,3 +157,12 @@ f_wine_explorer() {
 f_datetime() {
     printf '%(%Y%m%d_%H%M%S)T\n' -1
 }
+
+f_clean_env() {
+    local thepid tmpfile cmd
+    cmd="$@"
+    thepid=$(pstree -s -p $$ | grep -o -E -- '[0-9]+' | sed -n -e 3p)
+    tmpfile=$(mktemp)
+    cat /proc/$thepid/environ | tr '\0' '\n' | sort > $tmpfile
+    env -i bash -c "set -a; source $tmpfile; set +a; rm $tmpfile; export SHLVL=2; export PWD=$PWD; export MEMORY_PRESSURE_WATCH=\"${MEMORY_PRESSURE_WATCH}\"; ${cmd}"
+}
