@@ -266,25 +266,18 @@
 (use-package yasnippet-snippets
   :defer t)
 
-
 (use-package projectile
-  :defer t
+  :init
+  (projectile-mode +1)
   :config
-  (projectile-mode)
-  ;;(setq projectile-completion-system 'ivy)
   (setq projectile-project-search-path '("~/myhome/home-config/"
                                          "~/myhome/home-config-ansible/"
                                          "~/myhome/org/"
                                          "~/myhome/org_work/"
+                                         ("~/myhome/playground" . 2)
                                          ("~/myhome/coding" . 5)))
   (setq projectile-auto-discover nil)
-  :bind
-  ("C-c p" . projectile-command-map))
-
-;;(use-package counsel-projectile
-;;counsel
-;;  :config
-;;  (counsel-projectile-mode))
+  :bind  (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package display-line-numbers
   :defer t
@@ -295,7 +288,20 @@
 (use-package magit
   :defer t
   :bind
-  ("C-x g" . magit-status))
+  ("C-x g" . magit-status)
+  :config
+  (setq magit-display-buffer-function
+      (lambda (buffer)
+        (display-buffer
+         buffer (if (and (derived-mode-p 'magit-mode)
+                         (memq (with-current-buffer buffer major-mode)
+                               '(magit-process-mode
+                                 magit-revision-mode
+                                 magit-diff-mode
+                                 magit-stash-mode
+                                 magit-status-mode)))
+                    nil
+                  '(display-buffer-same-window))))))
 
 (use-package zoom-window
   :defer t
