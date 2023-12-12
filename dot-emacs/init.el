@@ -615,7 +615,7 @@
   :hook
   ((python-mode . (lambda ()
                     (flycheck-mode)
-                    (flycheck-select-checker 'python-pylint)
+                    (setq flycheck-checker 'python-pylint)
                     (flycheck-add-next-checker 'python-pylint 'python-pyright)))
    (sh-mode . (lambda ()
                 (flycheck-mode)
@@ -623,22 +623,6 @@
    (yaml-mode . (lambda ()
                   (flycheck-mode)
                   (flycheck-select-checker 'yaml-yamllint)))))
-
-
-
-;;
-(use-package flycheck-pycheckers
-  :defer t
-  :config
-  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
-  (setq flycheck-pycheckers-checkers '(pylint flake8)))
-
-;;(use-package lsp-pyright
-;;
-;;  :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp)  ;; or lsp-deferred
-;;                          (flycheck-add-next-checker 'lsp 'python-pycheckers))))
 
 
 ;;(use-package impatient-mode
@@ -745,7 +729,10 @@ Point^^                     Recursive^^             All^^
 (use-package expand-region
   :bind (("C-=" . 'er/expand-region)))
 
-(use-package poetry
-  :defer t
-  :bind (("C-c y" . poetry))
-  :config (poetry-track-virtualenv))
+;;(use-package poetry
+;;  :defer t
+;;  :bind (("C-c y" . poetry))
+;;  :config (poetry-track-virtualenv))
+
+(use-package envrc
+  :config (envrc-global-mode))
