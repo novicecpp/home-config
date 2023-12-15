@@ -165,5 +165,5 @@ f_clean_env() {
     tmpfile=$(mktemp)
     cat /proc/$thepid/environ | tr '\0' '\n' | sort > $tmpfile
     # MEMORY_PRESSURE_WATCH has escape char "\x2d" which get stripped in /proc/$thepid/environ.
-    env -i bash -c "set -a; source $tmpfile; set +a; rm $tmpfile; export SHLVL=2; export PWD=$PWD; export MEMORY_PRESSURE_WATCH=\"${MEMORY_PRESSURE_WATCH}\"; ${cmd}"
+    env -i bash -c "set -a; source $tmpfile; set +a; rm $tmpfile; export SHLVL=2; export PWD=$PWD; export MEMORY_PRESSURE_WATCH=\"${MEMORY_PRESSURE_WATCH}\"; export TERM=${TERM}; ${cmd}"
 }
