@@ -11,16 +11,27 @@
 shopt -s histappend
 # do not save history when prefix comamnd with space
 HISTCONTROL="ignorespace"
-HISTSIZE=10000
+HISTSIZE=100000
 PROMPT_COMMAND="history -a;"
 
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
 
+mv ~/.bashhist ~/.bashhist_previous
 nl ~/.bash_history | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
-if (( $(stat --printf="%s" ~/.bashhist) > 2 )); then
-   cp ~/.bashhist ~/.bash_history
+bashhist_size=$(stat --printf="%s" ~/.bashhist)
+bashhist_previous_size=$(stat --printf="%s" ~/.bashhist_previous)
+if [[ "$bashhist_size" -le "$bashhist_previous_size" ]]; then
+    datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
+    backuppath="$HOME/.bash_history_$datetime"
+    backup_bashhist_path="$HOME/.bashhist_$datetime"
+    >&2 echo "ERROR: ~/.bashhist is smaller than ~/.bashhist_previous"
+    >&2 echo "Making ~/.bash_history backup at $backuppath"
+    cp ~/.bash_history "$backuppath"
+    >&2 echo "Making ~/.bashhist backup at $backup_bashhist_path"
+    cp ~/.bash_history "$backup_bashhist_path"
 fi
+cp ~/.bashhist ~/.bash_history
 
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash

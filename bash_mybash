@@ -38,7 +38,8 @@ __which_content() {
 SCRIPT_DIR=$(__get_script_dir)
 
 # source all files in bash/
-for i in $(find ${SCRIPT_DIR}/bash/ -type f -iname '*.sh'); do
+source "${SCRIPT_DIR}/bash/main.sh";
+for i in $(find "${SCRIPT_DIR}"/bash/ -type f -iname '*.sh' | grep -v main.sh); do
     source "${i}";
 done
 
