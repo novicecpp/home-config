@@ -121,9 +121,7 @@ f_ () {
 
 
 f_ssh_add () {
-    export SSH_ASKPASS=askpass.sh
-    export SSH_ASKPASS_REQUIRE=force
-    ssh-add "$1"
+    SSH_ASKPASS=askpass.sh SSH_ASKPASS_REQUIRE=force ssh-add "$1"
 }
 
 f_proc_environ () {
