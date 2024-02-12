@@ -242,24 +242,25 @@
 ;;    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 (use-package company
-  :defer t
-  :diminish
+  ;;:defer t
+  ;;:diminish
   :bind
   ("M-/" . company-complete)
   :hook
   (after-init . global-company-mode)
   :config
-  (setq company-idle-delay 0.2))
-
-(use-package company-quickhelp
-  :defer t
-  :config
-  (company-quickhelp-mode 1))
-
-
-(use-package company-ansible
-  :defer t
-  :config  (push 'company-ansible company-backends))
+  (setq company-idle-delay 0.2
+        company-backends '((company-capf company-dabbrev-code))))
+;;
+;;(use-package company-quickhelp
+;;  :defer t
+;;  :config
+;;  (company-quickhelp-mode 1))
+;;
+;;
+;;(use-package company-ansible
+;;  :defer t
+;;  :config  (push 'company-ansible company-backends))
 
 (use-package yasnippet
   :config
@@ -290,20 +291,21 @@
 (use-package magit
   :defer t
   :bind
-  ("C-x g" . magit-status)
-  :config
-  (setq magit-display-buffer-function
-      (lambda (buffer)
-        (display-buffer
-         buffer (if (and (derived-mode-p 'magit-mode)
-                         (memq (with-current-buffer buffer major-mode)
-                               '(magit-process-mode
-                                 magit-revision-mode
-                                 magit-diff-mode
-                                 magit-stash-mode
-                                 magit-status-mode)))
-                    nil
-                  '(display-buffer-same-window))))))
+  ("C-x g" . magit-status))
+  ;;:config
+  ;; open magit in same windows
+  ;;(setq magit-display-buffer-function
+  ;;    (lambda (buffer)
+  ;;      (display-buffer
+  ;;       buffer (if (and (derived-mode-p 'magit-mode)
+  ;;                       (memq (with-current-buffer buffer major-mode)
+  ;;                             '(magit-process-mode
+  ;;                               magit-revision-mode
+  ;;                               magit-diff-mode
+  ;;                               magit-stash-mode
+  ;;                               magit-status-mode)))
+  ;;                  nil
+  ;;                '(display-buffer-same-window))))))
 
 (use-package zoom-window
   :defer t
@@ -440,11 +442,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;;;; ================== testing section ======================
-;;(use-package pdf-tools
-;;  )
-
-;; eglot testing
+;; eglot
 (use-package eglot
   :straight (eglot :type built-in)
   :defer t
@@ -454,6 +452,8 @@
   (python-mode . eglot-ensure)
   (yaml-mode . eglot-ensure)
   (sh-mode . eglot-ensure))
+
+;; ======================== start vertico/consult ====================
 
 (use-package vertico
   :defer t
@@ -590,8 +590,7 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
-
-
+;; ======================== end vertico/consult ====================
 
 ;; copy from https://github.com/purcell/emacs.d/blob/6eec82f623d6a866cba1b182c63d6d11446d88c4/lisp/init-flymake.el#L15-L18
 ;;(use-package flymake-flycheck
@@ -626,6 +625,43 @@
                   (flycheck-mode)
                   (flycheck-select-checker 'yaml-yamllint)))))
 
+
+(use-package expand-region
+  :bind (("C-=" . 'er/expand-region)))
+
+
+(use-package org-roam
+  :custom
+  (org-roam-directory (file-truename "~/myhome/org/roam"))
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n")
+      :unnarrowed t)
+   ("f" "fleeting note" plain
+      "* %?"
+      :target (file+head "%<%Y%m%d>-fleet.org"
+                         "#+title: %<%Y-%m-%d>-fleeting-note\n")
+      :unnarrowed t)
+   ))
+
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+
+         ("C-M-i"    . completion-at-point)
+  :config
+  (org-roam-db-autosync-mode))
+
+;;;; ================== testing section ======================
+;;(use-package pdf-tools
+;;  )
 
 ;;(use-package impatient-mode
 ;;  )
@@ -695,41 +731,6 @@ Point^^                     Recursive^^             All^^
 
 
 (global-set-key (kbd "C-c f") 'hydra-ts-fold/body)
-
-
-(use-package org-roam
-  :custom
-  (org-roam-directory (file-truename "~/myhome/org/roam"))
-  (org-roam-completion-everywhere t)
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                         "#+title: ${title}\n")
-      :unnarrowed t)
-   ("f" "fleeting note" plain
-      "* %?"
-      :target (file+head "%<%Y%m%d>-fleet.org"
-                         "#+title: %<%Y-%m-%d>-fleeting-note\n")
-      :unnarrowed t)
-   ))
-
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
-
-         ("C-M-i"    . completion-at-point)
-  :config
-  (org-roam-db-autosync-mode))
-
-
-
-(use-package expand-region
-  :bind (("C-=" . 'er/expand-region)))
 
 ;;(use-package poetry
 ;;  :defer t
