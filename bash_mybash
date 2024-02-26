@@ -56,3 +56,4 @@ done
 
 # path in home-config
 export PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
+export PATH="${BASH_MYBASH_SCRIPT_DIR}"/private/bin:"$PATH"
