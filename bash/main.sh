@@ -14,23 +14,20 @@ HISTCONTROL="ignorespace"
 HISTSIZE=100000
 PROMPT_COMMAND="history -a;"
 
+# backup, exit immediately if .bash_history is blank
+datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
+backuppath="$HOME/.bash_history_$datetime"
+hist_content="$(cat ~/.bash_history)"
+linum=$(echo "$hist_content" | wc -l)
+if [[ $linum -lt 5 ]]; then
+    >&2 echo "\~/.bash_history has line number less than 5: $linum. Exit immediately"
+    return 1
+fi
+echo "$hist_content" > "$backuppath"
+
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
-
-mv ~/.bashhist ~/.bashhist_previous
-nl ~/.bash_history | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
-bashhist_size=$(stat --printf="%s" ~/.bashhist)
-bashhist_previous_size=$(stat --printf="%s" ~/.bashhist_previous)
-if [[ "$bashhist_size" -le "$bashhist_previous_size" ]]; then
-    datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
-    backuppath="$HOME/.bash_history_$datetime"
-    backup_bashhist_path="$HOME/.bashhist_$datetime"
-    >&2 echo "ERROR: ~/.bashhist is smaller than ~/.bashhist_previous"
-    >&2 echo "Making ~/.bash_history backup at $backuppath"
-    cp ~/.bash_history "$backuppath"
-    >&2 echo "Making ~/.bashhist backup at $backup_bashhist_path"
-    cp ~/.bash_history "$backup_bashhist_path"
-fi
+echo "$hist_content" | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
 cp ~/.bashhist ~/.bash_history
 
 # do not color PS1 when ssh connection (for localvm testing)
@@ -39,15 +36,12 @@ cp ~/.bashhist ~/.bash_history
 # Also, if we are inside apptainer, do not override PS1.
 if [[ -n ${SSH_CONNECTION} ]]; then
     :
+# also inside singularity
 elif [[ -d '/.singularity.d' ]]; then
     :
 else
     export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
 
+# editor
 export EDITOR='emacs'
-
-# get ssh private passphrase from pass
-# it does not work when ssh session need to hostkey confirmation or 2fa
-#export SSH_ASKPASS_REQUIRE=prefer
-#export SSH_ASKPASS=askpass.sh
