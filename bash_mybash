@@ -35,16 +35,24 @@ __which_content() {
 # exec 3>&2 2>/tmp/bashstart.$$.log
 # set -x
 
-SCRIPT_DIR=$(__get_script_dir)
 
-# source all files in bash/
-source "${SCRIPT_DIR}/bash/main.sh";
-for i in $(find "${SCRIPT_DIR}"/bash/ -type f -iname '*.sh' | grep -v main.sh); do
+BASH_MYBASH_SCRIPT_DIR=$(__get_script_dir)
+# source all files in bash/, private/bash
+# source main.sh first then other file, order by find command :)
+# need to add SCRIPT_DIR=$(__get_script_dir) to restore value back, in case get replace by source
+source "${BASH_MYBASH_SCRIPT_DIR}/bash/main.sh";
+for i in $(find "${BASH_MYBASH_SCRIPT_DIR}"/bash/ -type f -iname '*.sh' | grep -v main.sh); do
     source "${i}";
 done
 
-# source entrypoint of bash in private/
-source "${SCRIPT_DIR}/private/bash_mybash"
+source "${BASH_MYBASH_SCRIPT_DIR}/private/bash/main.sh";
+for i in $(find "${BASH_MYBASH_SCRIPT_DIR}"/private/bash/ -type f -iname '*.sh' | grep -v main.sh); do
+    source "${i}";
+done
 
 # set +x
 # exec 2>&3 3>&-
+# path
+
+# path in home-config
+export PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
