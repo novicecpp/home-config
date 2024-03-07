@@ -437,6 +437,7 @@
 ;;  )
 
 (use-package groovy-mode)
+(use-package php-mode)
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
@@ -739,3 +740,8 @@ Point^^                     Recursive^^             All^^
 
 (use-package envrc
   :config (envrc-global-mode))
+
+(use-package jinx
+  :hook (emacs-startup . global-jinx-mode)
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages)))
