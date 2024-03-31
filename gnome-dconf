@@ -33,6 +33,9 @@ font-hinting='medium'
 monospace-font-name='Liberation Mono 12'
 text-scaling-factor=1.0
 
+[org/gnome/terminal/legacy/profiles:]
+list=['9748b6df-65a6-4f2a-a80d-0d6f5edce971']
+
 [org/gnome/terminal/legacy/profiles:/:9748b6df-65a6-4f2a-a80d-0d6f5edce971]
 allow-bold=true
 background-color='rgb(23,20,33)'
