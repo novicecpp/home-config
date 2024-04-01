@@ -35,6 +35,11 @@ __which_content() {
 # exec 3>&2 2>/tmp/bashstart.$$.log
 # set -x
 
+# save env for debug as env
+if [[ -z ${ENVVAR_BASE64} ]]; then
+    ENVVAR_BASE64="$(printenv | base64 -w0)"
+    export ENVVAR_BASE64
+fi
 
 BASH_MYBASH_SCRIPT_DIR=$(__get_script_dir)
 # source all files in bash/, private/bash
@@ -53,7 +58,3 @@ done
 # set +x
 # exec 2>&3 3>&-
 # path
-
-# path in home-config
-export PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
-export PATH="${BASH_MYBASH_SCRIPT_DIR}"/private/bin:"$PATH"

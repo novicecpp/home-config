@@ -159,9 +159,14 @@ f_datetime() {
 f_clean_env() {
     local thepid tmpfile cmd
     cmd="$@"
-    thepid=$(pstree -s -p $$ | grep -o -E -- '[0-9]+' | sed -n -e 3p)
     tmpfile=$(mktemp)
-    cat /proc/$thepid/environ | tr '\0' '\n' | sort > $tmpfile
+    # if ENVVAR_BASE64 if exist (see bash_mybash). otherwise, fallback to old method (use env from terminal emulator
+    if [[ -n ${ENVVAR_BASE64} ]]; then
+        echo "${ENVVAR_BASE64}" | base64 -d > "${tmpfile}"
+    else
+        thepid=$(pstree -s -p $$ | grep -o -E -- '[0-9]+' | sed -n -e 3p)
+        cat /proc/$thepid/environ | tr '\0' '\n' | sort > $tmpfile
+    fi
     # MEMORY_PRESSURE_WATCH has escape char "\x2d" which get stripped in /proc/$thepid/environ.
     env -i bash -c "set -a; source $tmpfile; set +a; rm $tmpfile; export SHLVL=2; export PWD=$PWD; export MEMORY_PRESSURE_WATCH=\"${MEMORY_PRESSURE_WATCH}\"; export TERM=${TERM}; ${cmd}"
 }

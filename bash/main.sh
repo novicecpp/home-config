@@ -20,7 +20,7 @@ backuppath="$HOME/.bash_history_$datetime"
 hist_content="$(cat ~/.bash_history)"
 linum=$(echo "$hist_content" | wc -l)
 if [[ $linum -lt 5 ]]; then
-    >&2 echo "\~/.bash_history has line number less than 5: $linum. Exit immediately"
+    >&2 echo "\~/.bash_history has line number less than 5 [${linum}]. Exit immediately"
     return 1
 fi
 echo "$hist_content" > "$backuppath"
@@ -40,8 +40,27 @@ if [[ -n ${SSH_CONNECTION} ]]; then
 elif [[ -d '/.singularity.d' ]]; then
     :
 else
-    export PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
+
+# default TERM to gnome
+export TERM=gnome
 
 # editor
 export EDITOR='emacs'
+
+# path in home-config
+PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
+PATH="${BASH_MYBASH_SCRIPT_DIR}"/private/bin:"$PATH"
+
+# dedup PATH
+# https://stackoverflow.com/questions/44232009/how-to-handle-duplicates-in-my-path-variable
+PATH="$(perl -e 'print join(":", grep { not $seen{$_}++ } split(/:/, $ENV{PATH}))')"
+export PATH
+
+# local bash completion
+if [[ -d ~/.bash_completion.d ]]; then
+  for bcfile in ~/.bash_completion.d/*.bash ; do
+    source "${bcfile}"
+  done
+fi
