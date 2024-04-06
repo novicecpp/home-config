@@ -43,8 +43,10 @@ else
     PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
 
-# default TERM to gnome
-export TERM=gnome
+# default TERM to xterm for compatibility with server
+export TERM=xterm
+# it is default in some /etc/profile.d files, but explicitly set it anyway.
+export COLORTERM=truecolor
 
 # editor
 export EDITOR='emacs'
