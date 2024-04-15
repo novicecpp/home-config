@@ -19,18 +19,6 @@ sshmux() {
     #echo $cmd
 }
 
-f_init_agent () {
-
-    sockdir=$(ls /tmp | grep -E 'ssh-[A-Za-z0-9]{12}' | head -1)
-    if [[ -z $sockdir ]]; then
-        eval $(ssh-agent)
-    else
-        local sockpath=$(find /tmp/$sockdir -type s)
-        export SSH_AUTH_SOCK=$sockpath
-        export SSH_AGENT_PID=$(($(cut -d'.' -f2 <<< $sockpath) + 1))
-    fi
-}
-f_init_agent
 f_digssh () {
     ssh bastion.wndv.co "dig +short $1"
 }
