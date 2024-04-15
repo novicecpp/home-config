@@ -35,16 +35,19 @@ __which_content() {
 # exec 3>&2 2>/tmp/bashstart.$$.log
 # set -x
 
-# save env for debug as env
+# save initial env for debug as base64 encoded and export to another env
 if [[ -z ${ENVVAR_BASE64} ]]; then
     ENVVAR_BASE64="$(printenv | base64 -w0)"
     export ENVVAR_BASE64
 fi
 
 BASH_MYBASH_SCRIPT_DIR=$(__get_script_dir)
-# source all files in bash/, private/bash
-# source main.sh first then other file, order by find command :)
+# source order
+# 1. source hidden vars on private/hidden_vars.sh
+# 2. source main.sh first, then file in `bash`,
+# 3. source main.sh in `private/bash`, then file in bash,
 # need to add SCRIPT_DIR=$(__get_script_dir) to restore value back, in case get replace by source
+source "${BASH_MYBASH_SCRIPT_DIR}"/private/hidden_vars.sh;
 source "${BASH_MYBASH_SCRIPT_DIR}/bash/main.sh";
 for i in $(find "${BASH_MYBASH_SCRIPT_DIR}"/bash/ -type f -iname '*.sh' | grep -v main.sh); do
     source "${i}";
