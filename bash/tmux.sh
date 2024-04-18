@@ -198,6 +198,9 @@ emacs_global() {
     #set +o xtrace
 }
 
-
-#initialize term
-#term
+t_reset_session () {
+    tmux select-window -t 0
+    tmux kill-window -a
+    tmux new-window
+    tmux select-window -t 1
+}
