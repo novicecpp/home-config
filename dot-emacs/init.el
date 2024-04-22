@@ -679,7 +679,6 @@
 ;;(require 'auth-source-pass)
 ;;(auth-source-pass-enable)
 
-
 ;; testing tree-sitter
 ;; use builtin treesit.el and only for python and yaml
 (use-package treesit-auto
@@ -745,3 +744,5 @@ Point^^                     Recursive^^             All^^
   :hook (org-mode . jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
+
+(use-package nix-mode)
