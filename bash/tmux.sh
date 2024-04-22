@@ -200,9 +200,9 @@ emacs_global() {
 
 t_reset_session () {
     # keep the current pane and kill all other pane and windows
-
     tmux kill-pane -a
     tmux kill-window -a
     tmux new-window
+    tmux move-window -r
     tmux select-window -t 1
 }
