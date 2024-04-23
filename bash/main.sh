@@ -27,6 +27,7 @@ echo "$hist_content" > "$backuppath"
 
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
+# sort to unique command, then sort it back to original order.
 echo "$hist_content" | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
 cp ~/.bashhist ~/.bash_history
 
