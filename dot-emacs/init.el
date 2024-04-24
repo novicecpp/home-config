@@ -624,7 +624,15 @@
                 (flycheck-select-checker 'sh-shellcheck)))
    (yaml-mode . (lambda ()
                   (flycheck-mode)
-                  (flycheck-select-checker 'yaml-yamllint)))))
+                  (flycheck-select-checker 'yaml-yamllint)))
+   (puppet-mode . (lambda ()
+                    (flycheck-mode)
+                    (setq flycheck-checker 'puppet-parser)
+                    (flycheck-add-next-checker 'puppet-parser 'puppet-lint)))
+   ;; simply enable for all prog-mode
+   (prog-mode . (lambda ()
+                    (flycheck-mode)))))
+
 
 
 (use-package expand-region
