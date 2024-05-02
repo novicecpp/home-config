@@ -1,0 +1,31 @@
+[Desktop Entry]
+Version=1.0
+Name=Firefox Custom Profile
+Comment=Browse the World Wide Web
+GenericName=Web Browser
+Keywords=Internet;WWW;Browser;Web;Explorer
+Exec=/usr/lib/firefox/firefox --ProfileManager --name firefox-custom --class firefox-custom %u
+Icon=firefox
+StartupWMClass=firefox-custom
+Terminal=false
+Type=Application
+MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;application/x-xpinstall;application/pdf;application/json;
+StartupNotify=true
+Categories=Network;WebBrowser;
+Actions=profile-cern;profile-tunnel;profile-chatgpt;
+#StartupWMClass=firefox
+
+[Desktop Action profile-cern]
+Name=Open a New Window (cern profile)
+Exec=/usr/lib/firefox/firefox -P cern --name firefox-cern --class firefox-cern %u
+StartupWMClass=firefox-cern
+
+[Desktop Action profile-tunnel]
+Name=Open a New Window (tunnel profile)
+Exec=/usr/lib/firefox/firefox -P tunnel --name firefox-tunnel --class firefox-tunnel %u
+StartupWMClass=firefox-tunnel
+
+[Desktop Action profile-chatgpt]
+Name=Open a New Window (chatgpt profile)
+Exec=/usr/lib/firefox/firefox -P chatgpt --name firefox-chatgpt --class firefox-chatgpt %u
+StartupWMClass=firefox-chatgpt
