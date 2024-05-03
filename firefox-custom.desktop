@@ -12,13 +12,13 @@ Type=Application
 MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;application/x-xpinstall;application/pdf;application/json;
 StartupNotify=true
 Categories=Network;WebBrowser;
-Actions=profile-cern;profile-tunnel;profile-chatgpt;
+Actions=profile-myhome;profile-cern;profile-tunnel;profile-chatgpt;
 #StartupWMClass=firefox
 
-[Desktop Action profile-cern]
-Name=Open a New Window (cern profile)
-Exec=/usr/lib/firefox/firefox -P cern --name firefox-cern --class firefox-cern %u
-StartupWMClass=firefox-cern
+[Desktop Action profile-myhome]
+Name=Open a New Window (myhome profile)
+Exec=/usr/lib/firefox/firefox -P myhome --name firefox-myhome --class firefox-myhome %u
+StartupWMClass=firefox-myhome
 
 [Desktop Action profile-tunnel]
 Name=Open a New Window (tunnel profile)
@@ -29,3 +29,8 @@ StartupWMClass=firefox-tunnel
 Name=Open a New Window (chatgpt profile)
 Exec=/usr/lib/firefox/firefox -P chatgpt --name firefox-chatgpt --class firefox-chatgpt %u
 StartupWMClass=firefox-chatgpt
+
+[Desktop Action profile-cern]
+Name=Open a New Window (cern profile)
+Exec=/usr/lib/firefox/firefox -P cern --name firefox-cern --class firefox-cern %u
+StartupWMClass=firefox-cern
