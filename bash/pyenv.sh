@@ -1,28 +1,29 @@
 #! /bin/bash
 
-# copy from `pyenv init -` command
+f_pyenv_init() {
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+}
 
-#PATH="$(bash --norc -ec 'IFS=:; paths=($PATH); for i in ${!paths[@]}; do if [[ ${paths[i]} == "'/home/thanayut/.local/share/pyenv/shims'" ]]; then unset '\''paths[i]'\''; fi; done; echo "${paths[*]}"')"
-#export PATH="${HOME}/.local/share/pyenv/shims:${PATH}"
-#export PYENV_SHELL=bash
-#source ~/.local/share/pyenv/libexec/../completions/pyenv.bash
-## disable rehash, it too slow
-## command pyenv rehash 2>/dev/null
-#pyenv() {
-#  local command
-#  command="${1:-}"
-#  if [ "$#" -gt 0 ]; then
-#    shift
-#  fi
-#
-#  case "$command" in
-#  rehash|shell)
-#    eval "$(pyenv "sh-$command" "$@")"
-#    ;;
-#  *)
-#    command pyenv "$command" "$@"
-#    ;;
-#  esac
-#}
-
-#export PYENV_ROOT="$HOME/.pyenv
+f_pyenv_init_pipenv() {
+    if [[ "$#" -ne 1 ]]; then
+        echo 'Error: python version required.'
+        echo "Usage: ${FUNCNAME[0]} <python_version>"
+        return 1
+    fi
+    PY_VERSION=${1}
+    if [[ -d .venv ]]; then
+        echo 'Error: .venv exists.'
+        return 1
+    fi
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv shell "${PY_VERSION}" || rc=$?
+    [[ $rc -ne 0 ]] && return "$rc"
+    python -m venv .venv --prompt "$(basename $PWD)"
+    source .venv/bin/activate
+    pip install -U pip
+    pip install pipenv
+}
