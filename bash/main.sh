@@ -41,7 +41,9 @@ if [[ -n ${SSH_CONNECTION} ]]; then
 elif [[ -d '/.singularity.d' ]]; then
     :
 else
-    PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    #PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    PS1='${VIRTUAL_ENV_PROMPT:+$VIRTUAL_ENV_PROMPT}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+
 fi
 
 # default TERM to xterm for compatibility with server
