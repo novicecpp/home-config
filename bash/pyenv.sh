@@ -22,8 +22,19 @@ f_pyenv_init_pipenv() {
     eval "$(pyenv init -)"
     pyenv shell "${PY_VERSION}" || rc=$?
     [[ $rc -ne 0 ]] && return "$rc"
-    python -m venv .venv --prompt "$(basename $PWD)"
+    python -m venv .venv --prompt "$(basename "${PWD}")"
     source .venv/bin/activate
     pip install -U pip
     pip install pipenv
+}
+
+
+f_pyenv_pipenv_sync() {
+    PY_VERSION=${1:-3.11}
+    if [[ -d .venv ]]; then
+        .venv/bin/activate
+    else
+        f_pyenv_init_pipenv "${PY_VERSION}"
+    fi
+    pipenv sync
 }
