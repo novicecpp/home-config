@@ -20,7 +20,8 @@ backuppath="$HOME/.bash_history_$datetime"
 hist_content="$(cat ~/.bash_history)"
 linum=$(echo "$hist_content" | wc -l)
 if [[ $linum -lt 5 ]]; then
-    >&2 echo "\~/.bash_history has line number less than 5 [${linum}]. Exit immediately"
+    echo "\~/.bash_history has line number less than 5 [${linum}]. Exit immediately"
+    echo "${backuppath}" >> ~/.bash_history_timestamp
     return 1
 fi
 echo "$hist_content" > "$backuppath"
@@ -43,7 +44,6 @@ elif [[ -d '/.singularity.d' ]]; then
 else
     #PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
     PS1='${VIRTUAL_ENV_PROMPT:+$VIRTUAL_ENV_PROMPT}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
-
 fi
 
 # default TERM to xterm for compatibility with server
@@ -55,8 +55,8 @@ export COLORTERM=truecolor
 export EDITOR='emacs'
 
 # path in home-config
-PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
-PATH="${BASH_MYBASH_SCRIPT_DIR}"/private/bin:"$PATH"
+#PATH="${BASH_MYBASH_SCRIPT_DIR}"/bin:"$PATH"
+#PATH="${BASH_MYBASH_SCRIPT_DIR}"/private/bin:"$PATH"
 
 # dedup PATH
 # https://stackoverflow.com/questions/44232009/how-to-handle-duplicates-in-my-path-variable
