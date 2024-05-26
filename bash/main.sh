@@ -14,23 +14,9 @@ HISTCONTROL="ignorespace"
 HISTSIZE=100000
 PROMPT_COMMAND="history -a;"
 
-# backup, exit immediately if .bash_history is blank
-datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
-backuppath="$HOME/.bash_history_$datetime"
-hist_content="$(cat ~/.bash_history)"
-linum=$(echo "$hist_content" | wc -l)
-if [[ $linum -lt 5 ]]; then
-    echo "\~/.bash_history has line number less than 5 [${linum}]. Exit immediately"
-    echo "${backuppath}" >> ~/.bash_history_timestamp
-    return 1
-fi
-echo "$hist_content" > "$backuppath"
-
-# dedup history
-# https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
-# sort to unique command, then sort it back to original order.
-echo "$hist_content" | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
-cp ~/.bashhist ~/.bash_history
+# test lock dedep history
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+bash $SCRIPT_DIR/../dedup_hist.sh
 
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
