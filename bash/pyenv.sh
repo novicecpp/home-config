@@ -38,3 +38,7 @@ f_pyenv_pipenv_sync() {
     fi
     pipenv sync
 }
+
+f_pyenv_pipenv_source() {
+    . .venv/bin/activate
+}
