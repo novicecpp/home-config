@@ -1,4 +1,4 @@
-ServerAliveInterval 60
+ServerAliveInterval 55
 ServerAliveCountMax 3
 ControlPersist 30m
 Compression yes
