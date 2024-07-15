@@ -32,19 +32,21 @@ backuppath="$HOME/.bashhist_backup/bash_history_$datetime"
 if [[ ! -d "$(dirname "$backuppath")" ]]; then
     mkdir -p "$(dirname "$backuppath")"
 fi
+
 hist_content="$(cat ~/.bash_history)"
-linum=$(echo "$hist_content" | wc -l)
-if [[ $linum -lt 5 ]]; then
-    echo "\~/.bash_history has line number less than 5 [${linum}]. Exit immediately"
-    echo "${backuppath}" >> ~/.bashhist_timestamp
-    return 1
-fi
+hist_current_linum=$(echo "$hist_content" | wc -l)
 echo "$hist_content" > "$backuppath"
 
 # dedup history
 # https://unix.stackexchange.com/questions/48713/how-can-i-remove-duplicates-in-my-bash-history-preserving-order
 # sort to unique command, then sort it back to original order.
 echo "$hist_content" | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
+hist_new_linum=$(wc -l < ~/.bashhist)
+morethan90=$(bc -l <<< "${hist_new_linum}/${hist_current_linum}>0.9")
+if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
+    echo "Error: New .bash_history has 90% less line than previous version. Exit immediately"
+    echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
+fi
 cp ~/.bashhist ~/.bash_history
 
 unlock
