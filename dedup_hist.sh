@@ -48,5 +48,8 @@ if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
     echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
 fi
 cp ~/.bashhist ~/.bash_history
+history -c
+history -r
+
 
 unlock
