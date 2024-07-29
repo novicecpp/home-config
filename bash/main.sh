@@ -34,7 +34,10 @@ elif [[ -d '/.singularity.d' ]]; then
     :
 else
     #PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
-    PS1='${VIRTUAL_ENV_PROMPT:+$VIRTUAL_ENV_PROMPT}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    # make PS1 play nice when source venv via direnv
+    # export line below need to put in every python's direnv
+    #   export VIRTUAL_ENV_PROMPT_CUSTOM=${VIRTUAL_ENV_PROMPT}
+    PS1='${VIRTUAL_ENV_PROMPT_CUSTOM:+$VIRTUAL_ENV_PROMPT_CUSTOM}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
 
 # default TERM to xterm for compatibility with server
