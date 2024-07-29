@@ -158,3 +158,10 @@ f_clean_env() {
     # MEMORY_PRESSURE_WATCH has escape char "\x2d" which get stripped in /proc/$thepid/environ.
     env -i bash -c "set -a; source $tmpfile; set +a; rm $tmpfile; export SHLVL=2; export PWD=$PWD; export MEMORY_PRESSURE_WATCH=\"${MEMORY_PRESSURE_WATCH}\"; export TERM=${TERM}; ${cmd}"
 }
+
+f_history_backup_restore() {
+    cat ~/.bashhist_backup/bash_history_* | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist2
+    cp ~/.bashhist2 ~/.bash_history
+    history -c
+    history -r
+}
