@@ -1,6 +1,11 @@
+#! /bin/bash
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
 # disable ctrl-s to freeze tty
 # https://stackoverflow.com/questions/24623021/getting-stty-standard-input-inappropriate-ioctl-for-device-when-using-scp-thro
-[[ $- == *i* ]] && stty -ixon
+stty -ixon
 
 # Dumb way to remove __vte_prompt_command from PROMPT_COMMAND
 # It should be better way to prevent load it entirely
