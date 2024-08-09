@@ -662,11 +662,22 @@
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
          ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+         ("C-c n j" . org-roam-dailies-capture-today)
 
-         ("C-M-i"    . completion-at-point)
+         ("C-M-i"    . completion-at-point))
   :config
   (org-roam-db-autosync-mode))
+
+(use-package envrc
+  :config (envrc-global-mode))
+
+(use-package jinx
+  :hook (org-mode . jinx-mode)
+  :bind (("M-$" . jinx-correct)
+         ("C-M-$" . jinx-languages)))
+
+(use-package nix-mode)
+
 
 ;;;; ================== testing section ======================
 ;;(use-package pdf-tools
@@ -703,54 +714,11 @@
   (setq bash-ts-mode-hook sh-mode-hook))
 
 
-
-;; shameless copy from Gary Oberbrunner’s https://github.com/garyo/emacs-config/blob/36639b9d771c68611f4be2786d74319229fc24bd/emacs-config.org
-;; manually clone ts-fold forked from Andrew Swerlick's https://github.com/AndrewSwerlick/ts-fold/tree/andrew-sw/treesit-el-support
-;; and put in ~/.emacs.d/clone/ts-fold
-;; still need to figure it out why the there is error everytime toggle ts-fold
-;; ts-fold--after-command: Symbol’s function definition is void: ts-fold-indicators-refresh
-;; and ts-fold does not load properly with hydra when use (use-package ts-fold :load-path /path)
-
-
-(use-package hydra
+(use-package treesit-fold
+  :bind  (("C-c f f" . treesit-fold-toggle)
+          ("C-c f o" . treesit-fold-open)
+          ("C-c f c" . treesit-fold-close)
+          ("C-c f O" . treesit-fold-open-recursively)
+          ("C-c f M-o" . treesit-fold-open-all)
+          ("C-c f M-c" . treesit-fold-close-all))
   :defer t)
-
-(defhydra hydra-ts-fold (:exit t :hint nil)
-  "
-Tree-sitter code folding
-Point^^                     Recursive^^             All^^
-^^^^^^---------------------------------------------------------------
-[_f_] toggle fold at point
-[_o_] open at point         [_O_] open recursively  [_M-o_] open all
-[_c_] close at point         ^ ^                    [_M-c_] close all"
-  ("f" ts-fold-toggle)
-  ("o" ts-fold-open)
-  ("c" ts-fold-close)
-  ("O" ts-fold-open-recursively)
-  ("M-o" ts-fold-open-all)
-  ("M-c" ts-fold-close-all))
-
-
-(use-package ts-fold
-  :straight (ts-fold :type git :host github
-                     :repo "AndrewSwerlick/ts-fold"
-                     :branch "andrew-sw/treesit-el-support")
-  :defer t)
-
-
-(global-set-key (kbd "C-c f") 'hydra-ts-fold/body)
-
-;;(use-package poetry
-;;  :defer t
-;;  :bind (("C-c y" . poetry))
-;;  :config (poetry-track-virtualenv))
-
-(use-package envrc
-  :config (envrc-global-mode))
-
-(use-package jinx
-  :hook (org-mode . jinx-mode)
-  :bind (("M-$" . jinx-correct)
-         ("C-M-$" . jinx-languages)))
-
-(use-package nix-mode)
