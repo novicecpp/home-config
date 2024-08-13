@@ -9,7 +9,7 @@ f_backup() {
 
     SRCDIR=$1
     DSTDIR=$2
-    MACHINE_NAME=${MACHINE_NAME:-x1g2}
+    MACHINE_NAME=${MACHINE_NAME:-any}
     DIR_NAME=${DIR_NAME:-$(basename "$1")}
     if [[ ! -d "${DSTDIR}" ]]; then
         >&2 echo "Error: backup path \"${DSTDIR}\" is not directory."
@@ -23,8 +23,12 @@ f_backup() {
     DIRSIZE=$(du -sb "${SRCDIR}" | awk '{print $1}' | xargs)
     echo "$DIRSIZE bytes"
 
+    if [[ -n $DRY_RUN ]]; then
+       echo "This following command will get execute:"
+       echo "tar --ignore-failed-read -cf - \"${SRCDIR}\" | pv -brtp -s \"${DIRSIZE}\" | zstd -T0 - > \"${BACKUP_PATH}\""
+       return
+    fi
     tar --ignore-failed-read -cf - "${SRCDIR}" | pv -brtp -s "${DIRSIZE}" | zstd -T0 - > "${BACKUP_PATH}"
-
     echo "Running checksum..."
     sha256sum "${BACKUP_PATH}" | tee "${BACKUP_PATH}.sha256"
 }
