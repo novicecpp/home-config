@@ -94,5 +94,15 @@ cdd() {
     cdh "${INPUT_DIR}" &> /dev/null
 }
 
+cdf() {
+    if [[ "$#" -eq 1 ]]; then
+        FILEPATH=${1}
+    else
+        >&2 echo 'cdf Error: wrong number argument.'
+        return 1
+    fi
+    cd "$(dirname "${FILEPATH}")" || return 1
+}
+
 
 alias cd=cdh
