@@ -4,8 +4,8 @@
 (define-key input-decode-map [?\C-m] [C-m])
 
 (use-package selected
-  ;; need demand, otherwise it will not load
-  ;; TODO: understand why it happen like this
+  ;; need demand, otherwise it will not load.
+  :ensure t
   :demand t
   :bind (:map selected-keymap
               ("[" . align-code)
@@ -29,8 +29,8 @@
 
 
 (use-package multiple-cursors
+  :ensure t
   :after selected
-  ;;:defer 5
 
   ;; - Sometimes you end up with cursors outside of your view. You can scroll
   ;;   the screen to center on each cursor with `C-v` and `M-v`.
@@ -88,6 +88,7 @@
     (activate-mark)))
 
 (use-package mc-extras
+  :ensure t
   :after multiple-cursors
   :bind (("<C-m> M-C-f" . mc/mark-next-sexps)
          ("<C-m> M-C-b" . mc/mark-previous-sexps)

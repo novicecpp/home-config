@@ -1,15 +1,3 @@
-;; derived from https://github.com/purcell/emacs.d/blob/4ea0b79754c3054e62c5fe6e94319b715a2698ba/init.el#L27
-(setq gc-cons-threshold most-positive-fixnum)
-(add-hook 'emacs-startup-hook
-    (lambda () (setq gc-cons-threshold (* 20 1024 1024))))
-(setq read-process-output-max (* 4 1024 1024))
-(setq process-adaptive-read-buffering nil) ;; I do not know what it is...
-
-;; for debug
-;; https://stackoverflow.com/questions/1322591/tracking-down-max-specpdl-size-errors-in-emacs/1322978
-(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
-(setq debug-on-error t)    ; now you should get a backtrace
-
 ;; Startup time
 ;; https://www.reddit.com/r/emacs/comments/m8d55l/what_is_your_startup_time/
 (defun efs/display-startup-time ()
@@ -22,21 +10,25 @@
    gcs-done))
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 
+;; disable splash screen
 (setq inhibit-startup-screen t)
 
-(defvar bootstrap-version)
-(progn (setq straight-repository-branch "develop")
-       (let ((bootstrap-file
-              (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-             (bootstrap-version 6))
-         (unless (file-exists-p bootstrap-file)
-           (with-current-buffer
-               (url-retrieve-synchronously
-                "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-                'silent 'inhibit-cookies)
-             (goto-char (point-max))
-             (eval-print-last-sexp)))
-         (load bootstrap-file nil 'nomessage)))
+;; package manager
+;; ============================================
+;;;; straight.el
+;;(defvar bootstrap-version)
+;;(progn (setq straight-repository-branch "develop")
+;;       (let ((bootstrap-file
+;;              (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;             (bootstrap-version 6))
+;;         (unless (file-exists-p bootstrap-file)
+;;           (with-current-buffer
+;;               (url-retrieve-synchronously
+;;                "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+;;                'silent 'inhibit-cookies)
+;;             (goto-char (point-max))
+;;             (eval-print-last-sexp)))
+;;         (load bootstrap-file nil 'nomessage)))
 
 ;; add melpa
 ;;(require 'package)
@@ -48,8 +40,53 @@
 ;;(unless (package-installed-p 'use-package)
 ;;  (package-refresh-contents)
 ;;  (package-install 'use-package))
-(setq straight-use-package-by-default t)
-(straight-use-package 'use-package)
+;;(setq straight-use-package-by-default t)
+;;(straight-use-package 'use-package)
+;; =========================================
+;; elpaca
+(defvar elpaca-installer-version 0.7)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                 ,@(when-let ((depth (plist-get order :depth)))
+                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                 ,(plist-get order :repo) ,repo))))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+
 
 ;; manage auto-save file
 ;; http://snarfed.org/gnu_emacs_backup_files
@@ -87,17 +124,18 @@
 ;; do not show native-compile's warning buffer
 (setq native-comp-async-report-warnings-errors 'silent)
 
-;; theme
-(use-package solarized-theme)
-(use-package zenburn-theme
-  :config
-  ;; load solarized theme when run in test machine
-  (if (file-exists-p "~/.emacs_test")
-      (load-theme 'solarized-light t)
-    (load-theme 'zenburn t)))
+;; follow symlink
+(setq find-file-visit-truename t)
+
+;; custom-set-variable file, to prevent emacs automatically write it in this file
+(setq custom-file "~/.emacs.d/custom-set-variable.el")
 
 ;; https://www.emacswiki.org/emacs/SavePlace
 (save-place-mode 1)
+
+;; https://www.gnu.org/software/emacs/manual/html_node/efaq/Displaying-the-current-line-or-column.html
+(setq line-number-mode t
+      column-number-mode t)
 
 ;; auto refresh when file change
 ;; http://stackoverflow.com/questions/1480572/how-to-have-emacs-auto-refresh-all-buffers-when-files-have-changed-on-disk
@@ -107,239 +145,11 @@
 ;; highlight parenthesis
 (show-paren-mode 1)
 
-;; tramp mode
-;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
-(use-package tramp
-  :defer t
-  :straight (tramp :type built-in)
-  :config
-  (setq tramp-default-method "ssh")
-  (setq tramp-use-ssh-controlmaster-options nil) ; Don't override SSH config.
-  (add-to-list 'tramp-default-proxies-alist '(nil "\\`root\\'" "/ssh:%h:"))
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
-
 ;; delete trailing whitespace when save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; disable lockfiles feature
 (setq create-lockfiles nil)
-
-;; Deprecated: doom-modeline move to nerd-icon, install fonts is enough to use.
-;; for doom-modeline, also resize icon to normal text
-;; need to install fonts manually by execute `M-x all-the-icons-install-fonts`
-;;(use-package all-the-icons
-;;  :config
-;;  (setq all-the-icons-scale-factor 0.9))
-
-(use-package doom-modeline
-  :config
-  (setq doom-modeline-icon t)
-  (setq doom-modeline-height 1)
-  (set-face-attribute 'mode-line nil :height 0.9)
-  (set-face-attribute 'mode-line-inactive nil :height 0.9)
-  :hook (after-init . doom-modeline-mode))
-
-;; jump window like tmux+ace-jump-mode
-(use-package ace-window
-  :defer t
-  :bind
-  ("C-x q" . ace-window)
-  :config
-  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?\;)))
-
-;; fix exec path for mac os, but don't use mac anymore
-;;(require 'exec-path-from-shell)
-;;(when (memq window-system '(mac ns x))
-;;  (exec-path-from-shell-initialize))
-
-;; show ssh list in counsel
-;;(use-package counsel-tramp
-;;
-;;  :config
-;;  (define-key global-map (kbd "C-c s") 'counsel-tramp))
-
-;; key helper
-(use-package which-key
-  ;;:defer t
-  :config (which-key-mode))
-
-;; avy: alternative ace-jump-mode
-(use-package avy
-  :defer t
-  :bind* ("C-." . avy-goto-char-timer)
-  :config
-  (avy-setup-default))
-
-(use-package undo-tree
-  ;;defer t
-  :config
-  (global-undo-tree-mode)
-  (setq undo-tree-auto-save-history nil))
-
-(use-package dockerfile-mode
-  :defer t)
-
-;;ivy
-;;(use-package counsel
-;;  )
-
-;;(use-package ivy
-;;
-;;  :config
-;;  (ivy-mode 1)
-;;  (setq ivy-use-virtual-buffers t)
-;;  (setq ivy-count-format "(%d/%d) ")
-;;  :bind
-;;  (("C-s" . swiper)
-;;   ("M-x" . counsel-M-x)
-;;   ;;("C-c g" . counsel-git)
-;;   ("C-c j" . counsel-git-grep)
-;;   ("C-c k" . counsel-ag)
-;;   ("C-c C-c C-l" . counsel-locate)
-;;   ("C-c C-r" . ivy-resume)))
-
-;;(use-package ivy-rich
-;;  :ensure
-;;  :init
-;;  (ivy-rich-mode 1)
-;;  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-;;  :config
-;;  (setq ivy-rich-parse-remote-buffer nil
-;;        ivy-rich-parse-remote-file-path nil))
-
-;;(use-package sudo-edit
-;;  :defer t
-;;  :bind
-;;  (("C-c C-r" . sudo-edit)))
-
-;;(use-package lsp-mode
-;;
-;;  :init (setq lsp-headerline-breadcrumb-enable nil)
-;;  :hook
-;;  (python-mode . (lambda ()
-;;                   (lsp)
-;;                   (setq-default lsp-diagnostics-provider :none)))
-;;  (lsp-mode . lsp-enable-which-key-integration)
-;;  :commands lsp)
-;;
-;;;; temporary disable
-;;;;(use-package lsp-ui
-;;;;
-;;;;  :bind
-;;;;  (:map lsp-ui-mode-map
-;;;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-;;;;        ([remap xref-find-references]  . lsp-ui-peek-find-references))
-;;;;  :commands lsp-ui-mode)
-;;
-;;(use-package lsp-ivy
-;;  :commands lsp-ivy-workspace-symbol)
-
-;;(use-package lsp-jedi
-;;
-;;  :config
-;;  (with-eval-after-load "lsp-mode"
-;;    (add-to-list 'lsp-disabled-clients 'pyls)
-;;    (add-to-list 'lsp-enabled-clients 'jedi)))
-
-(use-package company
-  ;;:defer t
-  ;;:diminish
-  :bind
-  ("M-/" . company-complete)
-  :hook
-  (after-init . global-company-mode)
-  :config
-  (setq company-idle-delay 0.2
-        company-backends '((company-capf company-dabbrev-code))))
-;;
-;;(use-package company-quickhelp
-;;  :defer t
-;;  :config
-;;  (company-quickhelp-mode 1))
-;;
-;;
-;;(use-package company-ansible
-;;  :defer t
-;;  :config  (push 'company-ansible company-backends))
-
-(use-package yasnippet
-  :config
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets
-  :defer t)
-
-(use-package projectile
-  :init
-  (projectile-mode +1)
-  :config
-  (setq projectile-project-search-path '("~/myhome/home-config/"
-                                         "~/myhome/home-config-ansible/"
-                                         "~/myhome/org/"
-                                         "~/myhome/org_work/"
-                                         ("~/myhome/playground" . 2)
-                                         ("~/myhome/coding" . 5)))
-  (setq projectile-auto-discover nil)
-  :bind  (:map projectile-mode-map ("C-c p" . projectile-command-map)))
-
-(use-package display-line-numbers
-  :defer t
-  :hook
-  (prog-mode . display-line-numbers-mode)
-  (yaml-mode . display-line-numbers-mode))
-
-(use-package magit
-  :defer t
-  :bind
-  ("C-x g" . magit-status))
-  ;;:config
-  ;; open magit in same windows
-  ;;(setq magit-display-buffer-function
-  ;;    (lambda (buffer)
-  ;;      (display-buffer
-  ;;       buffer (if (and (derived-mode-p 'magit-mode)
-  ;;                       (memq (with-current-buffer buffer major-mode)
-  ;;                             '(magit-process-mode
-  ;;                               magit-revision-mode
-  ;;                               magit-diff-mode
-  ;;                               magit-stash-mode
-  ;;                               magit-status-mode)))
-  ;;                  nil
-  ;;                '(display-buffer-same-window))))))
-
-(use-package zoom-window
-  :defer t
-  :bind
-  ("C-x z" . zoom-window-zoom))
-
-
-(setq python-shell-interpreter "python3"
-      python-shell-interpreter-args "-i")
-
-(use-package yaml-mode
-  :defer t)
-;;  :hook (yaml-mode . (lambda ()
-;;                       (flycheck-select-checker 'yaml-yamllint)
-;;                       (flycheck-mode))))
-
-(use-package jsonnet-mode
-  :defer t
-  :config
-  (setq jsonnet-use-smie t)
-  :hook
-  (jsonnet-mode . (lambda ()
-                    (setq indent-tabs-mode t
-                          tab-width 2))))
-
-(use-package json-mode
-  :defer t
-  :config
-  ;; set tab size to 4
-  (setq json-encoding-default-indentation "    ")
-  )
-
-(use-package terraform-mode
-  :defer t)
 
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
@@ -353,47 +163,139 @@
 ;; browse-url-generic-program value is browser executable file
 ;; (setq-default browse-url-browser-function 'browse-url-generic
 ;;               browse-url-generic-program "firefox")
-;; follow symlink
-(setq find-file-visit-truename t)
-
-;;
-(setq custom-file "~/.emacs.d/custom-set-variable.el")
-
-;; temporary disable because straight.el cannot pull source
-;; interact with gpg file
-;;(use-package epa-file
-;;  :config
-;;  (epa-file-enable)
-;;  (setq epg-gpg-program  "/usr/bin/gpg2"
-;;        epg-pinentry-mode 'loopback))
-
-;;(use-package dumb-jump
-;;
-;;  :bind
-;;  (("M-g o" . dumb-jump-go-other-window)
-;;   ("M-g j" . dumb-jump-go)
-;;   ("M-g b" . dumb-jump-back)
-;;   ("M-g i" . dumb-jump-go-prompt)
-;;   ("M-g x" . dumb-jump-go-prefer-external)
-;;   ("M-g z" . dumb-jump-go-prefer-external-other-window))
-;;  :config
-;;  (setq dumb-jump-selector 'ivy))
-
-(use-package go-mode
-  :defer t)
-
-(use-package rust-mode
-  :defer t
+;; theme
+(use-package solarized-theme
+  :ensure t)
+(use-package zenburn-theme
+  :ensure t
   :config
-  (setq rust-format-on-save t))
+  ;; load solarized theme when run in test machine
+  (if (file-exists-p "~/.emacs_test")
+      (load-theme 'solarized-light t)
+    (load-theme 'zenburn t)))
+
+;; built-in packages.
+;; use emacs's pinentry
+(use-package epa-file
+  :config
+  (epa-file-enable)
+  (setq epg-gpg-program  "/usr/bin/gpg2"
+        epg-pinentry-mode 'loopback))
+
+;; show line num
+(use-package display-line-numbers
+  :hook
+  (prog-mode . display-line-numbers-mode)
+  (yaml-mode . display-line-numbers-mode))
+
+;; tramp mode
+;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
+(use-package tramp
+  :ensure t
+  :config
+  (setq tramp-default-method "ssh")
+  (setq tramp-use-ssh-controlmaster-options nil) ; Don't override SSH config.
+  (add-to-list 'tramp-default-proxies-alist '(nil "\\`root\\'" "/ssh:%h:"))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+;; mark-active will break when move cursor vertically in emacs-master.
+;; disable for now until it fix.
+;; Note: install nerd-icon in ansible instead
+;;(use-package doom-modeline
+;;  :ensure t
+;;  :init (doom-modeline-mode 1)
+;;  :config
+;;  (setq doom-modeline-icon t)
+;;  (setq doom-modeline-height 1)
+;;  (set-face-attribute 'mode-line nil :height 0.9)
+;;  (set-face-attribute 'mode-line-inactive nil :height 0.9))
+
+;; use minion and enable some minor modes
+(use-package minions
+  :ensure t
+  :config
+  (minions-mode 1)
+  (setq minions-prominent-modes '(flycheck-mode)))
+
+;; jump window like tmux
+(use-package ace-window
+  :ensure t
+  :defer t
+  :bind
+  ("C-x q" . ace-window)
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?\;)))
+
+;; key helper
+(use-package which-key
+  :ensure t
+  :config (which-key-mode))
+
+(use-package undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode)
+  (setq undo-tree-auto-save-history nil))
+
+(use-package company
+  :ensure t
+  :bind
+  ("M-/" . company-complete)
+  :hook
+  (after-init . global-company-mode)
+  :config
+  (setq company-idle-delay 0.2
+        company-backends '((company-capf company-dabbrev-code))))
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :config
+  (setq projectile-project-search-path '("~/myhome/home-config/"
+                                         "~/myhome/home-config-ansible/"
+                                         "~/myhome/org/"
+                                         "~/myhome/org_work/"
+                                         ("~/myhome/playground" . 2)
+                                         ("~/myhome/coding" . 5)))
+  (setq projectile-auto-discover nil)
+  :bind  (:map projectile-mode-map ("C-c p" . projectile-command-map)))
+
+
+(use-package transient
+  :ensure t)
+
+(use-package magit
+  :ensure t
+  :bind
+  ("C-x g" . magit-status))
+
+(use-package zoom-window
+  :ensure t
+  :bind
+  ("C-x z" . zoom-window-zoom))
+
+
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+
 
 (use-package cargo
-  :defer t
+  :ensure t
   :hook
   (rust-mode . cargo-minor-mode))
 
+
 (use-package emamux
-  :defer t
+  :ensure t
   :bind (("C-c t C-s" . emamux:send-command)
          ("C-c t C-y" . emamux:yank-from-list-buffers)
          ("C-c t C-k" . emamux:close-runner-pane)
@@ -402,42 +304,17 @@
          ("C-c t 2" . emamux:split-window)
          ("C-c t 3" . emamux:split-window-horizontally)))
 
-;;(use-package blacken
-;;
-;;  :config
-;;  (setq-default blacken-line-length 120))
-
-(use-package lua-mode
-  :defer t)
-(use-package puppet-mode
-  :defer t)
-
-
-;; load all file in loads dir
-(mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
-
 (use-package exec-path-from-shell
+  :ensure t
   :config
   (exec-path-from-shell-initialize))
 
 (use-package browse-at-remote
-  :defer t
+  :ensure t
   :config
   (add-to-list 'browse-at-remote-remote-type-regexps '(:host "^gitlab\\.cern\\.ch$" :type "gitlab"))
   :bind
   (("C-c g g" . browse-at-remote)))
-
-;;(use-package pipenv
-;;  :defer t
-;;  :hook (python-mode . pipenv-mode)
-;;  :init
-;;  (setq
-;;   pipenv-projectile-after-switch-function
-;;   #'pipenv-projectile-after-switch-extended)
-;;  )
-
-(use-package groovy-mode)
-(use-package php-mode)
 
 ;; upcase/downcase region without asking
 (put 'upcase-region 'disabled nil)
@@ -445,8 +322,7 @@
 
 ;; eglot
 (use-package eglot
-  :straight (eglot :type built-in)
-  :defer t
+  :ensure t
   :init
   (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   :hook
@@ -457,12 +333,12 @@
 ;; ======================== start vertico/consult ====================
 
 (use-package vertico
-  :defer t
+  :ensure t
   :init
   (vertico-mode))
 
 (use-package consult
-  :defer t
+  :ensure t
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
@@ -582,7 +458,7 @@
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
-  :defer t
+  :ensure t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -593,24 +469,8 @@
 
 ;; ======================== end vertico/consult ====================
 
-;; copy from https://github.com/purcell/emacs.d/blob/6eec82f623d6a866cba1b182c63d6d11446d88c4/lisp/init-flymake.el#L15-L18
-;;(use-package flymake-flycheck
-;;
-;;  :init
-;;  (defun sanityinc/enable-flymake-flycheck ()
-;;    (setq-local flymake-diagnostic-functions
-;;                (append flymake-diagnostic-functions
-;;                        (flymake-flycheck-all-chained-diagnostic-functions))))
-;;  :hook
-;;  (flymake-mode . sanityinc/enable-flymake-flycheck)
-;;  :bind
-;;  (("C-c ! n" . flymake-goto-next-error)
-;;  ("C-c ! p" . flymake-goto-prev-error)
-;;  ("C-c ! c" . flymake-start)))
-
-
 (use-package flycheck
-  ;;:defer t
+  :ensure t
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
@@ -634,12 +494,13 @@
                     (flycheck-mode)))))
 
 
-
 (use-package expand-region
+  :ensure t
   :bind (("C-=" . 'er/expand-region)))
 
 
 (use-package org-roam
+  :ensure t
   :custom
   (org-roam-directory (file-truename "~/myhome/org/roam"))
   (org-roam-completion-everywhere t)
@@ -669,17 +530,162 @@
   (org-roam-db-autosync-mode))
 
 (use-package envrc
+  :ensure t
   :config (envrc-global-mode))
 
 (use-package jinx
+  :ensure t
   :hook (org-mode . jinx-mode)
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 
-(use-package nix-mode)
+;; testing tree-sitter
+;; use builtin treesit.el and only for python and yaml
+(use-package treesit-auto
+  :ensure t
+  :config
+  (global-treesit-auto-mode)
+  ;; somehow it does not work with latest emacs master HEAD.
+  ;; but still need it to notify (warning message)  if grammar is not installed.
+  ;; install grammar manually via treesit-install-language-grammar
+  (setq treesit-auto-install t)
+  (setq python-ts-mode-hook python-mode-hook
+        yaml-ts-mode-hook yaml-mode-hook)
+  ;; sh-mode is changed to bash-ts-mode by this package.
+  (setq bash-ts-mode-hook sh-mode-hook))
 
 
-;;;; ================== testing section ======================
+(use-package treesit-fold
+  :ensure t
+  :bind  (("C-c f f" . treesit-fold-toggle)
+          ("C-c f o" . treesit-fold-open)
+          ("C-c f c" . treesit-fold-close)
+          ("C-c f O" . treesit-fold-open-recursively)
+          ("C-c f M-o" . treesit-fold-open-all)
+          ("C-c f M-c" . treesit-fold-close-all)))
+
+;; major mode
+(use-package nix-mode
+  :ensure t)
+
+(use-package dockerfile-mode
+  :ensure t)
+
+(use-package groovy-mode
+  :ensure t)
+(use-package php-mode
+  :ensure t)
+
+(use-package go-mode
+  :ensure t)
+
+(use-package rust-mode
+  :ensure t
+  :config
+  (setq rust-format-on-save t))
+(use-package lua-mode
+  :ensure t)
+
+(use-package puppet-mode
+  :ensure t)
+
+(use-package yaml-mode
+  :ensure t)
+
+(use-package jsonnet-mode
+  :ensure t
+  :config
+  (setq jsonnet-use-smie t)
+  :hook
+  (jsonnet-mode . (lambda ()
+                    (setq indent-tabs-mode t
+                          tab-width 2))))
+
+(use-package json-mode
+  :ensure t
+  :config
+  ;; set tab size to 4
+  (setq json-encoding-default-indentation "    ")
+  )
+
+(use-package terraform-mode
+  :ensure t)
+
+;; load all file in loads dir
+(mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
+
+;; ================== deprecate =====================
+
+;; avy: alternative ace-jump-mode
+;;(use-package avy
+;;  :defer t
+;;  :bind* ("C-." . avy-goto-char-timer)
+;;  :config
+;;  (avy-setup-default))
+
+;;(use-package sudo-edit
+;;  :defer t
+;;  :bind
+;;  (("C-c C-r" . sudo-edit)))
+
+;;(use-package lsp-mode
+;;
+;;  :init (setq lsp-headerline-breadcrumb-enable nil)
+;;  :hook
+;;  (python-mode . (lambda ()
+;;                   (lsp)
+;;                   (setq-default lsp-diagnostics-provider :none)))
+;;  (lsp-mode . lsp-enable-which-key-integration)
+;;  :commands lsp)
+;;
+;;;; temporary disable
+;;;;(use-package lsp-ui
+;;;;
+;;;;  :bind
+;;;;  (:map lsp-ui-mode-map
+;;;;        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+;;;;        ([remap xref-find-references]  . lsp-ui-peek-find-references))
+;;;;  :commands lsp-ui-mode)
+;;
+;;(use-package lsp-ivy
+;;  :commands lsp-ivy-workspace-symbol)
+
+;;(use-package lsp-jedi
+;;
+;;  :config
+;;  (with-eval-after-load "lsp-mode"
+;;    (add-to-list 'lsp-disabled-clients 'pyls)
+;;    (add-to-list 'lsp-enabled-clients 'jedi)))
+
+;; move to flymake later, or maybe not
+;; copy from https://github.com/purcell/emacs.d/blob/6eec82f623d6a866cba1b182c63d6d11446d88c4/lisp/init-flymake.el#L15-L18
+;;(use-package flymake-flycheck
+;;
+;;  :init
+;;  (defun sanityinc/enable-flymake-flycheck ()
+;;    (setq-local flymake-diagnostic-functions
+;;                (append flymake-diagnostic-functions
+;;                        (flymake-flycheck-all-chained-diagnostic-functions))))
+;;  :hook
+;;  (flymake-mode . sanityinc/enable-flymake-flycheck)
+;;  :bind
+;;  (("C-c ! n" . flymake-goto-next-error)
+;;  ("C-c ! p" . flymake-goto-prev-error)
+;;  ("C-c ! c" . flymake-start)))
+
+;; fix exec path for mac os, but I do not use mac anymore
+;;(require 'exec-path-from-shell)
+;;(when (memq window-system '(mac ns x))
+;;  (exec-path-from-shell-initialize))
+
+;; show ssh list in counsel
+;;(use-package counsel-tramp
+;;
+;;  :config
+;;  (define-key global-map (kbd "C-c s") 'counsel-tramp))
+
+;; ================== testing section ======================
+
 ;;(use-package pdf-tools
 ;;  )
 
@@ -697,28 +703,3 @@
 ;; not sure why i need this
 ;;(require 'auth-source-pass)
 ;;(auth-source-pass-enable)
-
-;; testing tree-sitter
-;; use builtin treesit.el and only for python and yaml
-(use-package treesit-auto
-  ;;:defer t
-  :config
-  (global-treesit-auto-mode)
-  ;; somehow it does not work with latest emacs master HEAD.
-  ;; but still need it to notify (warning message)  if grammar is not installed.
-  ;; install grammar manually via treesit-install-language-grammar
-  (setq treesit-auto-install t)
-  (setq python-ts-mode-hook python-mode-hook
-        yaml-ts-mode-hook yaml-mode-hook)
-  ;; sh-mode is changed to bash-ts-mode by this package.
-  (setq bash-ts-mode-hook sh-mode-hook))
-
-
-(use-package treesit-fold
-  :bind  (("C-c f f" . treesit-fold-toggle)
-          ("C-c f o" . treesit-fold-open)
-          ("C-c f c" . treesit-fold-close)
-          ("C-c f O" . treesit-fold-open-recursively)
-          ("C-c f M-o" . treesit-fold-open-all)
-          ("C-c f M-c" . treesit-fold-close-all))
-  :defer t)
