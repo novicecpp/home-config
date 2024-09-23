@@ -182,7 +182,8 @@
   (setq epg-gpg-program  "/usr/bin/gpg2"
         epg-pinentry-mode 'loopback))
 
-;; show line num
+;; built-in packages.
+;; show line num on the left hand side
 (use-package display-line-numbers
   :hook
   (prog-mode . display-line-numbers-mode)
