@@ -25,6 +25,7 @@ unlock()            { _lock u; }   # drop a lock
 ### BEGIN OF SCRIPT ###
 
 exlock
+lockstart=$(date '+%Y%m%d_%H%M%S.%3N')
 
 # backup, exit immediately if .bash_history is blank
 datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
@@ -54,10 +55,10 @@ if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
     echo "Error: New .bash_history has 90% less line than previous version. Exit immediately"
     echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
 fi
->"$statspath" echo "$hist_current_linum $hist_new_linum"
 cp ~/.bashhist ~/.bash_history
 history -c
 history -r
 
-
+lockend=$(date '+%Y%m%d_%H%M%S.%3N')
 unlock
+>"$statspath" echo "$hist_current_linum $hist_new_linum $lockstart $lockend"
