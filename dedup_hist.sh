@@ -29,8 +29,15 @@ exlock
 # backup, exit immediately if .bash_history is blank
 datetime=$(printf '%(%Y%m%d_%H%M%S)T\n' -1)
 backuppath="$HOME/.bashhist_backup/bash_history_$datetime"
+
 if [[ ! -d "$(dirname "$backuppath")" ]]; then
     mkdir -p "$(dirname "$backuppath")"
+fi
+# stats path
+# oneliner total line "num_line_before num_line_after"
+statspath="$HOME/.bashhist_stats/$datetime"
+if [[ ! -d "$(dirname "$statspath")" ]]; then
+    mkdir -p "$(dirname "$statspath")"
 fi
 
 hist_content="$(cat ~/.bash_history)"
@@ -47,6 +54,7 @@ if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
     echo "Error: New .bash_history has 90% less line than previous version. Exit immediately"
     echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
 fi
+>"$statspath" echo "$hist_current_linum $hist_new_linum"
 cp ~/.bashhist ~/.bash_history
 history -c
 history -r
