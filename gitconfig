@@ -7,7 +7,7 @@
     fixup = "!f() { TARGET=$(git rev-parse "$1"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
     mergelist = "git log --oneline --decorate --merges --pretty=format:"%an %s" "$1"…HEAD (edited)"
 	root = rev-parse --show-toplevel
-
+	rl = reflog --date=relative
 [user]
 	name = Thanayut Seethongchuen
 [diff]
