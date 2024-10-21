@@ -55,9 +55,8 @@ if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
     echo "Error: New .bash_history has 90% less line than previous version. Exit immediately"
     echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
 fi
-cp ~/.bashhist ~/.bash_history
 history -c
-history -r
+history -r ~/.bashhist
 
 lockend=$(date '+%Y%m%d_%H%M%S.%3N')
 unlock
