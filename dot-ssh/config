@@ -1,8 +1,10 @@
+# include first to set the following value as "default"
+Include conf.d/*.conf
+
 ServerAliveInterval 55
 ServerAliveCountMax 3
-ControlPersist 30m
 Compression yes
 Ciphers chacha20-poly1305@openssh.com
 ControlPath /tmp/sshmux_%C
+ControlPersist 30m
 IdentitiesOnly yes
-Include conf.d/*.conf
