@@ -161,7 +161,6 @@ f_clean_env() {
 
 f_history_backup_restore() {
     cat ~/.bashhist_backup/bash_history_* | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist2
-    cp ~/.bashhist2 ~/.bash_history
     history -c
-    history -r
+    history -r ~/.bashhist2
 }
