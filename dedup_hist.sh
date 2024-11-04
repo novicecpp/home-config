@@ -50,10 +50,11 @@ echo "$hist_content" > "$backuppath"
 # sort to unique command, then sort it back to original order.
 echo "$hist_content" | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist
 hist_new_linum=$(wc -l < ~/.bashhist)
-morethan90=$(bc -l <<< "${hist_new_linum}/${hist_current_linum}>0.9")
-if [[ ${hist_new_linum} -gt 20 && ${morethan90} -eq 0  ]]; then
-    echo "Error: New .bash_history has 90% less line than previous version. Exit immediately"
-    echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_timestamp
+threshold=$(bc -l <<< "${hist_new_linum}/${hist_current_linum}>0.8")
+if [[ ${hist_new_linum} -gt 20 && ${threshold} -eq 0  ]]; then
+    echo "Error: New .bash_history has 80% less line than previous version. Exit immediately"
+    echo "$(date): ${backuppath} ${hist_new_linum} ${hist_current_linum}" >> ~/.bashhist_errors_timestamp
+    exit 1
 fi
 history -c
 history -r ~/.bashhist
