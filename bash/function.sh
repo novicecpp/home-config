@@ -163,4 +163,5 @@ f_history_backup_restore() {
     cat ~/.bashhist_backup/bash_history_* | nl | sed 's/[[:space:]]*$//' | sort -k2 -k1,1nr | uniq -f1 | sort -n | cut -f2 > ~/.bashhist2
     history -c
     history -r ~/.bashhist2
+    history -w
 }

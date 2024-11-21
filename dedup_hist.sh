@@ -58,6 +58,7 @@ if [[ ${hist_new_linum} -gt 20 && ${threshold} -eq 0  ]]; then
 fi
 history -c
 history -r ~/.bashhist
+history -w
 
 lockend=$(date '+%Y%m%d_%H%M%S.%3N')
 unlock
