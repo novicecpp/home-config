@@ -19,7 +19,7 @@ HISTCONTROL="ignorespace"
 HISTSIZE=100000
 PROMPT_COMMAND="history -a;"
 
-# test lock dedep history
+# dedep history
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 bash $SCRIPT_DIR/../dedup_hist.sh
 
