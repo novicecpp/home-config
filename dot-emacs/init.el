@@ -202,21 +202,21 @@
 ;; mark-active will break when move cursor vertically in emacs-master.
 ;; disable for now until it fix.
 ;; Note: install nerd-icon in ansible instead
-;;(use-package doom-modeline
-;;  :ensure t
-;;  :init (doom-modeline-mode 1)
-;;  :config
-;;  (setq doom-modeline-icon t)
-;;  (setq doom-modeline-height 1)
-;;  (set-face-attribute 'mode-line nil :height 0.9)
-;;  (set-face-attribute 'mode-line-inactive nil :height 0.9))
-
-;; use minion and enable some minor modes
-(use-package minions
+(use-package doom-modeline
   :ensure t
+  :init (doom-modeline-mode 1)
   :config
-  (minions-mode 1)
-  (setq minions-prominent-modes '(flycheck-mode)))
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-height 1)
+  (set-face-attribute 'mode-line nil :height 0.9)
+  (set-face-attribute 'mode-line-inactive nil :height 0.9))
+
+;;;; use minion and enable some minor modes
+;;(use-package minions
+;;  :ensure t
+;;  :config
+;;  (minions-mode 1)
+;;  (setq minions-prominent-modes '(flycheck-mode)))
 
 ;; jump window like tmux
 (use-package ace-window
