@@ -23,6 +23,14 @@ PROMPT_COMMAND="history -a;"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 bash $SCRIPT_DIR/../dedup_hist.sh
 
+# https://github.com/direnv/direnv/wiki/Python#restoring-the-ps1
+show_virtual_env() {
+  if [[ -n "$VIRTUAL_ENV_PROMPT" && -n "$DIRENV_DIR" ]]; then
+    echo "($(basename $VIRTUAL_ENV_PROMPT)) "
+  fi
+}
+export -f show_virtual_env
+
 # do not color PS1 when ssh connection (for localvm testing)
 # https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
 # https://unix.stackexchange.com/questions/9605/how-can-i-detect-if-the-shell-is-controlled-from-ssh
@@ -37,7 +45,8 @@ else
     # make PS1 play nice when source venv via direnv
     # export line below need to put in every python's direnv
     #   export VIRTUAL_ENV_PROMPT_CUSTOM=${VIRTUAL_ENV_PROMPT}
-    PS1='${VIRTUAL_ENV_PROMPT_CUSTOM:+$VIRTUAL_ENV_PROMPT_CUSTOM}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    PS1='[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    PS1='$(show_virtual_env)'$PS1
 fi
 
 # default TERM to xterm for compatibility with server
