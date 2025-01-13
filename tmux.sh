@@ -22,23 +22,27 @@ tmux_copy_buffer_to_clipboard() {
 tmux_open_remote_file() {
     if [[ $1 == "" ]]; then
         DEBUG_TARGET=""
-        DEBUG_GREP_PID="^1"
+        #DEBUG_GREP_PID="^1"
     else
         DEBUG_TARGET="-t $1"
-        DEBUG_GREP_PID="0 $1"
+        #DEBUG_GREP_PID="0 $1"
     fi
     GREP_STRING='^##emacslocal'
     CAPTURED=$(tmux capture-pane -p ${DEBUG_TARGET} | grep -- "${GREP_STRING}" | tail -n1)
     if [[ "$CAPTURED" == "" ]]; then
         return
     fi
-    PANE_PID=$(tmux list-panes -F '#{pane_active} #{pane_index} #{pane_pid}' | grep "$DEBUG_GREP_PID" | cut -d' ' -f3)
-    PROCESS_PID=$(ps -o ppid= -o pid= -A | awk "\$1 == ${PANE_PID}{print \$2}")
-    IFS=' ' read P_COMMAND P_ARGS <<< $(ps --pid ${PROCESS_PID} -o args=)
-    if [[ $P_COMMAND != "ssh" ]]; then
-        return
-    fi
-    FILEPATH=$(echo ${CAPTURED} | awk '{print $2}')
+    #PANE_PID=$(tmux list-panes -F '#{pane_active} #{pane_index} #{pane_pid}' | grep "$DEBUG_GREP_PID" | cut -d' ' -f3)
+    #PROCESS_PID=$(ps -o ppid= -o pid= -A | awk "\$1 == ${PANE_PID}{print \$2}")
+    #IFS=' ' read P_COMMAND P_ARGS <<< $(ps --pid ${PROCESS_PID} -o args=)
+
+    #if [[ $P_COMMAND != "ssh" ]]; then
+    #    return
+    #fi
+    #FILEPATH=$(echo ${CAPTURED} | awk '{print $2}')
+    arglist=(${CAPTURED})
+    P_ARGS=${arglist[1]}
+    FILEPATH=${arglist[2]}
     emacsclient -cn "/ssh:${P_ARGS}:${FILEPATH}"
 }
 
