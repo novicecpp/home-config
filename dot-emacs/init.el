@@ -312,8 +312,6 @@
 
 (use-package browse-at-remote
   :ensure t
-  :config
-  (add-to-list 'browse-at-remote-remote-type-regexps '(:host "^gitlab\\.cern\\.ch$" :type "gitlab"))
   :bind
   (("C-c g g" . browse-at-remote)))
 
@@ -612,8 +610,9 @@
 (use-package terraform-mode
   :ensure t)
 
-;; load all file in loads dir
+;; load all file in dirs
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
+(mapc 'load (directory-files-recursively "~/.emacs.d/private" ".el$"))
 
 ;; ================== deprecate =====================
 
