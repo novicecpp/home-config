@@ -74,19 +74,27 @@ cdg()
 
 
 cdd() {
-    local dir lsd input_dir search_string
-    if [[ "$#" -le 2 ]]; then
-        SEARCH_STRING="${1:-.}"
-        INPUT_DIR="${2:-.}"
+    local INPUT_DIR SEARCH_STRING LSD DIR_SELECTED EXIT_CODE
+    if [[ "$#" -eq 2 ]]; then
+        SEARCH_STRING="${1}"
+        INPUT_DIR="${2}"
+    elif [[ "$#" -eq 1 ]]; then
+        SEARCH_STRING="."
+        INPUT_DIR="${1}"
     else
-        echo 'wrong number argument.'
+        >&2 echo 'Error: wrong number argument.'
+        >&2 echo "Usage: ${FUNCNAME} [REGEXP] DIR"
+        return 1
+    fi
+    if [[ ! -d "${INPUT_DIR}" ]]; then
+        >&2 echo "Error: ${INPUT_DIR}: No such file or directory."
         return 1
     fi
     while true; do
-        LSD="$(cd ${INPUT_DIR} && fd --type d ${SEARCH_STRING} )"
+        LSD="$(cd "${INPUT_DIR}" && fd --type d "${SEARCH_STRING}" )"
         DIR_SELECTED="$(printf '%s\n..\n.\n' "${LSD[@]}" | fzf )"
         EXIT_CODE=$?
-        INPUT_DIR="$INPUT_DIR/$DIR_SELECTED"
+        INPUT_DIR="${INPUT_DIR}/${DIR_SELECTED}"
         if [[ $EXIT_CODE == 130 || ${DIR_SELECTED} == '.' ]]; then
             break
         fi
