@@ -98,11 +98,6 @@ f_ () {
 	(sleep 0.05 && tmux send-key "$FUNCTION_NAME" &)
 }
 
-
-f_ssh_add () {
-    SSH_ASKPASS=askpass.sh SSH_ASKPASS_REQUIRE=force ssh-add "$1"
-}
-
 f_proc_environ () {
     if [[ $# != 1 ]]; then
         >&2 echo 'usage: f_proc_environ <pid>'
