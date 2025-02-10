@@ -92,15 +92,6 @@ f_awk_sum () {
 }
 
 
-f_open_gpg () {
-    if [[ -f "$1" ]]; then
-        timeout 180s emacs -Q $1 || xsel -cb
-    else
-        echo "$1: No such file or directory"
-        return 1
-    fi
-}
-
 f_ () {
     F_FUNCTION=$(declare -F | grep -P -- '-f f_.+' | cut -d' ' -f3)
     FUNCTION_NAME=$(printf '%s\n..\n.\n' "${F_FUNCTION[@]}" | fzf)
