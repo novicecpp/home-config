@@ -28,7 +28,7 @@ tmux_open_remote_file() {
         #DEBUG_GREP_PID="0 $1"
     fi
     GREP_STRING='^##emacslocal'
-    CAPTURED=$(tmux capture-pane -p ${DEBUG_TARGET} | grep -- "${GREP_STRING}" | tail -n1)
+    CAPTURED=$(tmux capture-pane -p -J ${DEBUG_TARGET} | grep -- "${GREP_STRING}" | tail -n1)
     if [[ "$CAPTURED" == "" ]]; then
         return
     fi
