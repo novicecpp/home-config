@@ -81,6 +81,9 @@ cdd() {
     elif [[ "$#" -eq 1 ]]; then
         SEARCH_STRING="."
         INPUT_DIR="${1}"
+    elif [[ "$#" -eq 0 ]]; then
+        SEARCH_STRING="."
+        INPUT_DIR="."
     else
         >&2 echo 'Error: wrong number argument.'
         >&2 echo "Usage: ${FUNCNAME} [REGEXP] DIR"
