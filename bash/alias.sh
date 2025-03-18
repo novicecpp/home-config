@@ -7,6 +7,7 @@ alias a_xset='xset r rate 200 60'
 alias e="emacsclient -t"
 alias ec="emacsclient -c"
 alias ecn="emacsclient -cn"
+alias en="emacsclient -n"
 #alias emacs='e'
 
 alias gpg='gpg2'
