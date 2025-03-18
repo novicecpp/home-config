@@ -705,3 +705,9 @@
 ;; not sure why i need this
 ;;(require 'auth-source-pass)
 ;;(auth-source-pass-enable)
+
+(use-package eglot-booster
+  :after eglot
+  :config	(eglot-booster-mode))
+
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
