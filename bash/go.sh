@@ -1,2 +1,2 @@
-#export PATH=/home/thanayut/go/bin/:$PATH
 export GOPATH=$HOME/.local/share/go
+export PATH=$HOME/.local/share/go/bin:$PATH
