@@ -207,6 +207,7 @@
   (add-to-list 'tramp-default-proxies-alist '(nil "\\`root\\'" "/ssh:%h:"))
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
+
 ;; mark-active will break when move cursor vertically in emacs-master.
 ;; disable for now until it fix.
 ;; Note: install nerd-icon in ansible instead
@@ -214,10 +215,12 @@
   :ensure t
   :init (doom-modeline-mode 1)
   :config
-  (setq doom-modeline-icon t)
-  (setq doom-modeline-height 1)
+  (setq doom-modeline-icon t
+        doom-modeline-height 1)
+  (setq doom-modeline-buffer-file-name-style 'file-name) ;; fix tramp's slowness https://github.com/seagle0128 (not sure what it does)
   (set-face-attribute 'mode-line nil :height 0.9)
   (set-face-attribute 'mode-line-inactive nil :height 0.9))
+
 
 ;;;; use minion and enable some minor modes
 ;;(use-package minions
@@ -632,6 +635,17 @@
 ;; load all file in dirs
 (mapc 'load (directory-files-recursively "~/.emacs.d/loads" ".el$"))
 (mapc 'load (directory-files-recursively "~/.emacs.d/private" ".el$"))
+
+;; https://www.reddit.com/r/emacs/comments/weuiqs/comment/iir59hj/
+(defun my/delete-this-file (&optional forever)
+  "Delete the file associated with `current-buffer'.
+If FOREVER is non-nil, the file is deleted without being moved to trash."
+  (interactive "P")
+  (when-let* ((file (or (buffer-file-name)
+                       (user-error "Current buffer is not visiting a file")))
+             ((y-or-n-p "Delete this file? ")))
+    (delete-file file (not forever))
+    (kill-buffer (current-buffer))))
 
 ;; ================== deprecate =====================
 
