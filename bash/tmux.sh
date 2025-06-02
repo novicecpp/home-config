@@ -206,3 +206,11 @@ t_reset_session () {
     tmux move-window -r
     tmux select-window -t 1
 }
+
+t_cp() {
+    local file_src pane_no pane_current_path
+    file_src=${1}
+    pane_no=${2}
+    pane_current_path=$(tmux display-message -p -F "#{pane_current_path}" -t :.${pane_no})
+    cp -rp "${file_src}" "${pane_current_path}"
+}
