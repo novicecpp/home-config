@@ -79,8 +79,8 @@ cdd() {
         SEARCH_STRING="${1}"
         INPUT_DIR="${2}"
     elif [[ "$#" -eq 1 ]]; then
-        SEARCH_STRING="."
-        INPUT_DIR="${1}"
+        SEARCH_STRING="${1}"
+        INPUT_DIR="."
     elif [[ "$#" -eq 0 ]]; then
         SEARCH_STRING="."
         INPUT_DIR="."
