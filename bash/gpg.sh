@@ -27,3 +27,5 @@ c_gpg_ctx() {
     ln -s "${gpghome_dir}" "${HOME}"/.gnupg
     ls "${HOME}"/ -alh --color=force | grep --color=never .gnupg
 }
+
+gpgconf --launch gpg-agent
