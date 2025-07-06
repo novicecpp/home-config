@@ -13,7 +13,7 @@ f_backup() {
     SRCDIR="${1}"
     DSTDIR="${2}"
     DRY_RUN="${DRY_RUN-x}"
-    machine_name=${machine_name:-${hostname}}
+    machine_name=${MACHINE_NAME:-${hostname}}
     dir_name="${dir_name:-$(basename "${SRCDIR}")}"
     if [[ ! -d "${DSTDIR}" ]]; then
         >&2 echo "Error: backup path \"${DSTDIR}\" is not directory."
