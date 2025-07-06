@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; lexical-binding: nil; -*-
 (use-package org
   :ensure t
   :config

@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; lexical-binding: nil; -*-
 ;; disable package.el, use elpaca instead
 (setq package-enable-at-startup nil)
 

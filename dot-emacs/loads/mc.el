@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; lexical-binding: nil; -*-
 ;; copy from jwiegley's dot-emacs
 ;; https://github.com/jwiegley/dot-emacs/blob/master/init.el
 

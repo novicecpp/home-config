@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; lexical-binding: nil; -*-
 ;; https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically
 (setq org-agenda-custom-commands
       '(("vs" "Sprint Schedule" agenda nil
