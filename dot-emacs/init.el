@@ -1,3 +1,4 @@
+;; -*- mode: emacs-lisp; lexical-binding: nil; -*-
 ;; Startup time
 ;; https://www.reddit.com/r/emacs/comments/m8d55l/what_is_your_startup_time/
 (defun efs/display-startup-time ()
