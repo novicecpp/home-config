@@ -113,8 +113,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-12" ))
-(set-face-attribute 'default nil :font "Liberation Mono-12" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-10" ))
+(set-face-attribute 'default nil :font "Liberation Mono-10" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
