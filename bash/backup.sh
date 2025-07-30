@@ -20,7 +20,11 @@ f_backup() {
         return 1
     fi
 
-    printf -v filename '%(%Y-%m-%d)T_%s_%s.tar.zst' -1 "${machine_name}" "${dir_name}"
+    if [[ -z ${BACKUP_SECOND+x} ]]; then
+        printf -v filename '%(%Y-%m-%d)T_%s_%s.tar.zst' -1 "${machine_name}" "${dir_name}"
+    else
+        printf -v filename '%(%Y-%m-%d_%H%M%S)T_%s_%s.tar.zst' -1 "${machine_name}" "${dir_name}"
+    fi
     backup_path="${DSTDIR%/}/${filename}"
 
     echo "Backup from $SRCDIR to ${backup_path}"
