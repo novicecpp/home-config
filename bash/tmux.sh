@@ -209,8 +209,9 @@ t_reset_session () {
 
 t_cp() {
     local file_src pane_no pane_current_path
-    file_src=${1}
-    pane_no=${2}
+    pane_no=${1}
+    file_src=${2}
+    file_dst=${3}
     re='^[0-9]+$'
     if [[ $pane_no =~ $re ]] ; then
         pane_target=":.${pane_no}"
@@ -218,5 +219,5 @@ t_cp() {
         pane_target=${pane_no}
     fi
     pane_current_path=$(tmux display-message -p -F "#{pane_current_path}" -t ${pane_target})
-    cp -rp "${file_src}" "${pane_current_path}"
+    cp -rp "${file_src}" "${pane_current_path}/${file_dst}"
 }
