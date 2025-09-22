@@ -221,3 +221,12 @@ t_cp() {
     pane_current_path=$(tmux display-message -p -F "#{pane_current_path}" -t ${pane_target})
     cp -rp "${file_src}" "${pane_current_path}/${file_dst}"
 }
+
+t_break_pane_sesison () {
+    session_name=${1}
+    tmux new-session -d -s ${session_name}
+    tmux new-window -t ${session_name}:1
+    tmux move-pane -t ${session_name}:1
+    tmux kill-pane -t ${session_name}:1.1
+    tmux switch-client -t ${session_name}:1.1
+}
