@@ -222,7 +222,7 @@ t_cp() {
     cp -rp "${file_src}" "${pane_current_path}/${file_dst}"
 }
 
-t_break_pane_sesison () {
+t_break_pane_new_session () {
     session_name=${1}
     tmux new-session -d -s ${session_name}
     tmux new-window -t ${session_name}:1
