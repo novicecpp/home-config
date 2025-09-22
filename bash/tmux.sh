@@ -223,10 +223,20 @@ t_cp() {
 }
 
 t_break_pane_new_session () {
-    session_name=${1}
-    tmux new-session -d -s ${session_name}
-    tmux new-window -t ${session_name}:1
-    tmux move-pane -t ${session_name}:1
-    tmux kill-pane -t ${session_name}:1.1
-    tmux switch-client -t ${session_name}:1.1
+    local session_name
+    session_name=${1:-}
+    if [[ -z ${session_name} ]]; then
+        >&2 echo "Usage: $FUNCNAME SESSION_NAME"
+        return 1
+    fi
+    if ! tmux has-session -t ${session_name} &> /dev/null; then
+        tmux new-session -d -s ${session_name}
+        tmux new-window -t ${session_name}:1
+        tmux move-pane -t ${session_name}:1
+        tmux kill-pane -t ${session_name}:1.1
+        tmux switch-client -t ${session_name}:1.1
+    else
+        >&2 echo "Error: tmux session already exists: \"${session_name}\""
+        return 1
+    fi
 }
