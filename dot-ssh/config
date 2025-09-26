@@ -8,3 +8,4 @@ Ciphers chacha20-poly1305@openssh.com
 ControlPath /tmp/sshmux_%C
 ControlPersist 30m
 IdentitiesOnly yes
+ForwardAgent no
