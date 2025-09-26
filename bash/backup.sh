@@ -38,7 +38,8 @@ f_backup() {
     fi
     echo "Getting directory size: "
     dirsize=$(du -sb "${SRCDIR}" | awk '{print $1}' | xargs)
-    echo "${dirsize} bytes"
+    dirhsize=$(numfmt --to=iec-i --suffix=B --format="%.3f" ${dirsize})
+    echo "${dirsize} bytes, ${dirhsize}"
 
     if [[ ${DRY_RUN} != "x" ]]; then
        echo "This following command will get execute:"
