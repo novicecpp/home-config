@@ -208,18 +208,19 @@ t_reset_session () {
 }
 
 t_cp() {
-    local file_src pane_no pane_current_path
+    local file_src pane_no pane_target_path pane_target
     pane_no=${1}
     file_src=${2}
-    file_dst=${3}
+    file_dst=${3:-}
+    # tmux default session+window for pan is `:.<pane_number>`
     re='^[0-9]+$'
     if [[ $pane_no =~ $re ]] ; then
         pane_target=":.${pane_no}"
     else
         pane_target=${pane_no}
     fi
-    pane_current_path=$(tmux display-message -p -F "#{pane_current_path}" -t ${pane_target})
-    cp -rp "${file_src}" "${pane_current_path}/${file_dst}"
+    pane_target_path=$(tmux display-message -p -F "#{pane_current_path}" -t ${pane_target})
+    cp -rp "${file_src}" "${pane_target_path}/${file_dst}"
 }
 
 t_break_pane_new_session () {
