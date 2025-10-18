@@ -45,7 +45,7 @@ else
     # make PS1 play nice when source venv via direnv
     # export line below need to put in every python's direnv
     #   export VIRTUAL_ENV_PROMPT_CUSTOM=${VIRTUAL_ENV_PROMPT}
-    PS1='${VIRTUAL_ENV_PROMPT_CUSTOM:-}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
+    PS1='${DIRENV_PROMPT_PREFIX:-}[\[\033[01;32m\]\u@\h\[\033[00m\] \W]\$ '
 fi
 
 # default TERM to xterm for compatibility with server
