@@ -181,9 +181,11 @@
   :ensure t
   :config
   ;; load solarized theme when run in test machine
-  (if (file-exists-p "~/.emacs_test")
-      (load-theme 'solarized-light t)
-    (load-theme 'zenburn t)))
+  (cond ((file-exists-p "~/.emacs_test")
+         (load-theme 'solarized-light t))
+        ((daemonp)
+         (load-theme 'zenburn t))
+        (t (load-theme 'solarized-dark t))))
 
 ;; built-in packages.
 ;; use emacs's pinentry
