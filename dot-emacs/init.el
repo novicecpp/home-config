@@ -327,7 +327,7 @@
   (exec-path-from-shell-initialize))
 
 (use-package browse-at-remote
-  :ensure t
+  :ensure (:host github :repo "novicecpp/browse-at-remote" :branch "use-vc-git-command")
   :bind
   (("C-c g g" . browse-at-remote)))
 
