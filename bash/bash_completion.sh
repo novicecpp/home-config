@@ -33,3 +33,25 @@ _f_k8s_debug_completion() {
     fi
 }
 complete -F _f_k8s_debug_completion f_k8s_debug
+
+
+_f_sudo_completion() {
+    local cur prev options actions used_options pod_name
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    actions=$(declare -F | awk '{print $3}' 2> /dev/null)
+    for word in "${COMP_WORDS[@]}"; do
+        case "${word}" in
+            *)
+                :
+                ;;
+        esac
+    done
+    if [[ "$COMP_CWORD" -ge 2 ]]; then
+       COMPREPLY=()
+       return
+    fi
+    COMPREPLY=($(compgen -W "${actions} ${options}" -- "$cur"))
+}
+
+complete -F _f_sudo_completion f_sudo
