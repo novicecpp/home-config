@@ -33,3 +33,7 @@ f_openssl_inspect_k8s_secret() {
     secretname=${1}
     kubectl get secret -o jsonpath='{.data.tls\.crt}' ${secretname} | base64 -d | f_openssl_inspect
 }
+
+f_openssl_inspect_csr() {
+    openssl req -text -noout -verify -in ${1}
+}
