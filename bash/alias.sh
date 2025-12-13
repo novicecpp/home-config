@@ -8,6 +8,7 @@ alias e="emacsclient -t"
 alias ec="emacsclient -c"
 alias ecn="emacsclient -cn"
 alias en="emacsclient -n"
+alias ent="f_emacsclient_newtab"
 #alias emacs='e'
 
 alias gpg='gpg2'
