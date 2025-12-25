@@ -157,7 +157,7 @@ f_history_backup_restore() {
 f_sudo() {
     local func=$1
     if [[ $(type -t $func) == "function" ]]; then
-        shift && command sudo bash -c "$(declare -f $func); $func \"$@\""
+        shift && command sudo -E bash -c "$(declare -f $func); $func \"$@\""
     elif [[ $(type -t $func) == "alias" ]];  then
         alias sudo='\sudo '
         eval "sudo $@"
