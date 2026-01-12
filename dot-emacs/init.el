@@ -335,6 +335,14 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
+
+;;eglot deps
+(use-package flymake
+  :ensure t)
+;;eglot deps
+(use-package jsonrpc
+  :ensure t)
+
 ;; eglot
 (use-package eglot
   :ensure t
@@ -343,7 +351,32 @@
   :hook
   (python-mode . eglot-ensure)
   (yaml-mode . eglot-ensure)
-  (sh-mode . eglot-ensure))
+  (sh-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(python-base-mode . ("ty" "server"))))
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-auto  t)
+  (completion-cycle-threshold 3)
+  (tab-always-indent 'complete)
+  :init
+  (global-corfu-mode))
+
+;; Use Dabbrev with Corfu!
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  :config
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
 
 ;; ======================== start vertico/consult ====================
 
