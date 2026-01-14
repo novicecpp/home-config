@@ -776,4 +776,7 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 (use-package ztree
   :ensure t)
 
+(use-package x509-mode
+  :ensure t)
+
 ;;(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
