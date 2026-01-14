@@ -19,7 +19,7 @@ f_openssl_s_client () {
     else
         port=443
     fi
-    echo | openssl s_client -connect ${host}:${port} -servername ${host}
+    echo | openssl s_client -connect ${host}:${port} -servername ${host} -showcerts
 }
 
 f_openssl_inspect_web() {
