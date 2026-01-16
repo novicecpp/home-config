@@ -200,7 +200,8 @@
 (use-package display-line-numbers
   :hook
   (prog-mode . display-line-numbers-mode)
-  (yaml-mode . display-line-numbers-mode))
+  (yaml-mode . display-line-numbers-mode)
+  (k8s-mode . display-line-numbers-mode))
 
 ;; tramp mode
 ;; https://stackoverflow.com/questions/3465567/how-to-use-ssh-and-sudo-together-with-tramp-in-emacs
@@ -339,8 +340,9 @@
 ;;eglot deps
 (use-package flymake
   :ensure t)
-;;eglot deps
 (use-package jsonrpc
+  :ensure t)
+(use-package project
   :ensure t)
 
 ;; eglot
@@ -779,4 +781,7 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 (use-package x509-mode
   :ensure t)
 
+(use-package k8s-mode
+  :ensure t
+  :hook (k8s-mode . yas-minor-mode))
 ;;(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
