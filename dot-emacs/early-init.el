@@ -11,5 +11,5 @@
 
 ;; for debug
 ;; https://stackoverflow.com/questions/1322591/tracking-down-max-specpdl-size-errors-in-emacs/1322978
-;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
-;;(setq debug-on-error t)    ; now you should get a backtrace
+(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
+(setq debug-on-error t)    ; now you should get a backtrace
