@@ -177,15 +177,19 @@
 ;; theme
 (use-package solarized-theme
   :ensure t)
+(use-package modus-themes
+  :ensure t)
 (use-package zenburn-theme
   :ensure t
   :config
-  ;; load solarized theme when run in test machine
   (cond ((file-exists-p "~/.emacs_test")
          (load-theme 'solarized-light t))
+        ((string-equal (daemonp) "org")
+         (load-theme 'modus-vivendi t))
         ((daemonp)
          (load-theme 'zenburn t))
         (t (load-theme 'solarized-dark t))))
+
 
 ;; built-in packages.
 ;; use emacs's pinentry
@@ -767,3 +771,17 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
   :ensure t
   :hook (k8s-mode . yas-minor-mode))
 ;;(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
+
+
+(add-hook 'after-init-hook
+          (lambda ()
+            (when (string-equal (daemonp) "org")
+              ;; 1. Set the internal Emacs instance name
+              (setq x-resource-name "emacs-org")
+
+              ;; 2. Ensure all future frames (windows) use this name/class
+              (add-to-list 'default-frame-alist '(name . "emacs-org"))
+              (add-to-list 'default-frame-alist '(client . "emacs-org"))
+
+              ;; 3. Optional: Set the frame title for visual confirmation
+              (setq frame-title-format "Emacs - Org Instance"))))
