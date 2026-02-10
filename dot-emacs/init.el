@@ -165,7 +165,6 @@
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
 (push '("bash" . sh-mode) interpreter-mode-alist)
-(push '("\\.yaml\\'" . yaml-mode) auto-mode-alist)
 (push '("\\.emacs_exwm\\'" . emacs-lisp-mode) auto-mode-alist)
 (push '("\\.env\\'" . sh-mode) auto-mode-alist)
 (push '("Dockerfile\\'" . dockerfile-mode) auto-mode-alist)
@@ -349,6 +348,19 @@
 (use-package project
   :ensure t)
 
+(define-derived-mode helm-k8s-mode yaml-mode "helm-k8s"
+  "Major mode for editing kubernetes helm templates")
+
+(push  '(".*\\.tpl\\'" . helm-k8s-mode) auto-mode-alist)
+;; auto-mode-alist does not work
+;;(push  '("/templates/.*\\.yaml\\'" . helm-k8s-mode) auto-mode-alist)
+(defun my/force-helm-k8s-mode ()
+  "Force helm-k8s-mode for helm chart file"
+  (when (and (stringp buffer-file-name)
+             (string-match "/templates/.*\\.yaml\\'" buffer-file-name))
+    (helm-k8s-mode)))
+(add-hook 'find-file-hook 'my/force-helm-k8s-mode)
+
 ;; eglot
 (use-package eglot
   :ensure t
@@ -358,9 +370,19 @@
   (python-mode . eglot-ensure)
   (yaml-mode . eglot-ensure)
   (sh-mode . eglot-ensure)
+  (helm-k8s-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               '(python-base-mode . ("ty" "server"))))
+               '(python-base-mode . ("ty" "server")))
+  (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
+  :custom
+  (eglot-workspace-configuration
+   '(:helm-ls (:yamlls (:enabled t
+                        :path "yaml-language-server")
+               :valuesFiles (:mainValuesFile "values.yaml"
+                             :lintOverlayValuesFile "values.lint.yaml"
+                             :additionalValuesFilesGlobPattern "values*.yaml")
+               :logLevel "info"))))
 
 (use-package corfu
   :ensure t
@@ -518,9 +540,9 @@
    (sh-mode . (lambda ()
                 (flycheck-mode)
                 (flycheck-select-checker 'sh-shellcheck)))
-   (yaml-mode . (lambda ()
-                  (flycheck-mode)
-                  (flycheck-select-checker 'yaml-yamllint)))
+   ;;(yaml-mode . (lambda ()
+   ;;               (flycheck-mode)
+   ;;               (flycheck-select-checker 'yaml-yamllint)))
    (puppet-mode . (lambda ()
                     (flycheck-mode)
                     (setq flycheck-checker 'puppet-parser)
