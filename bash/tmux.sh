@@ -207,6 +207,15 @@ t_reset_session () {
     tmux select-window -t 1
 }
 
+t_kill_windows_right () {
+    # keep the current pane and kill all other pane and windows
+    local windows
+    windows=( $(tmux list-windows -F "#{window_index}" | awk -v cur=$(tmux display-message -p '#{window_index}') '$1 > cur') )
+    for w in "${windows[@]}"; do
+        tmux kill-window -t $w
+    done
+}
+
 t_cp() {
     local file_src tmux_target
     file_src=${1}
