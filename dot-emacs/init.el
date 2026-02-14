@@ -168,6 +168,7 @@
 (push '("\\.emacs_exwm\\'" . emacs-lisp-mode) auto-mode-alist)
 (push '("\\.env\\'" . sh-mode) auto-mode-alist)
 (push '("Dockerfile\\'" . dockerfile-mode) auto-mode-alist)
+(push '("\\.(alloy|river).\\'" . hcl-mode) auto-mode-alist)
 
 ;; set default emacs web browser
 ;; browse-url-generic-program value is browser executable file
