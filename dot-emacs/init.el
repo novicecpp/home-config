@@ -777,11 +777,11 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 ;;(auth-source-pass-enable)
 
 
-;; test eglot bootster
-(use-package eglot-booster
-  :load-path "~/.emacs.d/eglot-booster"
-  :after eglot
-  :config	(eglot-booster-mode))
+;;;; test eglot bootster
+;;(use-package eglot-booster
+;;  :load-path "~/.emacs.d/eglot-booster"
+;;  :after eglot
+;;  :config	(eglot-booster-mode))
 
 (use-package ztree
   :ensure t)
