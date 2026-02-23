@@ -13,7 +13,7 @@ f_openssl_s_client () {
     local endpoint host port pattern
     endpoint=${1}
     host="${endpoint%:*}"
-    pattern='^[a-z.]+\:[0-9]+$'
+    pattern='^[a-z.\-]+\:[0-9]+$'
     if [[ ${endpoint} =~ $pattern ]]; then
         port="${endpoint#*:}"
     else
