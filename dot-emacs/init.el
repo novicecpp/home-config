@@ -373,8 +373,8 @@
   (sh-mode . eglot-ensure)
   (helm-k8s-mode . eglot-ensure)
   :config
-  (add-to-list 'eglot-server-programs
-               '(python-base-mode . ("ty" "server")))
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '(python-base-mode . ("ty" "server")))
   (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
   :custom
   (eglot-workspace-configuration
@@ -778,11 +778,13 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 ;;(auth-source-pass-enable)
 
 
-;;;; test eglot bootster
-;;(use-package eglot-booster
-;;  :load-path "~/.emacs.d/eglot-booster"
-;;  :after eglot
-;;  :config	(eglot-booster-mode))
+;; test eglot bootster
+(use-package eglot-booster
+  :load-path "~/.emacs.d/eglot-booster"
+  :after eglot
+  :config
+  (eglot-booster-mode)
+  (setq eglot-booster-io-only t))
 
 (use-package ztree
   :ensure t)
