@@ -62,3 +62,6 @@ keybind = global:ctrl+enter=unbind
 
 # disable until it can move toast to somewhere else
 app-notifications = false
+
+# fix iowait
+async-backend = epoll
