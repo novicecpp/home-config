@@ -28,6 +28,12 @@ f_openssl_inspect_web() {
     f_openssl_s_client ${endpoint} | awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' | f_openssl_inspect
 }
 
+f_openssl_inspect_web_raw() {
+    local endpoint
+    endpoint=${1}
+    f_openssl_s_client ${endpoint} | awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/'
+}
+
 
 f_openssl_inspect_k8s_secret() {
     secretname=${1}
