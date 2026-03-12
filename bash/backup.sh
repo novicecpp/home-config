@@ -1,8 +1,8 @@
 #! /bin/bash
 
 f_backup() {
-    local SRCDIR DSTDIR machine_name backup_path dir_name dirsize filename chksum_algo chksum_algo_ext hostname ignorepath_rel exclude_args p
-    chksum_algo=b3sum
+    local SRCDIR DSTDIR machine_name backup_path dir_name dirsize filename chksum_algo chksum_algo_ext hostname ignorepath_rel exclude_args p sum
+    chksum_cmd=b3sum
     chksum_algo_ext=b3
     if [[ $# != 2 ]]; then
        echo "Usage: "
@@ -48,18 +48,13 @@ f_backup() {
         ignorepath_rel="$(realpath -s --relative-to="${SRCDIR}" "${p}")"
         exclude_args+=("--exclude ${SRCDIR}/${ignorepath_rel}")
     done <<< "$(df -hT | grep -v /dev/mapper/root | grep /dev/mapper | awk '{print $7}')"
-    cmd="tar --ignore-failed-read ${exclude_args[*]} -cf - ${SRCDIR} | pv -brtp -s ${dirsize} | zstd -T0 - > ${backup_path}"
+    cmd="tar --ignore-failed-read ${exclude_args[*]} -cf - ${SRCDIR} | pv -brtp -s ${dirsize} | zstd -12 -T0 --long | tee ${backup_path} | ${chksum_cmd}"
     if [[ ${DRY_RUN} != "x" ]]; then
        echo "This following command will get execute:"
        echo "${cmd}"
        return
     fi
-    eval "$(echo "${cmd}" | paste -s -d " " -)"
-    #tar --ignore-failed-read -cf - "${SRCDIR}" | pv -brtp -s "${dirsize}" | zstd -T0 - > "${backup_path}"
-    echo "Running checksum..."
-    (
-        pushd "${DSTDIR%/}" > /dev/null || return
-        ${chksum_algo} "${filename}" | tee "${filename}"."${chksum_algo_ext}"
-        popd > /dev/null || return
-    )
+    sum=$(eval "$(echo "${cmd}" | paste -s -d " " -)" | awk '{print $1}')
+    echo "checksum ${chksum_cmd}: ${sum}"
+    echo "${sum}  ${filename}" > "${filename}"."${chksum_algo_ext}"
 }
