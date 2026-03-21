@@ -166,3 +166,26 @@ f_sudo() {
     fi
 
 }
+
+
+f_gen_mac() {
+    local upper=false
+    local OPTIND opt first mac
+
+    while getopts "U" opt; do
+        case "$opt" in
+            U) upper=true ;;
+            *) return 1 ;;
+        esac
+    done
+
+    # Bitwise AND with 254 (11111110) ensures the last bit is 0 (Unicast)
+    first=$(( (RANDOM % 256) & 254 ))
+
+    mac=$(printf '%02x:%02x:%02x:%02x:%02x:%02x' \
+        $first \
+        $((RANDOM%256)) $((RANDOM%256)) \
+        $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))
+
+    [[ "$upper" == true ]] && echo "${mac^^}" || echo "${mac}"
+}
