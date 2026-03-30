@@ -162,6 +162,13 @@
 ;; disable lockfiles feature
 (setq create-lockfiles nil)
 
+
+;; smooth-scroll
+(pixel-scroll-precision-mode 1)
+(setq scroll-conservatively 10
+      scroll-margin 2)
+
+
 ;;.auto-mode & interpreter-mode
 (push '("python" . python-mode) interpreter-mode-alist)
 (push '("bash" . sh-mode) interpreter-mode-alist)
