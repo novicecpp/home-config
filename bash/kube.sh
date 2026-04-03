@@ -33,3 +33,7 @@ h_k8s_ctx() {
     s_kube_config
     set +x
 }
+
+f_delete_pod() {
+    kubectl "$@" delete $(kubectl get pod --no-headers -o name)
+}
