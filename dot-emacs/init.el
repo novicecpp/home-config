@@ -672,7 +672,7 @@
   :config
   ;; set tab size to 4
   (setq json-encoding-default-indentation "    ")
-  )
+  (setq indent-tabs-mode nil))
 
 (use-package terraform-mode
   :ensure t)
