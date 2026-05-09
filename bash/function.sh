@@ -189,3 +189,8 @@ f_gen_mac() {
 
     [[ "$upper" == true ]] && echo "${mac^^}" || echo "${mac}"
 }
+
+
+f_set_prompt() {
+    export DIRENV_PROMPT_PREFIX="(${1}) "
+}
