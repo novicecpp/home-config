@@ -56,5 +56,5 @@ f_backup() {
     fi
     sum=$(eval "$(echo "${cmd}" | paste -s -d " " -)" | awk '{print $1}')
     echo "checksum ${chksum_cmd}: ${sum}"
-    echo "${sum}  ${filename}" > "${filename}"."${chksum_algo_ext}"
+    echo "${sum}  ${filename}" > "${backup_path}.${chksum_algo_ext}"
 }
