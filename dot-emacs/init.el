@@ -348,9 +348,12 @@
 (put 'downcase-region 'disabled nil)
 
 
-;;eglot deps
+;; switch to flymake
 (use-package flymake
-  :ensure t)
+  :ensure t
+  :bind
+  (("C-c !" . flymake-show-buffer-diagnostics)))
+;;eglot deps
 (use-package jsonrpc
   :ensure t)
 (use-package project
@@ -372,16 +375,14 @@
 ;; eglot
 (use-package eglot
   :ensure t
-  :init
-  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   :hook
   (python-mode . eglot-ensure)
   (yaml-mode . eglot-ensure)
   (sh-mode . eglot-ensure)
   (helm-k8s-mode . eglot-ensure)
   :config
-  ;;(add-to-list 'eglot-server-programs
-  ;;             '(python-base-mode . ("ty" "server")))
+  (add-to-list 'eglot-server-programs
+               '(python-base-mode . ("rass" "python")))
   (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
   :custom
   (eglot-workspace-configuration
@@ -535,29 +536,29 @@
 
 ;; ======================== end vertico/consult ====================
 
-(use-package flycheck
-  :ensure t
-  :config
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  :hook
-  ((python-mode . (lambda ()
-                    (flycheck-mode)
-                    (setq flycheck-checker 'python-pylint)
-                    (flycheck-add-next-checker 'python-pylint 'python-pyright)))
-   (sh-mode . (lambda ()
-                (flycheck-mode)
-                (flycheck-select-checker 'sh-shellcheck)))
-   ;;(yaml-mode . (lambda ()
-   ;;               (flycheck-mode)
-   ;;               (flycheck-select-checker 'yaml-yamllint)))
-   (puppet-mode . (lambda ()
-                    (flycheck-mode)
-                    (setq flycheck-checker 'puppet-parser)
-                    (flycheck-add-next-checker 'puppet-parser 'puppet-lint)))
-   ;; simply enable for all prog-mode
-   (prog-mode . (lambda ()
-                    (flycheck-mode)))))
+;;(use-package flycheck
+;;  :ensure t
+;;  :config
+;;  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+;;  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+;;  :hook
+;;  ((python-mode . (lambda ()
+;;                    (flycheck-mode)
+;;                    (setq flycheck-checker 'python-pylint)
+;;                    (flycheck-add-next-checker 'python-pylint 'python-pyright)))
+;;   (sh-mode . (lambda ()
+;;                (flycheck-mode)
+;;                (flycheck-select-checker 'sh-shellcheck)))
+;;   ;;(yaml-mode . (lambda ()
+;;   ;;               (flycheck-mode)
+;;   ;;               (flycheck-select-checker 'yaml-yamllint)))
+;;   (puppet-mode . (lambda ()
+;;                    (flycheck-mode)
+;;                    (setq flycheck-checker 'puppet-parser)
+;;                    (flycheck-add-next-checker 'puppet-parser 'puppet-lint)))
+;;   ;; simply enable for all prog-mode
+;;   (prog-mode . (lambda ()
+;;                    (flycheck-mode)))))
 
 
 (use-package expand-region
