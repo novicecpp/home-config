@@ -106,12 +106,6 @@ f_proc_environ () {
     cat /proc/$1/environ | tr '\0' '\n'
 }
 
-f_pyenv_init() {
-    export PYENV_ROOT="$HOME/.pyenv"
-    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-}
-
 # https://serverfault.com/a/755815
 f_print_cert_bundle() {
     openssl crl2pkcs7 -nocrl -certfile $1 | openssl pkcs7 -print_certs -text -noout
