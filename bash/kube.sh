@@ -34,6 +34,15 @@ h_k8s_ctx() {
     set +x
 }
 
-f_delete_pod() {
-    kubectl "$@" delete $(kubectl get pod --no-headers -o name)
+f_k8s_delete_pod() {
+    kubectl "$@" delete pod $(kubectl "$@" get pod --no-headers -o custom-columns=":metadata.name")
+}
+
+f_k8s_get_obj_crd() {
+    GREP_REGEXP=${1:-issuers.cert-manager.io}
+    for i in $(kubectl get crd --no-headers -o custom-columns=":metadata.name" | grep -E "${GREP_REGEXP}"); do
+        echo '---'
+        echo $i
+        kubectl get $i -A;
+    done
 }
