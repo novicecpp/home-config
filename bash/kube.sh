@@ -46,3 +46,19 @@ f_k8s_get_obj_crd() {
         kubectl get $i -A;
     done
 }
+
+f_k8s_view_secret() {
+    secret=${1}
+    kubectl get secret -o yaml $secret | yq -j '.data' | jq 'with_entries(.value |= @base64d)'
+}
+
+
+f_kubectl() {
+    if [[ -n $KUBECONTEXT ]]; then
+        command kubectl --context $KUBECONTEXT "$@"
+    else
+        command kubectl "$@"
+    fi
+}
+
+alias kubectl="f_kubectl"
