@@ -116,8 +116,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-10" ))
-(set-face-attribute 'default nil :font "Liberation Mono-10" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-9" ))
+(set-face-attribute 'default nil :font "Liberation Mono-9" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
@@ -386,7 +386,9 @@
   (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
   :custom
   (eglot-workspace-configuration
-   '(:helm-ls (:yamlls (:enabled t
+   '(:ty (:inlayHints (:variableTypes :json-false
+                       :callArgumentNames :json-false))
+     :helm-ls (:yamlls (:enabled t
                         :path "yaml-language-server")
                :valuesFiles (:mainValuesFile "values.yaml"
                              :lintOverlayValuesFile "values.lint.yaml"
