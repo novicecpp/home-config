@@ -35,7 +35,16 @@ h_k8s_ctx() {
 }
 
 f_k8s_delete_pod() {
-    kubectl "$@" delete pod $(kubectl "$@" get pod --no-headers -o custom-columns=":metadata.name")
+    pattern=${1:-.}
+    shift
+    filtered=$(kubectl "$@" get pod --no-headers -o custom-columns=":metadata.name" | grep ${pattern})
+    if [[ $? != 0 ]]; then
+        >&2 echo "Error: not found pod with pattern \"${pattern}\"."
+        return 1
+    fi
+    pods="$(echo "${filtered}" | tr '\n' ' ')"
+    echo >&2 "Pod(s) to delete: ${pods}"
+    kubectl "$@" delete pod ${pods}
 }
 
 f_k8s_get_obj_crd() {
