@@ -384,11 +384,10 @@
   (add-to-list 'eglot-server-programs
                '(python-base-mode . ("rass" "python")))
   (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
+  (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider)
   :custom
   (eglot-workspace-configuration
-   '(:ty (:inlayHints (:variableTypes :json-false
-                       :callArgumentNames :json-false))
-     :helm-ls (:yamlls (:enabled t
+   '(:helm-ls (:yamlls (:enabled t
                         :path "yaml-language-server")
                :valuesFiles (:mainValuesFile "values.yaml"
                              :lintOverlayValuesFile "values.lint.yaml"
@@ -810,7 +809,8 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 
 (add-hook 'after-init-hook
           (lambda ()
-            (when (string-equal (daemonp) "org")
+            (cond
+             ((string-equal (daemonp) "org")
               ;; 1. Set the internal Emacs instance name
               (setq x-resource-name "emacs-org")
 
@@ -819,4 +819,11 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
               (add-to-list 'default-frame-alist '(client . "emacs-org"))
 
               ;; 3. Optional: Set the frame title for visual confirmation
-              (setq frame-title-format "Emacs - Org Instance"))))
+              (setq frame-title-format "Emacs - Org Instance"))
+            ((string-equal (daemonp) "server")
+             (setq x-resource-name "emacs-server")
+
+             (add-to-list 'default-frame-alist '(name . "emacs-server"))
+             (add-to-list 'default-frame-alist '(client . "emacs-server"))
+
+             (setq frame-title-format "Emacs - Server Instance")))))
