@@ -51,7 +51,7 @@
 
 theme = Adwaita Dark
 font-family = Liberation Mono
-font-size = 10
+font-size = 9
 window-padding-y = 2
 adjust-cell-height = 10%
 

@@ -116,8 +116,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; set-font
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-10" ))
-(set-face-attribute 'default nil :font "Liberation Mono-10" )
+(add-to-list 'default-frame-alist '(font . "Liberation Mono-9" ))
+(set-face-attribute 'default nil :font "Liberation Mono-9" )
 
 ;; disible bell noti
 ;; (setq visible-bell t)
@@ -384,6 +384,7 @@
   (add-to-list 'eglot-server-programs
                '(python-base-mode . ("rass" "python")))
   (add-to-list 'eglot-server-programs '(helm-k8s-mode . ("helm_ls" "serve")))
+  (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider)
   :custom
   (eglot-workspace-configuration
    '(:helm-ls (:yamlls (:enabled t
@@ -808,7 +809,8 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
 
 (add-hook 'after-init-hook
           (lambda ()
-            (when (string-equal (daemonp) "org")
+            (cond
+             ((string-equal (daemonp) "org")
               ;; 1. Set the internal Emacs instance name
               (setq x-resource-name "emacs-org")
 
@@ -817,4 +819,11 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
               (add-to-list 'default-frame-alist '(client . "emacs-org"))
 
               ;; 3. Optional: Set the frame title for visual confirmation
-              (setq frame-title-format "Emacs - Org Instance"))))
+              (setq frame-title-format "Emacs - Org Instance"))
+            ((string-equal (daemonp) "server")
+             (setq x-resource-name "emacs-server")
+
+             (add-to-list 'default-frame-alist '(name . "emacs-server"))
+             (add-to-list 'default-frame-alist '(client . "emacs-server"))
+
+             (setq frame-title-format "Emacs - Server Instance")))))
