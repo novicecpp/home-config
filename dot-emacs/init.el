@@ -611,16 +611,22 @@
 ;; use builtin treesit.el and only for python and yaml
 (use-package treesit-auto
   :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
   :config
-  (global-treesit-auto-mode)
-  ;; somehow it does not work with latest emacs master HEAD.
-  ;; but still need it to notify (warning message)  if grammar is not installed.
-  ;; install grammar manually via treesit-install-language-grammar
-  (setq treesit-auto-install t)
-  (setq python-ts-mode-hook python-mode-hook
-        yaml-ts-mode-hook yaml-mode-hook)
+  ;;(setq python-ts-mode-hook python-mode-hook
+  ;;      yaml-ts-mode-hook yaml-mode-hook
+  ;;      json-ts-mode-hook json-mode-hook)
+  ;;(treesit-auto-add-to-auto-mode-alist 'all)
+  ;;(global-treesit-auto-mode))
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (setq major-mode-remap-alist
+          (append '((json-mode . json-ts-mode)
+                    (js-json-mode . json-ts-mode))
+                  major-mode-remap-alist))
   ;; sh-mode is changed to bash-ts-mode by this package.
-  (setq bash-ts-mode-hook sh-mode-hook))
+  (setq bash-ts-mode-hook sh-mode-hook)
+  (global-treesit-auto-mode))
 
 
 (use-package treesit-fold
@@ -672,8 +678,8 @@
 (use-package json-mode
   :ensure t
   :config
-  ;; set tab size to 4
-  (setq json-encoding-default-indentation "    ")
+  ;; set tab size to 2
+  (setq js-indent-level 2)
   (setq indent-tabs-mode nil))
 
 (use-package terraform-mode
@@ -806,6 +812,12 @@ If FOREVER is non-nil, the file is deleted without being moved to trash."
   :hook (k8s-mode . yas-minor-mode))
 ;;(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
+
+(use-package auto-compile
+  :ensure t
+  :config
+  (auto-compile-on-load-mode)
+  (auto-compile-on-save-mode))
 
 (add-hook 'after-init-hook
           (lambda ()
