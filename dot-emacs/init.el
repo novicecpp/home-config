@@ -305,7 +305,28 @@
 (use-package magit
   :ensure t
   :bind
-  ("C-x g" . magit-status))
+  ("C-x g" . magit-status)
+  :config
+  (defun my-magit-validate-commit-message ()
+    "Abort the commit if the first line does not match the required regexp."
+    (save-excursion
+      (goto-char (point-min))
+      (let ((summary (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+            ;; Breakdown of the pattern:
+            ;; ^                     - Start of the line
+            ;; [^[:space:]\n\(]\{1,32\} - 1 to 32 non-whitespace, non-parenthesis characters
+            ;; \(?:([^)]+)\)?        - Optional scope in parentheses (e.g., "(ui)")
+            ;; :                     - A mandatory colon
+            ;;                       - A mandatory space
+            ;; .+$                   - The rest of your commit summary text
+            (required-regexp "^[^[:space:]\n\(]\{1,32\}\(?:([^)]+)\)?: .+$"))
+        (unless (string-match-p required-regexp summary)
+          (unless (y-or-n-p "Commit message does not match the 1-32 character prefix format. Proceed anyway? ")
+            (user-error "Aborting commit to fix the message."))))))
+
+  (add-hook 'git-commit-setup-hook
+            (lambda ()
+              (add-hook 'with-editor-pre-finish-hook #'my-magit-validate-commit-message nil t))))
 
 (use-package zoom-window
   :ensure t
